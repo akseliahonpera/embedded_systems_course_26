@@ -49,6 +49,16 @@
 				(hide yes)
 			)
 		)
+		(symbol "BMP581_1_1"
+			(text "${SYMBOL_NAME}"
+				(at 0.254 5.334 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+		)
 		(embedded_fonts no)
 	)
 	(symbol "M20048-1"
@@ -98,6 +108,16 @@
 				(hide yes)
 			)
 		)
+		(symbol "M20048-1_1_1"
+			(text "${SYMBOL_NAME}"
+				(at 0 4.826 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+		)
 		(embedded_fonts no)
 	)
 	(symbol "MP2235S"
@@ -145,6 +165,16 @@
 					(size 1.27 1.27)
 				)
 				(hide yes)
+			)
+		)
+		(symbol "MP2235S_1_1"
+			(text "${SYMBOL_NAME}"
+				(at -0.254 3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
 			)
 		)
 		(embedded_fonts no)
