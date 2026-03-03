@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "Project footprints")(type "KiCad")(uri "C:/Users/JONIK/embedded_systems_project/KiCad_libraries/footprints/project_library.pretty")(options "")(descr ""))
+)
