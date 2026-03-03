@@ -1,0 +1,19 @@
+# Ignore list for KiCAD Projects (kopsattu osoitteesta https://github.com/pcbcupid/Github_Kicad_Integration_Demo/blob/main/.gitignore)
+# Temporary files
+*.000
+*.bak
+*.bck
+*.kicad_pcb-bak
+*.sch-bak
+*~
+_autosave-*
+*.tmp
+*-save.pro
+*-save.kicad_pcb
+fp-info-cache
+# Netlist files (exported from Eeschema)
+*.net
+# Autorouter files (exported from Pcbnew)
+*.dsn
+*.ses
+*.zip
