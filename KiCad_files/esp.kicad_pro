@@ -631,6 +631,30 @@
     [
       "186d5500-054c-4b47-a89c-85f6ce2abe33",
       "Root"
+    ],
+    [
+      "718dca9f-314d-4628-afec-7956f3606013",
+      "1_power_supply"
+    ],
+    [
+      "1d098c74-ef64-49cb-a95a-ee89cc8acd66",
+      "1_IMU"
+    ],
+    [
+      "117263c6-b09f-4555-b324-57dde8b40725",
+      "1_barometer"
+    ],
+    [
+      "58061273-0348-4c5f-98ae-c78a02c73d37",
+      "1_GNSS"
+    ],
+    [
+      "da295ba5-5e07-44a9-8c1c-e3f6c5500b46",
+      "1_MCU"
+    ],
+    [
+      "dce605b2-bfca-4721-a3b2-461c5c7ec909",
+      "1_USB"
     ]
   ],
   "text_variables": {}
