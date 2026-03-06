@@ -2,7 +2,7 @@
 	(version 20250114)
 	(generator "eeschema")
 	(generator_version "9.0")
-	(uuid "12d34fcb-1a93-41ce-b7e8-831eb4268e74")
+	(uuid "0c967033-e9d6-4fa2-96bc-a53d0213cf98")
 	(paper "A4")
 	(lib_symbols
 		(symbol "Connector:USB_C_Receptacle_USB2.0_16P"
@@ -1309,17 +1309,6 @@
 		)
 		(uuid "f2d5e583-0a5f-47b4-880c-a4c011f9f896")
 	)
-	(hierarchical_label "USB_D+"
-		(shape bidirectional)
-		(at 124.46 81.28 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "6ec99b3f-fa42-4c24-b992-90f250f4e0c7")
-	)
 	(hierarchical_label "USB_D-"
 		(shape bidirectional)
 		(at 124.46 76.2 0)
@@ -1329,7 +1318,18 @@
 			)
 			(justify left)
 		)
-		(uuid "ee89ed08-c0a5-4ee7-8a7c-06110e68f2b8")
+		(uuid "4b8fc7ce-b3d0-4f9b-bb0f-b48ced9cdeb7")
+	)
+	(hierarchical_label "USB_D+"
+		(shape bidirectional)
+		(at 124.46 81.28 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "8ed8e887-fce0-430f-9f18-69b2ce7bc31f")
 	)
 	(symbol
 		(lib_id "Device:R")

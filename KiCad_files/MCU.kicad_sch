@@ -2,7 +2,7 @@
 	(version 20250114)
 	(generator "eeschema")
 	(generator_version "9.0")
-	(uuid "aa77ebd6-6a7b-4c97-aa2e-e5fa3cfbb9b7")
+	(uuid "af3cc709-cda1-4c41-bc14-a5685a049dd5")
 	(paper "A4")
 	(lib_symbols
 		(symbol "Device:C"
@@ -2506,25 +2506,27 @@
 		)
 		(uuid "fe8b9c54-4ec5-409c-994a-7aa8db448dc3")
 	)
-	(label "USB_D+"
-		(at 187.96 90.17 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "105b032c-9593-419c-8132-977da3fdb835")
-	)
-	(label "USB_D-"
+	(hierarchical_label "USB_D-"
+		(shape bidirectional)
 		(at 187.96 87.63 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left bottom)
+			(justify left)
 		)
-		(uuid "fba20d9c-73df-4701-b093-bfe4a31a0770")
+		(uuid "757821aa-57a6-4d65-b407-fd49e2639da6")
+	)
+	(hierarchical_label "USB_D+"
+		(shape bidirectional)
+		(at 187.96 90.17 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "9fc24602-24fc-475f-bc09-e3ba63505a88")
 	)
 	(symbol
 		(lib_id "Device:C")

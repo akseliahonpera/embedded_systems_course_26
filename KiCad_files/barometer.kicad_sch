@@ -2,7 +2,7 @@
 	(version 20250114)
 	(generator "eeschema")
 	(generator_version "9.0")
-	(uuid "36b1d585-1355-4938-99fa-5ba0213d6422")
+	(uuid "bf0b3b5b-b963-4896-aeb8-3209b6bea1ea")
 	(paper "A4")
 	(lib_symbols
 		(symbol "1_projektin osat:BMP581"

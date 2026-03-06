@@ -5512,7 +5512,7 @@
 	)
 	(wire
 		(pts
-			(xy 284.48 209.55) (xy 298.45 209.55)
+			(xy 288.29 209.55) (xy 304.8 209.55)
 		)
 		(stroke
 			(width 0)
@@ -6052,6 +6052,36 @@
 	)
 	(wire
 		(pts
+			(xy 299.72 161.29) (xy 312.42 161.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b2394e66-b64d-4ece-ad44-b1268b2bb449")
+	)
+	(wire
+		(pts
+			(xy 299.72 156.21) (xy 299.72 157.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b32c5889-469a-437e-a162-d89637cd0a85")
+	)
+	(wire
+		(pts
+			(xy 312.42 157.48) (xy 299.72 157.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "babdc60d-83b6-45f3-ac11-d8e34f3beb21")
+	)
+	(wire
+		(pts
 			(xy 160.02 222.25) (xy 166.37 222.25)
 		)
 		(stroke
@@ -6182,7 +6212,7 @@
 	)
 	(wire
 		(pts
-			(xy 284.48 213.36) (xy 298.45 213.36)
+			(xy 288.29 213.36) (xy 304.8 213.36)
 		)
 		(stroke
 			(width 0)
@@ -6320,8 +6350,18 @@
 		)
 		(uuid "6ab884b0-0f4e-4b01-a685-926e4ea43f93")
 	)
+	(label "USB_D-"
+		(at 299.72 161.29 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "86291e19-ac81-481c-aef8-17adb2f243b9")
+	)
 	(label "USB_D+"
-		(at 284.48 209.55 0)
+		(at 288.29 209.55 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -6329,6 +6369,16 @@
 			(justify left bottom)
 		)
 		(uuid "9e17482f-6f13-45c7-aad3-af19f73cbf30")
+	)
+	(label "USB_D+"
+		(at 299.72 156.21 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a3971361-30b9-40ca-8840-c5dd63897d13")
 	)
 	(label "USB_D+"
 		(at 203.2 217.17 0)
@@ -6361,7 +6411,7 @@
 		(uuid "e25be4ad-485a-42a3-a8f0-0cbf6e75fbd8")
 	)
 	(label "USB_D-"
-		(at 284.48 213.36 0)
+		(at 288.29 213.36 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9264,6 +9314,26 @@
 				(justify left top)
 			)
 		)
+		(pin "USB_D+" bidirectional
+			(at 312.42 157.48 180)
+			(uuid "87a0d49f-d2a8-48df-bc6d-3a957dcc342c")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "USB_D-" bidirectional
+			(at 312.42 161.29 180)
+			(uuid "5d57be1c-70ef-409d-a6c9-e68e326ca315")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 		(instances
 			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33"
@@ -9273,7 +9343,7 @@
 		)
 	)
 	(sheet
-		(at 298.45 195.58)
+		(at 304.8 195.58)
 		(size 55.88 48.26)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -9289,7 +9359,7 @@
 		)
 		(uuid "dce605b2-bfca-4721-a3b2-461c5c7ec909")
 		(property "Sheetname" "1_USB"
-			(at 298.45 194.8684 0)
+			(at 304.8 194.8684 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9298,7 +9368,7 @@
 			)
 		)
 		(property "Sheetfile" "USB.kicad_sch"
-			(at 298.45 244.4246 0)
+			(at 304.8 244.4246 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9307,7 +9377,7 @@
 			)
 		)
 		(pin "USB_D+" bidirectional
-			(at 298.45 209.55 180)
+			(at 304.8 209.55 180)
 			(uuid "684853c8-4671-44e0-8cac-c42e5a71a4dd")
 			(effects
 				(font
@@ -9317,7 +9387,7 @@
 			)
 		)
 		(pin "USB_D-" bidirectional
-			(at 298.45 213.36 180)
+			(at 304.8 213.36 180)
 			(uuid "64976c44-12f9-41be-834e-e9245064ecd9")
 			(effects
 				(font

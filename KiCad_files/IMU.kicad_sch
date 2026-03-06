@@ -2,7 +2,7 @@
 	(version 20250114)
 	(generator "eeschema")
 	(generator_version "9.0")
-	(uuid "ebf59ed3-ed6a-4a42-bc8c-f1cec5128461")
+	(uuid "42aaa4cf-05fd-414a-8380-234d47e32867")
 	(paper "A4")
 	(lib_symbols
 		(symbol "Sensor_Motion:BNO055"
