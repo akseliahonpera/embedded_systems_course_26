@@ -1304,9 +1304,9 @@
 		)
 		(uuid "d6089292-569f-4469-b3ad-e763f0f3d575")
 	)
-	(text "Pulse per second output, which provides a synchronized\noutput which is synchronized to GNSS time.\nPulse width is 100 ms. Enable with command PMTK255 "
+	(text "Pulse per second output, which provides a synchronized\noutput which is synchronized to GNSS time.\nPulse width is 100 ms. Enable with command PMTK255 \n\nLeave floating if not needed"
 		(exclude_from_sim no)
-		(at 41.402 115.062 0)
+		(at 42.672 116.84 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1379,6 +1379,12 @@
 		(uuid "315b4b85-4dc9-4f70-85c0-48ced02d5cf4")
 	)
 	(junction
+		(at 160.02 106.68)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "344857df-e6b4-445e-9451-5dfdec5264aa")
+	)
+	(junction
 		(at 137.16 119.38)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1415,28 +1421,10 @@
 		(uuid "be89cf4b-3c1a-4244-ae33-91e5c7671e1e")
 	)
 	(junction
-		(at 160.02 106.68)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "c15798ea-21e3-4148-8f74-5be3e8b30bc2")
-	)
-	(junction
-		(at 160.02 99.06)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "d146ffca-c128-4375-967b-592368798317")
-	)
-	(junction
 		(at 106.68 88.9)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "d1f6f1ae-5aa1-41f4-b592-8d8cceb2848e")
-	)
-	(junction
-		(at 160.02 104.14)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "d23af723-a9c4-4279-94a7-d40dc5f3fc49")
 	)
 	(junction
 		(at 160.02 93.98)
@@ -1461,6 +1449,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e3dc4e6e-0204-49a2-81c2-2891c3f35175")
+	)
+	(junction
+		(at 160.02 99.06)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "ef3393a9-4860-40e1-9459-5e6d80d1c653")
 	)
 	(wire
 		(pts
@@ -1504,7 +1498,7 @@
 	)
 	(wire
 		(pts
-			(xy 156.21 104.14) (xy 160.02 104.14)
+			(xy 156.21 104.14) (xy 193.04 104.14)
 		)
 		(stroke
 			(width 0)
@@ -1591,16 +1585,6 @@
 			(type default)
 		)
 		(uuid "24c01583-467b-47f9-9395-ccc78e031dcf")
-	)
-	(wire
-		(pts
-			(xy 160.02 104.14) (xy 160.02 106.68)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "25c16619-660e-4ace-914a-3c8bc390ceb6")
 	)
 	(wire
 		(pts
@@ -1701,6 +1685,16 @@
 			(type default)
 		)
 		(uuid "382382eb-e441-45be-877b-1811afd2962e")
+	)
+	(wire
+		(pts
+			(xy 160.02 99.06) (xy 160.02 106.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "39b4bebd-ff4d-41ad-bb0e-4b960a62c23f")
 	)
 	(wire
 		(pts
@@ -1934,16 +1928,6 @@
 	)
 	(wire
 		(pts
-			(xy 160.02 104.14) (xy 193.04 104.14)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "866fe4d9-f2bd-48c4-8bca-2401c54f2096")
-	)
-	(wire
-		(pts
 			(xy 177.8 62.23) (xy 177.8 63.5)
 		)
 		(stroke
@@ -2011,16 +1995,6 @@
 			(type default)
 		)
 		(uuid "928c5e63-7af0-461a-aaa2-8e76d5783040")
-	)
-	(wire
-		(pts
-			(xy 160.02 99.06) (xy 160.02 104.14)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "92fbe265-101e-40a7-975a-da0789c8e452")
 	)
 	(wire
 		(pts
