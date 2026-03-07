@@ -9230,6 +9230,86 @@
 				(justify left top)
 			)
 		)
+		(pin "E1_BAUD_SELECT" input
+			(at 323.85 55.88 180)
+			(uuid "c698effa-8d3b-4a68-a409-7b496c8e0465")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "E2_BAUD_SELECT" input
+			(at 323.85 58.42 180)
+			(uuid "d5e39753-dabf-45e0-9f11-ed7659f704a6")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "FIX" output
+			(at 323.85 60.96 180)
+			(uuid "2165d4d4-d3a8-4c85-978d-53839d625720")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "HW_R" input
+			(at 323.85 63.5 180)
+			(uuid "a2e54c4b-be8e-4921-a8b9-550a65ed9056")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "HW_S" input
+			(at 323.85 66.04 180)
+			(uuid "4adf2bff-68ab-4919-a70f-9127de9a07f0")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "RX" input
+			(at 323.85 68.58 180)
+			(uuid "3273e6bc-b60e-40fc-842e-ed4d29aff2fa")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "TM" output
+			(at 323.85 73.66 180)
+			(uuid "65a3682c-9990-45c3-a734-5ac4db36ce42")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "TX" output
+			(at 323.85 71.12 180)
+			(uuid "58d8f091-6c2d-467b-9453-a9d8dada6f65")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 		(instances
 			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33"

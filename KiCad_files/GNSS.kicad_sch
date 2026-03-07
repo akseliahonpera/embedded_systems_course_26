@@ -582,6 +582,210 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Device:Battery_Cell"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "BT"
+				(at 2.54 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "Battery_Cell"
+				(at 2.54 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 1.524 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 1.524 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Single-cell battery"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Device" "V"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Type" "DC"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Pins" "1=+ 2=-"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "battery cell"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "Battery_Cell_0_1"
+				(rectangle
+					(start -2.286 1.778)
+					(end 2.286 1.524)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(rectangle
+					(start -1.524 1.016)
+					(end 1.524 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 1.778) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0.762) (xy 0 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 3.048) (xy 1.778 3.048)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 3.556) (xy 1.27 2.54)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "Battery_Cell_1_1"
+				(pin passive line
+					(at 0 5.08 270)
+					(length 2.54)
+					(name "+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -2.54 90)
+					(length 2.54)
+					(name "-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Device:C"
 			(pin_numbers
 				(hide yes)
@@ -1234,9 +1438,9 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "TODO: Backup voltage. Need a 3 volt battery to enable\nquick startup and satellite acquisition by the GPS\n\nDo other devices require this as well?\n"
+	(text "Backup voltage. Need a 3 volt battery to enable\nquick startup and satellite acquisition by the GPS\n\nTODO: Do other devices require this as well?\n"
 		(exclude_from_sim no)
-		(at 94.488 173.228 0)
+		(at 59.182 177.546 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1244,7 +1448,7 @@
 		)
 		(uuid "2b1e2879-0f2e-426d-ada8-f888b8560599")
 	)
-	(text "Could probably use this to determine whether to\ninclude the GPS data into the sensor fusion"
+	(text "Could probably use this to determine whether to\ninclude the GPS data into the sensor fusion\nif(FIX) do readgps()"
 		(exclude_from_sim no)
 		(at 248.92 145.034 0)
 		(effects
@@ -1254,7 +1458,7 @@
 		)
 		(uuid "3c48d5e2-eea4-4406-9e95-455dc4849249")
 	)
-	(text "UART interface. Cross-connect with MCU:\nRX -> TX, TX -> RX\nSelect baud rate with pins E2 & E3"
+	(text "UART interface. Cross-connect with MCU:\nRX -> TX, TX -> RX\nSelect baud rate with pins E2 & E3 \nOR via software"
 		(exclude_from_sim no)
 		(at 243.84 102.87 0)
 		(effects
@@ -1718,6 +1922,16 @@
 	)
 	(wire
 		(pts
+			(xy 88.9 165.1) (xy 88.9 177.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "51b47789-0805-4983-8117-38854af63c46")
+	)
+	(wire
+		(pts
 			(xy 93.98 99.06) (xy 93.98 97.79)
 		)
 		(stroke
@@ -2128,6 +2342,16 @@
 	)
 	(wire
 		(pts
+			(xy 104.14 165.1) (xy 88.9 165.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c4563526-3edf-446f-a0cb-f7c80a0e1bde")
+	)
+	(wire
+		(pts
 			(xy 165.1 139.7) (xy 215.9 139.7)
 		)
 		(stroke
@@ -2188,7 +2412,7 @@
 	)
 	(wire
 		(pts
-			(xy 93.98 165.1) (xy 127 165.1)
+			(xy 111.76 165.1) (xy 127 165.1)
 		)
 		(stroke
 			(width 0)
@@ -3304,6 +3528,167 @@
 			(project ""
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/58061273-0348-4c5f-98ae-c78a02c73d37"
 					(reference "C9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:Battery_Cell")
+		(at 106.68 165.1 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a820fb07-51ae-43fc-8421-ddea8666800c")
+		(property "Reference" "BT1"
+			(at 108.5215 157.48 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "3 V"
+			(at 108.5215 160.02 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 108.204 165.1 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 108.204 165.1 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Single-cell battery"
+			(at 106.68 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Device" "V"
+			(at 106.68 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" "DC"
+			(at 106.68 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pins" "1=+ 2=-"
+			(at 106.68 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "aaf22b94-66d3-4dc2-830b-eee5b8fcad5e")
+		)
+		(pin "2"
+			(uuid "c006d133-30a7-4f5d-866b-834acdb9b564")
+		)
+		(instances
+			(project ""
+				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/58061273-0348-4c5f-98ae-c78a02c73d37"
+					(reference "BT1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 88.9 177.8 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a8d59cf6-c62f-46e2-b460-fa3e65c26b4a")
+		(property "Reference" "#PWR040"
+			(at 88.9 184.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 88.9 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 88.9 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 88.9 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 88.9 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "907a0eed-44c8-4a05-a574-ccb7abfff650")
+		)
+		(instances
+			(project ""
+				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/58061273-0348-4c5f-98ae-c78a02c73d37"
+					(reference "#PWR040")
 					(unit 1)
 				)
 			)
