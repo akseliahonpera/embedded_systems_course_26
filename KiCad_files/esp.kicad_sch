@@ -9148,7 +9148,7 @@
 		)
 		(pin "SCK" input
 			(at 255.27 49.53 180)
-			(uuid "0fd08113-538b-4fef-af53-ac315ca4b2be")
+			(uuid "08c0b850-5f06-4cfa-b800-e58961518b2c")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9156,19 +9156,9 @@
 				(justify left)
 			)
 		)
-		(pin "SDI" input
+		(pin "SDI" bidirectional
 			(at 255.27 45.72 180)
-			(uuid "61a54ebb-299d-4620-9726-fd3f01b5910f")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(pin "SDO" input
-			(at 255.27 71.12 180)
-			(uuid "059cf1a5-2602-4371-9519-b1d56897d66f")
+			(uuid "1047e8ae-514c-4bc4-aaff-274b77170eb3")
 			(effects
 				(font
 					(size 1.27 1.27)

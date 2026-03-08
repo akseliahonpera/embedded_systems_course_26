@@ -645,6 +645,16 @@
 		)
 		(uuid "0dbc8733-22ce-4054-8896-32fa9297512c")
 	)
+	(text "The I2C slave address of BMP581 is 7'h46 for SDO = 1'b0 and 7'h47 for SDO = 1'b1."
+		(exclude_from_sim no)
+		(at 192.024 88.138 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "56fa2bc5-8524-4286-9ba3-40f532bea78a")
+	)
 	(text "All VSS pins must be connected to the ground."
 		(exclude_from_sim no)
 		(at 105.664 111.76 0)
@@ -895,7 +905,7 @@
 	)
 	(wire
 		(pts
-			(xy 144.78 92.71) (xy 149.86 92.71)
+			(xy 144.78 92.71) (xy 153.67 92.71)
 		)
 		(stroke
 			(width 0)
@@ -904,7 +914,7 @@
 		(uuid "fd42cb36-40bd-43e2-905e-def70df0d98f")
 	)
 	(hierarchical_label "SDI"
-		(shape input)
+		(shape bidirectional)
 		(at 110.49 95.25 180)
 		(effects
 			(font
@@ -925,16 +935,72 @@
 		)
 		(uuid "1b062153-c792-45b3-9bf6-0ccc3ae08570")
 	)
-	(hierarchical_label "SDO"
-		(shape input)
-		(at 149.86 92.71 0)
-		(effects
-			(font
-				(size 1.27 1.27)
+	(symbol
+		(lib_id "power:GND")
+		(at 153.67 92.71 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "028b7b70-fea9-4028-8ac7-79a1d3bb6cb2")
+		(property "Reference" "#PWR048"
+			(at 160.02 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
-			(justify left)
 		)
-		(uuid "9375ce15-0cdf-4307-b46c-b62321a7da2f")
+		(property "Value" "GND"
+			(at 157.48 92.7099 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 153.67 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 153.67 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 153.67 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "350e4284-948a-4dc7-9cf3-46be44ed7118")
+		)
+		(instances
+			(project ""
+				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/117263c6-b09f-4555-b324-57dde8b40725"
+					(reference "#PWR048")
+					(unit 1)
+				)
+			)
+		)
 	)
 	(symbol
 		(lib_id "power:+3.3V")
