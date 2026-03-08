@@ -9189,6 +9189,16 @@
 				(justify left)
 			)
 		)
+		(pin "INT" output
+			(at 255.27 53.34 180)
+			(uuid "e89c040b-ec97-49f3-a753-62dec9a07622")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 		(instances
 			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33"
