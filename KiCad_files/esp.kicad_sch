@@ -9113,7 +9113,7 @@
 		)
 	)
 	(sheet
-		(at 254 40.64)
+		(at 255.27 40.64)
 		(size 34.29 33.02)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -9129,7 +9129,7 @@
 		)
 		(uuid "117263c6-b09f-4555-b324-57dde8b40725")
 		(property "Sheetname" "1_barometer"
-			(at 254 39.9284 0)
+			(at 255.27 39.9284 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9138,12 +9138,42 @@
 			)
 		)
 		(property "Sheetfile" "barometer.kicad_sch"
-			(at 254 74.2446 0)
+			(at 255.27 74.2446 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(justify left top)
+			)
+		)
+		(pin "SCK" input
+			(at 255.27 49.53 180)
+			(uuid "0fd08113-538b-4fef-af53-ac315ca4b2be")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "SDI" input
+			(at 255.27 45.72 180)
+			(uuid "61a54ebb-299d-4620-9726-fd3f01b5910f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "SDO" input
+			(at 255.27 71.12 180)
+			(uuid "059cf1a5-2602-4371-9519-b1d56897d66f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
 			)
 		)
 		(instances
