@@ -647,7 +647,7 @@
 	)
 	(text "The I2C slave address of BMP581 is 7'h46 for SDO = 1'b0 and 7'h47 for SDO = 1'b1."
 		(exclude_from_sim no)
-		(at 192.024 88.138 0)
+		(at 202.184 87.884 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -667,7 +667,7 @@
 	)
 	(text "Interrupt pin(INT) should be connected to the ground if not used.\nSee page 46 section 6.2 from the datasheet."
 		(exclude_from_sim no)
-		(at 182.118 99.822 0)
+		(at 192.532 99.822 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -705,7 +705,7 @@
 	)
 	(wire
 		(pts
-			(xy 144.78 97.79) (xy 148.59 97.79)
+			(xy 144.78 97.79) (xy 154.94 97.79)
 		)
 		(stroke
 			(width 0)
@@ -752,16 +752,6 @@
 			(type default)
 		)
 		(uuid "38d7c336-3b6e-4205-bbae-bb4634f2ecb0")
-	)
-	(wire
-		(pts
-			(xy 148.59 97.79) (xy 148.59 116.84)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5d048e7e-896c-420c-b5c8-c7e0d057dd6f")
 	)
 	(wire
 		(pts
@@ -934,6 +924,17 @@
 			(justify right)
 		)
 		(uuid "1b062153-c792-45b3-9bf6-0ccc3ae08570")
+	)
+	(hierarchical_label "INT"
+		(shape output)
+		(at 154.94 97.79 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "c1c10fb9-b3e8-43f9-84f9-b678793afc1b")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -1355,72 +1356,6 @@
 			(project ""
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/117263c6-b09f-4555-b324-57dde8b40725"
 					(reference "#PWR045")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 148.59 116.84 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "b6130d58-98c0-453a-af4a-9d0814e6dafd")
-		(property "Reference" "#PWR042"
-			(at 148.59 123.19 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 148.59 121.92 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 148.59 116.84 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 148.59 116.84 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 148.59 116.84 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "27dd1c45-e672-48e4-9544-31d0f28e8160")
-		)
-		(instances
-			(project "esp"
-				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/117263c6-b09f-4555-b324-57dde8b40725"
-					(reference "#PWR042")
 					(unit 1)
 				)
 			)
