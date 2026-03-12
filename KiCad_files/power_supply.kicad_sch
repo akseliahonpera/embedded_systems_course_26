@@ -2199,6 +2199,12 @@
 		)
 	)
 	(junction
+		(at 201.93 95.25)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "0d242d22-da85-4d8a-ac3f-501025fae140")
+	)
+	(junction
 		(at 236.22 95.25)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2211,12 +2217,6 @@
 		(uuid "3a16a321-9964-48e4-9e36-4a60b3c73f0f")
 	)
 	(junction
-		(at 207.01 95.25)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "449e232a-e31d-4bb9-b8ef-f5adaa05f937")
-	)
-	(junction
 		(at 227.33 95.25)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2227,6 +2227,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "54557954-dcdd-45c3-ae4a-78981a99a0f8")
+	)
+	(junction
+		(at 223.52 95.25)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "59defdb4-1e03-4562-8570-39e78529e856")
 	)
 	(junction
 		(at 124.46 77.47)
@@ -2269,12 +2275,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "7d810fa2-9c87-4451-9fe3-b377253dc99a")
-	)
-	(junction
-		(at 223.52 95.25)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "7ea3d5af-f1b3-4a00-bd5c-6fe458d4557a")
 	)
 	(junction
 		(at 185.42 80.01)
@@ -2360,7 +2360,7 @@
 	)
 	(wire
 		(pts
-			(xy 207.01 83.82) (xy 207.01 82.55)
+			(xy 201.93 83.82) (xy 201.93 82.55)
 		)
 		(stroke
 			(width 0)
@@ -2370,7 +2370,7 @@
 	)
 	(wire
 		(pts
-			(xy 143.51 95.25) (xy 207.01 95.25)
+			(xy 143.51 95.25) (xy 201.93 95.25)
 		)
 		(stroke
 			(width 0)
@@ -2477,6 +2477,16 @@
 			(type default)
 		)
 		(uuid "332795f0-5348-4d28-8abe-933865b8b65d")
+	)
+	(wire
+		(pts
+			(xy 201.93 95.25) (xy 205.74 95.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3bb3a297-3b48-44b4-b1b8-5eed645d265a")
 	)
 	(wire
 		(pts
@@ -2710,7 +2720,7 @@
 	)
 	(wire
 		(pts
-			(xy 207.01 91.44) (xy 207.01 95.25)
+			(xy 201.93 91.44) (xy 201.93 95.25)
 		)
 		(stroke
 			(width 0)
@@ -2960,7 +2970,7 @@
 	)
 	(wire
 		(pts
-			(xy 185.42 82.55) (xy 198.12 82.55)
+			(xy 185.42 82.55) (xy 193.04 82.55)
 		)
 		(stroke
 			(width 0)
@@ -2980,7 +2990,7 @@
 	)
 	(wire
 		(pts
-			(xy 207.01 82.55) (xy 205.74 82.55)
+			(xy 201.93 82.55) (xy 200.66 82.55)
 		)
 		(stroke
 			(width 0)
@@ -3070,16 +3080,6 @@
 	)
 	(wire
 		(pts
-			(xy 222.25 95.25) (xy 223.52 95.25)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "de61de60-c9a6-4eb5-b3ec-a1b42ab4ec52")
-	)
-	(wire
-		(pts
 			(xy 179.07 74.93) (xy 175.26 74.93)
 		)
 		(stroke
@@ -3147,6 +3147,16 @@
 			(type default)
 		)
 		(uuid "fcb6f511-da70-4a59-923e-22a36bf2ffcd")
+	)
+	(wire
+		(pts
+			(xy 220.98 95.25) (xy 223.52 95.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fd17c908-ffe8-4766-a54a-96dd9ac6de6e")
 	)
 	(wire
 		(pts
@@ -3246,6 +3256,15 @@
 				(hide yes)
 			)
 		)
+		(property "DigiKey" "DMP3099L-7DICT-ND"
+			(at 62.23 87.63 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "b3f1b047-5e34-47f5-a9bf-6f21e8f9c80d")
 		)
@@ -3321,6 +3340,15 @@
 		)
 		(property "Sim.Pins" "1=K 2=A"
 			(at 257.81 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "492-2281-1-ND"
+			(at 257.81 76.2 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3530,6 +3558,15 @@
 				(hide yes)
 			)
 		)
+		(property "DigiKey" "720-1754-1-ND"
+			(at 134.62 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "84e32975-8c74-4e36-a7a3-ed48454a28ad")
 		)
@@ -3600,6 +3637,15 @@
 				(hide yes)
 			)
 		)
+		(property "DigiKey" "399-C0805C330J5GACTUCT-ND"
+			(at 236.22 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "85e5e174-e880-4dab-b4bc-543b88bd8468")
 		)
@@ -3662,6 +3708,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
+			(at 143.51 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "490-1644-1-ND"
 			(at 143.51 59.69 0)
 			(effects
 				(font
@@ -3803,6 +3858,15 @@
 				)
 			)
 		)
+		(property "DigiKey" "1589-1573-1-ND"
+			(at 154.94 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "ef69da35-2cba-4856-862a-6919ca0693c5")
 		)
@@ -3891,6 +3955,15 @@
 				(hide yes)
 			)
 		)
+		(property "DigiKey" "311-470KCRCT-ND"
+			(at 236.22 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "4c447ae2-d8b3-4d7c-a33a-e66c786baa04")
 		)
@@ -3901,76 +3974,6 @@
 			(project ""
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
 					(reference "R15")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "1_projektin osat:SRU1038-5R0Y")
-		(at 207.01 95.25 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "343fa31e-f7ea-40ab-932a-2faf4bc0f793")
-		(property "Reference" "L5"
-			(at 214.63 87.63 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-			)
-		)
-		(property "Value" "SRU1038-5R0Y"
-			(at 214.63 90.17 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-			)
-		)
-		(property "Footprint" "Inductor_SMD:L_Bourns-SRU1028_10.0x10.0mm"
-			(at 207.01 95.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "SRU1038-5R0Y"
-			(at 207.01 95.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 207.01 95.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "fde5e529-38a8-4672-a82f-d6491fa80cd8")
-		)
-		(pin "1"
-			(uuid "8d0497d4-48ed-4d60-b3be-61741e756065")
-		)
-		(instances
-			(project ""
-				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
-					(reference "L5")
 					(unit 1)
 				)
 			)
@@ -4023,6 +4026,15 @@
 			)
 		)
 		(property "Description" "Resistor"
+			(at 223.52 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "311-40.2KCRCT-ND"
 			(at 223.52 74.93 0)
 			(effects
 				(font
@@ -4101,6 +4113,15 @@
 				(hide yes)
 			)
 		)
+		(property "DigiKey" "720-1754-1-ND"
+			(at 181.61 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "50304dd4-5e7e-422a-a418-b40ccaa10582")
 		)
@@ -4163,6 +4184,15 @@
 			)
 		)
 		(property "Description" "Resistor"
+			(at 257.81 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "311-2.20KCRCT-ND"
 			(at 257.81 87.63 0)
 			(effects
 				(font
@@ -4310,6 +4340,15 @@
 				(hide yes)
 			)
 		)
+		(property "DigiKey" "587-3246-1-ND"
+			(at 227.33 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "20b2e892-bb85-4611-b8b9-ef6d484751ee")
 		)
@@ -4386,6 +4425,85 @@
 			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
 					(reference "#PWR050")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "1_projektin osat:SRU1038-5R0Y")
+		(at 205.74 95.25 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "4db38f90-6260-48bc-8c7e-9627305dfb79")
+		(property "Reference" "L4"
+			(at 213.36 87.63 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "SRU1038-5R0Y"
+			(at 213.36 90.17 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "1_project_library:IND_BOURNS_SRU1038"
+			(at 205.74 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "SRU1038-5R0Y"
+			(at 205.74 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 205.74 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "SRU1038-5R0YCT-ND"
+			(at 205.74 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "6717bf9f-a8f2-417d-82c5-1c86a1b9b1f5")
+		)
+		(pin "1"
+			(uuid "26dd07e4-147a-4434-83a2-253c6157d2aa")
+		)
+		(instances
+			(project ""
+				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
+					(reference "L4")
 					(unit 1)
 				)
 			)
@@ -4578,6 +4696,15 @@
 				(hide yes)
 			)
 		)
+		(property "DigiKey" "13-RT0805FRE0713KLCT-ND"
+			(at 223.52 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "e31eb317-a128-4027-a263-eac2cfde1623")
 		)
@@ -4638,6 +4765,15 @@
 			)
 		)
 		(property "Description" "Schottky diode"
+			(at 101.6 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "CUS10S30H3FCT-ND"
 			(at 101.6 72.39 0)
 			(effects
 				(font
@@ -4707,6 +4843,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
+			(at 124.46 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "587-3246-1-ND"
 			(at 124.46 85.09 0)
 			(effects
 				(font
@@ -4796,6 +4941,15 @@
 		)
 		(property "Sim.Pins" "1=K 2=A"
 			(at 185.42 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "1N4148WSFSCT-ND"
+			(at 185.42 76.2 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4952,7 +5106,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 201.93 82.55 90)
+		(at 196.85 82.55 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4961,7 +5115,7 @@
 		(fields_autoplaced yes)
 		(uuid "d07bb5be-0943-4029-a7f6-145f772fe681")
 		(property "Reference" "R11"
-			(at 201.93 76.2 90)
+			(at 196.85 76.2 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4969,7 +5123,7 @@
 			)
 		)
 		(property "Value" "20"
-			(at 201.93 78.74 90)
+			(at 196.85 78.74 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4977,7 +5131,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
-			(at 201.93 84.328 90)
+			(at 196.85 84.328 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4986,7 +5140,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 201.93 82.55 0)
+			(at 196.85 82.55 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4995,7 +5149,16 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 201.93 82.55 0)
+			(at 196.85 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "311-20.0CRCT-ND"
+			(at 196.85 82.55 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5065,6 +5228,15 @@
 			)
 		)
 		(property "Description" "Low Loss PowerPath Controller, TSOT-23-6"
+			(at 62.23 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "505-LTC4412ES6#TRMPBFCT-ND"
 			(at 62.23 115.57 0)
 			(effects
 				(font
@@ -5289,6 +5461,15 @@
 				(hide yes)
 			)
 		)
+		(property "DigiKey" "13-RC0805FR-135K6LCT-ND"
+			(at 196.85 69.85 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "d95f591c-7e22-4f33-adf8-f3d1a1775fae")
 		)
@@ -5372,7 +5553,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 207.01 87.63 180)
+		(at 201.93 87.63 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5381,7 +5562,7 @@
 		(fields_autoplaced yes)
 		(uuid "f8d0eb24-8b12-4723-9dc3-8286a06f992f")
 		(property "Reference" "C19"
-			(at 203.2 88.9001 0)
+			(at 198.12 88.9001 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5390,7 +5571,7 @@
 			)
 		)
 		(property "Value" "0.1u"
-			(at 203.2 86.3601 0)
+			(at 198.12 86.3601 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5399,7 +5580,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 206.0448 83.82 0)
+			(at 200.9648 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5408,7 +5589,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 207.01 87.63 0)
+			(at 201.93 87.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5417,7 +5598,16 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 207.01 87.63 0)
+			(at 201.93 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "720-1754-1-ND"
+			(at 201.93 87.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5487,6 +5677,15 @@
 			)
 		)
 		(property "Description" "Resistor"
+			(at 134.62 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "311-100KCRCT-ND"
 			(at 134.62 85.09 0)
 			(effects
 				(font
