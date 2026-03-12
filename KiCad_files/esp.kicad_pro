@@ -679,6 +679,10 @@
     [
       "dce605b2-bfca-4721-a3b2-461c5c7ec909",
       "1_USB"
+    ],
+    [
+      "e57caa54-6ff3-4f9e-a4cf-b739534fbed5",
+      "1_pin_header"
     ]
   ],
   "text_variables": {}

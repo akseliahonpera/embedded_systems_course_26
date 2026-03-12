@@ -17,6 +17,36 @@
 	)
 	(wire
 		(pts
+			(xy 229.87 181.61) (xy 246.38 181.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "41b0004e-dd43-4127-be47-7d405edf3b6e")
+	)
+	(wire
+		(pts
+			(xy 246.38 181.61) (xy 246.38 114.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7023901b-f8c6-4fd5-b1d5-b26bec56d8db")
+	)
+	(wire
+		(pts
+			(xy 246.38 114.3) (xy 256.54 114.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "72058992-0c71-44b2-b753-cf23bd638687")
+	)
+	(wire
+		(pts
 			(xy 299.72 161.29) (xy 312.42 161.29)
 		)
 		(stroke
@@ -365,6 +395,26 @@
 				(justify left top)
 			)
 		)
+		(pin "BAT_STAT" output
+			(at 256.54 100.33 180)
+			(uuid "4b3d1738-781e-4352-bd3e-a29ad260d172")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "BAT" input
+			(at 256.54 114.3 180)
+			(uuid "6995dcff-ad19-47be-b670-0cdda0ece22c")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 		(instances
 			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33"
@@ -493,6 +543,98 @@
 			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33"
 					(page "7")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 190.5 154.94)
+		(size 39.37 35.56)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "e57caa54-6ff3-4f9e-a4cf-b739534fbed5")
+		(property "Sheetname" "1_pin_header"
+			(at 190.5 154.2284 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "pin_header.kicad_sch"
+			(at 190.5 191.0846 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "PWM3" input
+			(at 229.87 161.29 0)
+			(uuid "18aa1ef2-f74b-4649-9309-85457fee58d2")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "PWM1" input
+			(at 229.87 168.91 0)
+			(uuid "4ab807cf-d0fb-49ac-8953-f4d660cf5b85")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "BAT" output
+			(at 229.87 181.61 0)
+			(uuid "b5db7ae8-dbd1-40b4-ab71-4f7a8095db8a")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "PWM2" input
+			(at 229.87 165.1 0)
+			(uuid "0020a99c-ca99-4444-a7b9-17175ccd09aa")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "PWM0" input
+			(at 229.87 172.72 0)
+			(uuid "823369b2-3892-46cf-80e6-5e4a6711991b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "esp"
+				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33"
+					(page "8")
 				)
 			)
 		)
