@@ -9405,26 +9405,6 @@
 				(justify left top)
 			)
 		)
-		(pin "BAT" input
-			(at 256.54 97.79 180)
-			(uuid "9aec6994-43a2-400c-97c8-d5a16626254f")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(pin "BAT_STAT" output
-			(at 256.54 111.76 180)
-			(uuid "df7e869b-c5f9-4432-87ec-871caa3e07fe")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
 		(instances
 			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33"
