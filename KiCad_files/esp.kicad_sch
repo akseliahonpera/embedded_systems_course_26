@@ -7,6 +7,16 @@
 	(lib_symbols)
 	(wire
 		(pts
+			(xy 300.99 157.48) (xy 317.5 157.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "10097ebd-25cc-4f45-8424-bbd72802a968")
+	)
+	(wire
+		(pts
 			(xy 189.23 166.37) (xy 208.28 166.37)
 		)
 		(stroke
@@ -44,6 +54,16 @@
 			(type default)
 		)
 		(uuid "41b0004e-dd43-4127-be47-7d405edf3b6e")
+	)
+	(wire
+		(pts
+			(xy 250.19 152.4) (xy 259.08 152.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7c63f76f-bda9-4b90-a32b-fb4e90327145")
 	)
 	(wire
 		(pts
@@ -87,6 +107,16 @@
 	)
 	(wire
 		(pts
+			(xy 250.19 156.21) (xy 259.08 156.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "af4e7629-fcc3-4ac5-a1c4-f72ed388994f")
+	)
+	(wire
+		(pts
 			(xy 189.23 149.86) (xy 208.28 149.86)
 		)
 		(stroke
@@ -114,6 +144,16 @@
 			(type default)
 		)
 		(uuid "c7e66ce6-5404-411e-9f90-cbec0c768286")
+	)
+	(wire
+		(pts
+			(xy 300.99 153.67) (xy 317.5 153.67)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d47ade97-9acc-4182-9a64-93131c407d1f")
 	)
 	(wire
 		(pts
@@ -175,6 +215,16 @@
 		)
 		(uuid "25e50f33-220e-4917-8a69-27045fec8b74")
 	)
+	(label "IMU_NRST"
+		(at 259.08 152.4 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "571edd14-7f5e-4dcc-97e9-d8efe782e2e0")
+	)
 	(label "I2C_CLK"
 		(at 299.72 90.17 0)
 		(effects
@@ -204,6 +254,26 @@
 			(justify left bottom)
 		)
 		(uuid "874e0ec1-420c-4663-8ffd-3141039b3a8b")
+	)
+	(label "IMU_BOOTN"
+		(at 300.99 157.48 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "87e945b4-6c1b-415f-b13b-922b54e030da")
+	)
+	(label "IMU_BOOTN"
+		(at 259.08 156.21 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "880d8073-99ea-4ab9-be79-6394fc32ccd7")
 	)
 	(label "I2C_SDA"
 		(at 299.72 86.36 0)
@@ -264,6 +334,16 @@
 			(justify left bottom)
 		)
 		(uuid "a8ac1b8f-094d-4e2a-bdf0-2d92252fe255")
+	)
+	(label "IMU_NRST"
+		(at 300.99 153.67 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "cac118a9-ad3f-4887-8ec2-94edec55de42")
 	)
 	(label "I2C_SDA"
 		(at 300.99 140.97 0)
@@ -402,18 +482,8 @@
 			)
 		)
 		(pin "BNO_BOOTN" input
-			(at 317.5 161.29 180)
-			(uuid "bd3bf2d1-6c2a-4f0f-953f-b866914d25f4")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(pin "BNO_CLKSFI0" input
 			(at 317.5 157.48 180)
-			(uuid "5d27e5b0-e57d-4357-a7ac-22b987625926")
+			(uuid "bd3bf2d1-6c2a-4f0f-953f-b866914d25f4")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -745,6 +815,26 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+			)
+		)
+		(pin "IMU_BOOTN" output
+			(at 250.19 156.21 0)
+			(uuid "80fda72e-0b1f-46af-80d2-8bec2831212a")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "IMU_NRST" output
+			(at 250.19 152.4 0)
+			(uuid "cb9685fb-32a8-4821-8288-47d49057f4bb")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 			)
 		)
 		(instances

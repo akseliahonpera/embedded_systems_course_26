@@ -2560,7 +2560,7 @@
 	)
 	(hierarchical_label "BAROMETER_INT"
 		(shape input)
-		(at 204.47 127 0)
+		(at 205.74 121.92 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2568,6 +2568,17 @@
 			(justify left)
 		)
 		(uuid "1652da0e-2070-434f-bdc5-ce9178363c27")
+	)
+	(hierarchical_label "IMU_BOOTN"
+		(shape output)
+		(at 205.74 135.89 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "4da99c8e-5381-428d-93b7-62cb758815f7")
 	)
 	(hierarchical_label "USB_D-"
 		(shape bidirectional)
@@ -2582,7 +2593,7 @@
 	)
 	(hierarchical_label "I2C_SDA"
 		(shape bidirectional)
-		(at 205.74 113.03 0)
+		(at 205.74 114.3 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2615,7 +2626,7 @@
 	)
 	(hierarchical_label "IMU_INT"
 		(shape input)
-		(at 204.47 132.08 0)
+		(at 205.74 125.73 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2623,6 +2634,17 @@
 			(justify left)
 		)
 		(uuid "bdd47b6c-9c52-42c4-a879-75c2a606392f")
+	)
+	(hierarchical_label "IMU_NRST"
+		(shape output)
+		(at 205.74 130.81 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "f8b57dbe-56a7-4a8e-bde8-0be67eb18723")
 	)
 	(symbol
 		(lib_id "Device:C")
