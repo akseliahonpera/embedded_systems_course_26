@@ -17,6 +17,16 @@
 	)
 	(wire
 		(pts
+			(xy 201.93 222.25) (xy 213.36 222.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0858fb93-8598-4fe3-9fa6-59ee7b13332e")
+	)
+	(wire
+		(pts
 			(xy 300.99 157.48) (xy 317.5 157.48)
 		)
 		(stroke
@@ -97,16 +107,6 @@
 	)
 	(wire
 		(pts
-			(xy 148.59 226.06) (xy 213.36 226.06)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "41b0004e-dd43-4127-be47-7d405edf3b6e")
-	)
-	(wire
-		(pts
 			(xy 303.53 220.98) (xy 318.77 220.98)
 		)
 		(stroke
@@ -114,6 +114,16 @@
 			(type default)
 		)
 		(uuid "552b00f9-1ea7-44ae-a31b-530593a4d2a7")
+	)
+	(wire
+		(pts
+			(xy 251.46 209.55) (xy 259.08 209.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5593532f-953b-47f5-98f4-86a851761703")
 	)
 	(wire
 		(pts
@@ -127,6 +137,16 @@
 	)
 	(wire
 		(pts
+			(xy 201.93 226.06) (xy 213.36 226.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5719f874-50c0-48a6-a912-e7009335af77")
+	)
+	(wire
+		(pts
 			(xy 250.19 107.95) (xy 260.35 107.95)
 		)
 		(stroke
@@ -134,6 +154,16 @@
 			(type default)
 		)
 		(uuid "5b5c104e-f94a-4d31-aedf-860d869987d4")
+	)
+	(wire
+		(pts
+			(xy 163.83 148.59) (xy 173.99 148.59)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6ec11714-2213-4686-beae-227b71863694")
 	)
 	(wire
 		(pts
@@ -297,6 +327,16 @@
 	)
 	(wire
 		(pts
+			(xy 148.59 226.06) (xy 156.21 226.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b9caacf1-184b-400b-aa3f-52f6bd4dab12")
+	)
+	(wire
+		(pts
 			(xy 208.28 146.05) (xy 189.23 146.05)
 		)
 		(stroke
@@ -377,6 +417,16 @@
 	)
 	(wire
 		(pts
+			(xy 189.23 153.67) (xy 208.28 153.67)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e4efec7a-d329-4305-8f49-06f95a94e4cf")
+	)
+	(wire
+		(pts
 			(xy 189.23 162.56) (xy 208.28 162.56)
 		)
 		(stroke
@@ -405,6 +455,16 @@
 		)
 		(uuid "0390a48f-9b36-4368-9663-b8ea6ad1459d")
 	)
+	(label "USB_VBUS"
+		(at 173.99 148.59 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "24f58849-ddc1-4df1-af6b-6b6e660ee253")
+	)
 	(label "BAROMETER_INT"
 		(at 299.72 93.98 0)
 		(effects
@@ -424,6 +484,26 @@
 			(justify left bottom)
 		)
 		(uuid "2eadbf1e-4fbe-454d-8c99-c6fe9fc18a60")
+	)
+	(label "BAT"
+		(at 156.21 226.06 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3451f1aa-1a5d-4611-b8bc-e29f5ced22bd")
+	)
+	(label "BAT_STAT"
+		(at 189.23 153.67 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4ffb70b2-0a4d-4029-a7e8-fc6e3a852dc5")
 	)
 	(label "GNSS_TX"
 		(at 260.35 139.7 0)
@@ -464,6 +544,26 @@
 			(justify left bottom)
 		)
 		(uuid "59774e0d-bd25-40ea-8ab4-170e462c51dc")
+	)
+	(label "BAT_STAT"
+		(at 259.08 209.55 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "611eae0b-0d83-4ce1-b304-ff67648beccb")
+	)
+	(label "BAT"
+		(at 201.93 226.06 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "61b479c1-3a46-4178-8347-d8a16fbb61e3")
 	)
 	(label "GNSS_HW_S"
 		(at 303.53 215.9 0)
@@ -574,6 +674,16 @@
 			(justify left bottom)
 		)
 		(uuid "9e17482f-6f13-45c7-aad3-af19f73cbf30")
+	)
+	(label "USB_VBUS"
+		(at 201.93 222.25 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a1549be8-4ba5-4626-beec-6d33e96c5aac")
 	)
 	(label "GNSS_HW_R"
 		(at 260.35 127 0)
@@ -754,6 +864,16 @@
 			(justify left bottom)
 		)
 		(uuid "eb748254-d5c9-4259-8d8f-73cddb2d64ae")
+	)
+	(label ""
+		(at 189.23 125.73 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "edf9834d-d7e9-421d-b059-dbb6bde1c919")
 	)
 	(label "PWM_0"
 		(at 156.21 217.17 0)
@@ -1075,16 +1195,6 @@
 				(justify left top)
 			)
 		)
-		(pin "BAT_STAT" output
-			(at 213.36 212.09 180)
-			(uuid "4b3d1738-781e-4352-bd3e-a29ad260d172")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
 		(pin "BAT" input
 			(at 213.36 226.06 180)
 			(uuid "6995dcff-ad19-47be-b670-0cdda0ece22c")
@@ -1093,6 +1203,26 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+			)
+		)
+		(pin "USB_VBUS" input
+			(at 213.36 222.25 180)
+			(uuid "56ca90e8-a001-47fb-83a0-df4f7f931a0f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "BAT_STAT" output
+			(at 251.46 209.55 0)
+			(uuid "46488758-0aa9-4f13-9ff3-72b33e8d559a")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 			)
 		)
 		(instances
@@ -1317,6 +1447,16 @@
 				(justify right)
 			)
 		)
+		(pin "BAT_STAT" input
+			(at 208.28 153.67 180)
+			(uuid "714cb19a-0475-4118-a140-da760fb965fe")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 		(instances
 			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33"
@@ -1377,6 +1517,16 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+			)
+		)
+		(pin "USB_VBUS" output
+			(at 163.83 148.59 0)
+			(uuid "894ae6df-0ae4-48f6-b0ae-7159285afa0c")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 			)
 		)
 		(instances

@@ -2635,6 +2635,17 @@
 		)
 		(uuid "757821aa-57a6-4d65-b407-fd49e2639da6")
 	)
+	(hierarchical_label "BAT_STAT"
+		(shape input)
+		(at 207.01 87.63 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "834d82a5-abd0-4bb9-aef6-78f028817d63")
+	)
 	(hierarchical_label "PWM_3"
 		(shape output)
 		(at 207.01 76.2 0)
