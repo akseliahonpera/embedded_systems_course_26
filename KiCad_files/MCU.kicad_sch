@@ -3109,6 +3109,15 @@
 				(hide yes)
 			)
 		)
+		(property "DigiKey" "SW1020CT-ND"
+			(at 86.36 80.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "abe82215-5d3b-4c00-8031-094e75cd95fb")
 		)

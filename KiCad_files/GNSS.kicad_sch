@@ -1468,6 +1468,16 @@
 		)
 		(uuid "5558259e-138e-4302-99bd-c4ea479e1988")
 	)
+	(text "0805CT-1N8EJTS"
+		(exclude_from_sim no)
+		(at 170.434 53.848 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "6b12cb5c-e609-4908-a3e7-c956192db4c7")
+	)
 	(text "Hardware reset pin.\nIf not used, the hardware reset should be left floating, \nas it is pulled up by an internal 75 k resistor"
 		(exclude_from_sim no)
 		(at 42.926 101.346 0)
@@ -2951,7 +2961,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Inductor_SMD:L_0805_2012Metric_Pad1.05x1.20mm_HandSolder"
 			(at 196.85 104.14 0)
 			(effects
 				(font
@@ -2971,6 +2981,15 @@
 		)
 		(property "Description" "Inductor"
 			(at 196.85 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "445-1032-1-ND"
+			(at 196.85 104.14 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3854,7 +3873,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Inductor_SMD:L_0805_2012Metric_Pad1.05x1.20mm_HandSolder"
 			(at 170.18 62.23 0)
 			(effects
 				(font
@@ -3874,6 +3893,15 @@
 		)
 		(property "Description" "Inductor"
 			(at 170.18 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "2035-1135-1-ND"
+			(at 170.18 62.23 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4069,7 +4097,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Inductor_SMD:L_0805_2012Metric_Pad1.05x1.20mm_HandSolder"
 			(at 184.15 101.6 0)
 			(effects
 				(font
@@ -4089,6 +4117,15 @@
 		)
 		(property "Description" "Inductor"
 			(at 184.15 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "445-1032-1-ND"
+			(at 184.15 101.6 90)
 			(effects
 				(font
 					(size 1.27 1.27)
