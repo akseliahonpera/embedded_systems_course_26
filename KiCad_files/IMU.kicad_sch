@@ -2047,7 +2047,7 @@
 		(uuid "3b066b1d-bf9a-4100-b2ba-84486bd70338")
 	)
 	(hierarchical_label "HOST_SDA"
-		(shape input)
+		(shape bidirectional)
 		(at 29.21 132.08 180)
 		(effects
 			(font
