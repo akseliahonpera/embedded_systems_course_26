@@ -2040,16 +2040,6 @@
 	)
 	(wire
 		(pts
-			(xy 181.61 130.81) (xy 187.96 130.81)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "108799ca-df47-4478-9fbb-25194e79cec7")
-	)
-	(wire
-		(pts
 			(xy 144.78 92.71) (xy 151.13 92.71)
 		)
 		(stroke
@@ -2147,6 +2137,16 @@
 			(type default)
 		)
 		(uuid "4ea29cea-b916-414d-8116-1a580f18d6d0")
+	)
+	(wire
+		(pts
+			(xy 181.61 130.81) (xy 187.96 130.81)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5178440e-b6a9-4c46-9e0a-c3a0e787952a")
 	)
 	(wire
 		(pts
@@ -2560,7 +2560,7 @@
 	)
 	(hierarchical_label "BAROMETER_INT"
 		(shape input)
-		(at 205.74 121.92 0)
+		(at 207.01 101.6 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2569,9 +2569,42 @@
 		)
 		(uuid "1652da0e-2070-434f-bdc5-ce9178363c27")
 	)
+	(hierarchical_label "GNSS_TM"
+		(shape input)
+		(at 207.01 147.32 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "2426b162-4730-4fbf-a773-a54173d95c59")
+	)
+	(hierarchical_label "PWM_2"
+		(shape output)
+		(at 207.01 71.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "3b8125db-adba-4fde-aab1-e0cc2e086118")
+	)
+	(hierarchical_label "GNSS_HW_S"
+		(shape output)
+		(at 207.01 130.81 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "47297fa2-feea-4a85-9516-5722cefc5272")
+	)
 	(hierarchical_label "IMU_BOOTN"
 		(shape output)
-		(at 205.74 135.89 0)
+		(at 207.01 115.57 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2579,6 +2612,17 @@
 			(justify left)
 		)
 		(uuid "4da99c8e-5381-428d-93b7-62cb758815f7")
+	)
+	(hierarchical_label "GNSS_HW_R"
+		(shape output)
+		(at 207.01 125.73 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "4e16e643-0700-4592-8a0f-eb0263725285")
 	)
 	(hierarchical_label "USB_D-"
 		(shape bidirectional)
@@ -2591,9 +2635,20 @@
 		)
 		(uuid "757821aa-57a6-4d65-b407-fd49e2639da6")
 	)
+	(hierarchical_label "PWM_3"
+		(shape output)
+		(at 207.01 76.2 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "8b133b22-e35f-4c25-b4a7-db84beee4af9")
+	)
 	(hierarchical_label "I2C_SDA"
 		(shape bidirectional)
-		(at 205.74 114.3 0)
+		(at 207.01 93.98 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2615,7 +2670,7 @@
 	)
 	(hierarchical_label "I2C_CLK"
 		(shape output)
-		(at 205.74 118.11 0)
+		(at 207.01 97.79 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2626,7 +2681,7 @@
 	)
 	(hierarchical_label "IMU_INT"
 		(shape input)
-		(at 205.74 125.73 0)
+		(at 207.01 105.41 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2635,9 +2690,64 @@
 		)
 		(uuid "bdd47b6c-9c52-42c4-a879-75c2a606392f")
 	)
+	(hierarchical_label "PWM_0"
+		(shape output)
+		(at 207.01 63.5 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "bff99902-c1d3-45e9-b176-0ca8c639d843")
+	)
+	(hierarchical_label "UART_RX"
+		(shape input)
+		(at 207.01 142.24 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "c4464108-2810-452c-9607-130cd9d6d00c")
+	)
+	(hierarchical_label "UART_TX"
+		(shape output)
+		(at 207.01 135.89 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "cb283503-942e-4707-9571-19161edce5b5")
+	)
+	(hierarchical_label "GNSS_FIX"
+		(shape input)
+		(at 207.01 120.65 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "d87127b6-b70c-486f-9bf2-cf4295875da1")
+	)
+	(hierarchical_label "PWM_1"
+		(shape output)
+		(at 207.01 67.31 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "f0af3065-a749-4b8f-ba50-18211694ff05")
+	)
 	(hierarchical_label "IMU_NRST"
 		(shape output)
-		(at 205.74 130.81 0)
+		(at 207.01 110.49 0)
 		(effects
 			(font
 				(size 1.27 1.27)
