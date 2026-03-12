@@ -4394,7 +4394,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "4b90450e-28fc-4940-8e3f-69b5c69b9365")
-		(property "Reference" "C5"
+		(property "Reference" "C27"
 			(at 231.14 101.5999 0)
 			(effects
 				(font
@@ -4466,7 +4466,7 @@
 		(instances
 			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
-					(reference "C5")
+					(reference "C27")
 					(unit 1)
 				)
 			)
