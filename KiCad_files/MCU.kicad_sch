@@ -2665,7 +2665,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10n"
+		(property "Value" "0.1u"
 			(at 158.75 58.4199 0)
 			(effects
 				(font
@@ -2702,6 +2702,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 154.94 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "720-1754-1-ND"
 			(at 154.94 57.15 0)
 			(effects
 				(font
@@ -2781,6 +2790,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 130.81 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "720-1754-1-ND"
 			(at 130.81 86.36 0)
 			(effects
 				(font
@@ -3021,7 +3039,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "1u"
+		(property "Value" "2.2u"
 			(at 147.32 58.4199 0)
 			(effects
 				(font
@@ -3058,6 +3076,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 143.51 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "399-C0805C225K4RACTUCT-ND"
 			(at 143.51 57.15 0)
 			(effects
 				(font
@@ -3299,6 +3326,15 @@
 				(hide yes)
 			)
 		)
+		(property "DigiKey" "541-10.0KCCT-ND"
+			(at 130.81 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "a588da76-fa92-4702-b40b-1de63adba153")
 		)
@@ -3370,6 +3406,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 166.37 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "1965-ESP32-S3-MINI-1U-N8CT-ND"
 			(at 166.37 105.41 0)
 			(effects
 				(font
