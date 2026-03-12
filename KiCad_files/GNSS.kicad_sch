@@ -3923,7 +3923,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "1_project_library:QFN28_M20048-1_ANT"
 			(at 113.03 78.74 0)
 			(effects
 				(font

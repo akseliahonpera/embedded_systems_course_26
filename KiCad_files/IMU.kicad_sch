@@ -2917,7 +2917,7 @@
 				)
 			)
 		)
-		(property "Footprint" "LGA-28_CEV"
+		(property "Footprint" "1_project_library:BNO085"
 			(at 119.38 82.55 0)
 			(effects
 				(font
