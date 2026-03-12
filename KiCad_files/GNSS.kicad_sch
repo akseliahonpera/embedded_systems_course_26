@@ -1488,7 +1488,7 @@
 		)
 		(uuid "bfb086fe-6947-41e8-b66a-26041c042baa")
 	)
-	(text "TODO: Tuning inductor and resistor are TBD\nNeed to research how to determine their values.\nThese vals are from the reference schematic"
+	(text "TODO: Tuning inductor and resistor are TBD\nNeed to research how to determine their values.\nThese vals are from the reference schematic\n\nRecommended package was"
 		(exclude_from_sim no)
 		(at 134.366 61.214 0)
 		(effects
@@ -2682,7 +2682,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
 			(at 51.7652 73.66 0)
 			(effects
 				(font
@@ -2884,7 +2884,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
 			(at 94.9452 97.79 0)
 			(effects
 				(font
@@ -3153,7 +3153,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
 			(at 204.1652 124.46 0)
 			(effects
 				(font
@@ -3289,7 +3289,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
 			(at 64.4652 73.66 0)
 			(effects
 				(font
@@ -3491,7 +3491,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
 			(at 127.9652 175.26 0)
 			(effects
 				(font
@@ -3720,7 +3720,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 95.25 64.008 90)
 			(effects
 				(font
@@ -4139,7 +4139,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
 			(at 191.4652 124.46 0)
 			(effects
 				(font
