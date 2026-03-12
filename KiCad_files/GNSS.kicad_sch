@@ -5,6 +5,172 @@
 	(uuid "6e0be861-3ade-4e98-9dbb-149c14b5bc52")
 	(paper "A4")
 	(lib_symbols
+		(symbol "1_projektin osat:1060"
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 20.32 10.16 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(property "Value" "1060"
+				(at 20.32 7.62 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(property "Footprint" "1060_KEY"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "1060"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_locked" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "1060"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "1060_KEY"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "1060_0_1"
+				(polyline
+					(pts
+						(xy 7.62 5.08) (xy 7.62 -5.08)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 7.62 -5.08) (xy 33.02 -5.08)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 33.02 5.08) (xy 7.62 5.08)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 33.02 -5.08) (xy 33.02 5.08)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin unspecified line
+					(at 0 0 0)
+					(length 7.62)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin unspecified line
+					(at 40.64 0 180)
+					(length 7.62)
+					(name "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "1_projektin osat:M20048-1"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -572,210 +738,6 @@
 						)
 					)
 					(number "18"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "Device:Battery_Cell"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "BT"
-				(at 2.54 2.54 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Value" "Battery_Cell"
-				(at 2.54 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 1.524 90)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 0 1.524 90)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Single-cell battery"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Sim.Device" "V"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Sim.Type" "DC"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Sim.Pins" "1=+ 2=-"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "battery cell"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "Battery_Cell_0_1"
-				(rectangle
-					(start -2.286 1.778)
-					(end 2.286 1.524)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(rectangle
-					(start -1.524 1.016)
-					(end 1.524 0.508)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 1.778) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 0.762) (xy 0 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0.762 3.048) (xy 1.778 3.048)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 3.556) (xy 1.27 2.54)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "Battery_Cell_1_1"
-				(pin passive line
-					(at 0 5.08 270)
-					(length 2.54)
-					(name "+"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 -2.54 90)
-					(length 2.54)
-					(name "-"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1440,7 +1402,7 @@
 	)
 	(text "Backup voltage. Need a 3 volt battery to enable\nquick startup and satellite acquisition by the GPS\n\nTODO: Do other devices require this as well?\n"
 		(exclude_from_sim no)
-		(at 59.182 177.546 0)
+		(at 92.71 190.754 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1581,6 +1543,12 @@
 		(uuid "0bda91ff-548d-4c37-923b-ba7a7384eb4d")
 	)
 	(junction
+		(at 127 167.64)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "1017b506-54fe-4fbc-a850-36774786e4cb")
+	)
+	(junction
 		(at 134.62 119.38)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1647,12 +1615,6 @@
 		(uuid "d6df02ff-f37b-4265-b6ea-051b7f5af872")
 	)
 	(junction
-		(at 127 165.1)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "d7e4a503-b5fd-4a0a-a776-fbdcf9239d33")
-	)
-	(junction
 		(at 203.2 104.14)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1669,6 +1631,16 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "ef3393a9-4860-40e1-9459-5e6d80d1c653")
+	)
+	(wire
+		(pts
+			(xy 121.92 167.64) (xy 127 167.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "00349ebb-7a46-4d64-8551-f2f0dedf2064")
 	)
 	(wire
 		(pts
@@ -1932,7 +1904,7 @@
 	)
 	(wire
 		(pts
-			(xy 88.9 165.1) (xy 88.9 177.8)
+			(xy 81.28 167.64) (xy 81.28 180.34)
 		)
 		(stroke
 			(width 0)
@@ -2112,7 +2084,7 @@
 	)
 	(wire
 		(pts
-			(xy 127 116.84) (xy 127 165.1)
+			(xy 127 116.84) (xy 127 167.64)
 		)
 		(stroke
 			(width 0)
@@ -2132,7 +2104,7 @@
 	)
 	(wire
 		(pts
-			(xy 127 177.8) (xy 127 175.26)
+			(xy 127 180.34) (xy 127 177.8)
 		)
 		(stroke
 			(width 0)
@@ -2332,16 +2304,6 @@
 	)
 	(wire
 		(pts
-			(xy 127 165.1) (xy 127 167.64)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "beea80d8-f830-4a68-828b-49dfdf1c5a45")
-	)
-	(wire
-		(pts
 			(xy 106.68 104.14) (xy 110.49 104.14)
 		)
 		(stroke
@@ -2349,16 +2311,6 @@
 			(type default)
 		)
 		(uuid "c2cb3338-ab27-4171-a5f5-b991d315ff78")
-	)
-	(wire
-		(pts
-			(xy 104.14 165.1) (xy 88.9 165.1)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c4563526-3edf-446f-a0cb-f7c80a0e1bde")
 	)
 	(wire
 		(pts
@@ -2419,16 +2371,6 @@
 			(type default)
 		)
 		(uuid "d37fc20d-c3eb-4a98-a139-5aa8526e5f56")
-	)
-	(wire
-		(pts
-			(xy 111.76 165.1) (xy 127 165.1)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d3f1095d-0685-4e8b-841c-cc9f1e9646ec")
 	)
 	(wire
 		(pts
@@ -2509,6 +2451,16 @@
 			(type default)
 		)
 		(uuid "f9051e5f-1b89-4664-9ca0-2dfa79d75089")
+	)
+	(wire
+		(pts
+			(xy 127 167.64) (xy 127 170.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fba71575-f82f-43be-888d-b16ddbbdbe20")
 	)
 	(hierarchical_label "TM"
 		(shape output)
@@ -2719,6 +2671,24 @@
 				(hide yes)
 			)
 		)
+		(property "DigiKey" "399-17625-1-ND"
+			(at 50.8 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MNF PART NUMBER" ""
+			(at 50.8 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "ccba241e-de5f-4d3b-a09b-3c7d96511ba7")
 		)
@@ -2921,6 +2891,24 @@
 				(hide yes)
 			)
 		)
+		(property "DigiKey" "399-17625-1-ND"
+			(at 93.98 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MNF PART NUMBER" ""
+			(at 93.98 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "62f810d0-6d37-49c0-a100-cdd39f8f2011")
 		)
@@ -2989,6 +2977,15 @@
 			)
 		)
 		(property "DigiKey" "445-1032-1-ND"
+			(at 196.85 104.14 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MNF PART NUMBER" ""
 			(at 196.85 104.14 90)
 			(effects
 				(font
@@ -3199,6 +3196,24 @@
 				(hide yes)
 			)
 		)
+		(property "DigiKey" "399-17625-1-ND"
+			(at 203.2 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MNF PART NUMBER" ""
+			(at 203.2 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "2dc16e50-6732-4e3f-a793-ab2c9abf96d0")
 		)
@@ -3327,6 +3342,24 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
+			(at 63.5 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MNF PART NUMBER" ""
+			(at 63.5 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "399-C0805C225K4RACTUCT-ND"
 			(at 63.5 69.85 0)
 			(effects
 				(font
@@ -3484,7 +3517,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 127 171.45 0)
+		(at 127 173.99 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3493,15 +3526,6 @@
 		(fields_autoplaced yes)
 		(uuid "a73b92a2-4605-462a-a2e6-fd3751d60609")
 		(property "Reference" "C9"
-			(at 130.81 170.1799 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "22p"
 			(at 130.81 172.7199 0)
 			(effects
 				(font
@@ -3510,8 +3534,17 @@
 				(justify left)
 			)
 		)
+		(property "Value" "22p"
+			(at 130.81 175.2599 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 127.9652 175.26 0)
+			(at 127.9652 177.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3520,7 +3553,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 127 171.45 0)
+			(at 127 173.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3529,7 +3562,25 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 127 171.45 0)
+			(at 127 173.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "399-17625-1-ND"
+			(at 127 173.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MNF PART NUMBER" ""
+			(at 127 173.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3553,103 +3604,8 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:Battery_Cell")
-		(at 106.68 165.1 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "a820fb07-51ae-43fc-8421-ddea8666800c")
-		(property "Reference" "BT1"
-			(at 108.5215 157.48 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "3 V"
-			(at 108.5215 160.02 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 108.204 165.1 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 108.204 165.1 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Single-cell battery"
-			(at 106.68 165.1 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" "V"
-			(at 106.68 165.1 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Type" "DC"
-			(at 106.68 165.1 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" "1=+ 2=-"
-			(at 106.68 165.1 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "aaf22b94-66d3-4dc2-830b-eee5b8fcad5e")
-		)
-		(pin "2"
-			(uuid "c006d133-30a7-4f5d-866b-834acdb9b564")
-		)
-		(instances
-			(project ""
-				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/58061273-0348-4c5f-98ae-c78a02c73d37"
-					(reference "BT1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
-		(at 88.9 177.8 0)
+		(at 81.28 180.34 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3658,7 +3614,7 @@
 		(fields_autoplaced yes)
 		(uuid "a8d59cf6-c62f-46e2-b460-fa3e65c26b4a")
 		(property "Reference" "#PWR040"
-			(at 88.9 184.15 0)
+			(at 81.28 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3667,7 +3623,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 88.9 182.88 0)
+			(at 81.28 185.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3675,7 +3631,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 88.9 177.8 0)
+			(at 81.28 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3684,7 +3640,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 88.9 177.8 0)
+			(at 81.28 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3693,7 +3649,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 88.9 177.8 0)
+			(at 81.28 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3766,6 +3722,24 @@
 				(hide yes)
 			)
 		)
+		(property "MNF PART NUMBER" ""
+			(at 95.25 62.23 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "311-0.0ARCT-ND"
+			(at 95.25 62.23 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "bcf38108-02a9-4e72-98aa-eff2f31856c0")
 		)
@@ -3783,7 +3757,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 127 177.8 0)
+		(at 127 180.34 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3792,7 +3766,7 @@
 		(fields_autoplaced yes)
 		(uuid "b2ba1d42-9979-422e-a3b5-fa466c0c9b91")
 		(property "Reference" "#PWR033"
-			(at 127 184.15 0)
+			(at 127 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3801,7 +3775,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 127 182.88 0)
+			(at 127 185.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3809,7 +3783,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 127 177.8 0)
+			(at 127 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3818,7 +3792,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 127 177.8 0)
+			(at 127 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3827,7 +3801,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 127 177.8 0)
+			(at 127 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3842,6 +3816,85 @@
 			(project ""
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/58061273-0348-4c5f-98ae-c78a02c73d37"
 					(reference "#PWR033")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "1_projektin osat:1060")
+		(at 81.28 167.64 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "b45d59aa-b23b-45e1-8c1b-5c0e037a6834")
+		(property "Reference" "U2"
+			(at 101.6 157.48 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "1060"
+			(at 101.6 160.02 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "1060_KEY"
+			(at 81.28 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "1060"
+			(at 81.28 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 81.28 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "36-1060-ND"
+			(at 81.28 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "aad575e0-e71b-4c36-bfa5-608a2967cc54")
+		)
+		(pin "2"
+			(uuid "53be4072-44a1-45e2-be41-e91a085d2919")
+		)
+		(instances
+			(project ""
+				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/58061273-0348-4c5f-98ae-c78a02c73d37"
+					(reference "U2")
 					(unit 1)
 				)
 			)
@@ -3901,6 +3954,15 @@
 			)
 		)
 		(property "DigiKey" "2035-1135-1-ND"
+			(at 170.18 62.23 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MNF PART NUMBER" ""
 			(at 170.18 62.23 90)
 			(effects
 				(font
@@ -3970,6 +4032,24 @@
 			)
 		)
 		(property "Description" ""
+			(at 113.03 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MNF PART NUMBER" ""
+			(at 113.03 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "627-1099-1-ND"
 			(at 113.03 78.74 0)
 			(effects
 				(font
@@ -4133,6 +4213,15 @@
 				(hide yes)
 			)
 		)
+		(property "MNF PART NUMBER" ""
+			(at 184.15 101.6 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "03a50a2f-e295-4af9-a624-ce82cd9dd843")
 		)
@@ -4195,6 +4284,24 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
+			(at 190.5 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "399-17625-1-ND"
+			(at 190.5 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MNF PART NUMBER" ""
 			(at 190.5 120.65 0)
 			(effects
 				(font

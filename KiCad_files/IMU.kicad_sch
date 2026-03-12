@@ -2396,6 +2396,15 @@
 				(hide yes)
 			)
 		)
+		(property "MNF PART NUMBER" ""
+			(at 55.88 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "70b3b365-2cdf-40c3-89ec-7f66b4937c84")
 		)
@@ -2466,6 +2475,15 @@
 				(hide yes)
 			)
 		)
+		(property "MNF PART NUMBER" ""
+			(at 135.89 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "d7fd0832-d123-4ddc-aa69-d1dcc1d99a25")
 		)
@@ -2528,6 +2546,15 @@
 			)
 		)
 		(property "Description" "Resistor"
+			(at 36.83 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MNF PART NUMBER" ""
 			(at 36.83 102.87 0)
 			(effects
 				(font
@@ -2672,6 +2699,15 @@
 				(hide yes)
 			)
 		)
+		(property "MNF PART NUMBER" ""
+			(at 238.76 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "df02165d-a2dd-4889-92fc-c09cc676b9e0")
 		)
@@ -2733,6 +2769,15 @@
 		)
 		(property "Description" "Resistor"
 			(at 66.04 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MNF PART NUMBER" ""
+			(at 66.04 95.25 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2876,6 +2921,15 @@
 				(hide yes)
 			)
 		)
+		(property "MNF PART NUMBER" ""
+			(at 46.99 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "cc835880-9bed-4a02-b034-ed93ec87fb2c")
 		)
@@ -2938,6 +2992,15 @@
 			)
 		)
 		(property "Description" ""
+			(at 119.38 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MNF PART NUMBER" ""
 			(at 119.38 82.55 0)
 			(effects
 				(font
@@ -3092,6 +3155,15 @@
 				(hide yes)
 			)
 		)
+		(property "MNF PART NUMBER" ""
+			(at 148.59 52.07 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "574d172c-b7f2-4e97-8818-b28cf13e86f9")
 		)
@@ -3228,6 +3300,15 @@
 				(hide yes)
 			)
 		)
+		(property "MNF PART NUMBER" ""
+			(at 248.92 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "3f51f938-facf-4507-8206-376910ac9cf6")
 		)
@@ -3290,6 +3371,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
+			(at 123.19 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MNF PART NUMBER" ""
 			(at 123.19 31.75 0)
 			(effects
 				(font
@@ -3365,6 +3455,15 @@
 				(hide yes)
 			)
 		)
+		(property "MNF PART NUMBER" ""
+			(at 170.18 52.07 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "4e24c6f1-c015-4cc5-b513-aec3d1fc5082")
 		)
@@ -3426,6 +3525,15 @@
 		)
 		(property "Description" "Unpolarized capacitor"
 			(at 96.52 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MNF PART NUMBER" ""
+			(at 96.52 102.87 90)
 			(effects
 				(font
 					(size 1.27 1.27)
