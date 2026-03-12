@@ -1297,6 +1297,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 144.78 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "B8"
 			(uuid "fe08feca-d619-474e-b769-a8c04f869d82")
 		)
@@ -1427,7 +1436,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "5.1K"
+		(property "Value" "5.1k"
 			(at 129.54 105.4099 0)
 			(effects
 				(font
@@ -1481,6 +1490,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 127 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "29862467-8300-4c92-bce4-74ded93e2b4b")
 		)
@@ -1514,7 +1532,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "5.1K"
+		(property "Value" "5.1k"
 			(at 205.74 105.4099 0)
 			(effects
 				(font
@@ -1560,6 +1578,15 @@
 			)
 		)
 		(property "DigiKey" "P5.1KDACT-ND"
+			(at 203.2 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 203.2 104.14 0)
 			(effects
 				(font

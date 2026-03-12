@@ -3274,6 +3274,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 62.23 87.63 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "b3f1b047-5e34-47f5-a9bf-6f21e8f9c80d")
 		)
@@ -3366,6 +3375,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 257.81 76.2 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 257.81 76.2 90)
 			(effects
 				(font
@@ -3594,6 +3612,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 134.62 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "84e32975-8c74-4e36-a7a3-ed48454a28ad")
 		)
@@ -3682,6 +3709,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 236.22 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "85e5e174-e880-4dab-b4bc-543b88bd8468")
 		)
@@ -3762,6 +3798,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 143.51 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 143.51 59.69 0)
 			(effects
 				(font
@@ -3921,6 +3966,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 154.94 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "ef69da35-2cba-4856-862a-6919ca0693c5")
 		)
@@ -4027,6 +4081,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 236.22 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "4c447ae2-d8b3-4d7c-a33a-e66c786baa04")
 		)
@@ -4107,6 +4170,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 223.52 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 223.52 74.93 0)
 			(effects
 				(font
@@ -4203,6 +4275,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 181.61 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "50304dd4-5e7e-422a-a418-b40ccaa10582")
 		)
@@ -4291,6 +4372,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 257.81 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "1313ff7c-866c-43a3-9cc1-1d90b4a03308")
 		)
@@ -4361,6 +4451,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 218.44 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 218.44 102.87 0)
 			(effects
 				(font
@@ -4449,6 +4548,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 227.33 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 227.33 102.87 0)
 			(effects
 				(font
@@ -4603,6 +4711,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 205.74 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 205.74 95.25 0)
 			(effects
 				(font
@@ -4831,6 +4948,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 223.52 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "e31eb317-a128-4027-a263-eac2cfde1623")
 		)
@@ -4909,6 +5035,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 101.6 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 101.6 72.39 0)
 			(effects
 				(font
@@ -4996,6 +5131,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 124.46 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 124.46 85.09 0)
 			(effects
 				(font
@@ -5102,6 +5246,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 185.42 76.2 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 185.42 76.2 90)
 			(effects
 				(font
@@ -5328,6 +5481,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 196.85 82.55 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "261b47b8-d9c6-4ea7-82dd-7726a96385cf")
 		)
@@ -5408,6 +5570,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 62.23 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 62.23 115.57 0)
 			(effects
 				(font
@@ -5498,6 +5669,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 114.3 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 114.3 85.09 0)
 			(effects
 				(font
@@ -5651,6 +5831,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 196.85 69.85 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 196.85 69.85 90)
 			(effects
 				(font
@@ -5813,6 +6002,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 201.93 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "c37fc6ff-9f0b-4720-9d56-2304ff005076")
 		)
@@ -5893,6 +6091,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 134.62 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 134.62 85.09 0)
 			(effects
 				(font

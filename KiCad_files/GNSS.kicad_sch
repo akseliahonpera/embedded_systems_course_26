@@ -2689,6 +2689,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 50.8 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "ccba241e-de5f-4d3b-a09b-3c7d96511ba7")
 		)
@@ -2909,6 +2918,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 93.98 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "62f810d0-6d37-49c0-a100-cdd39f8f2011")
 		)
@@ -2986,6 +3004,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 196.85 104.14 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 196.85 104.14 90)
 			(effects
 				(font
@@ -3214,6 +3241,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 203.2 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "2dc16e50-6732-4e3f-a793-ab2c9abf96d0")
 		)
@@ -3360,6 +3396,15 @@
 			)
 		)
 		(property "DigiKey" "399-C0805C225K4RACTUCT-ND"
+			(at 63.5 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 63.5 69.85 0)
 			(effects
 				(font
@@ -3588,6 +3633,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 127 173.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "5831e18a-a33e-4d03-88eb-c80c487f80e7")
 		)
@@ -3740,6 +3794,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 95.25 62.23 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "bcf38108-02a9-4e72-98aa-eff2f31856c0")
 		)
@@ -3847,7 +3910,7 @@
 				)
 			)
 		)
-		(property "Footprint" "1060_KEY"
+		(property "Footprint" "1_project_library:1060_KEY"
 			(at 81.28 167.64 0)
 			(effects
 				(font
@@ -3877,6 +3940,15 @@
 			)
 		)
 		(property "DigiKey" "36-1060-ND"
+			(at 81.28 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 81.28 167.64 0)
 			(effects
 				(font
@@ -3971,6 +4043,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 170.18 62.23 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "b465b968-c70e-4e8e-880e-41844d27da33")
 		)
@@ -4050,6 +4131,15 @@
 			)
 		)
 		(property "DigiKey" "627-1099-1-ND"
+			(at 113.03 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 113.03 78.74 0)
 			(effects
 				(font
@@ -4222,6 +4312,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Type" ""
+			(at 184.15 101.6 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "03a50a2f-e295-4af9-a624-ce82cd9dd843")
 		)
@@ -4302,6 +4401,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 190.5 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" ""
 			(at 190.5 120.65 0)
 			(effects
 				(font
