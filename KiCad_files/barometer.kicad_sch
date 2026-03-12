@@ -1132,6 +1132,15 @@
 				(hide yes)
 			)
 		)
+		(property "DigiKey" "720-1754-1-ND"
+			(at 115.57 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "b9d51179-728d-4a82-93fa-49233a86cdce")
 		)
@@ -1267,6 +1276,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 121.92 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "828-BMP581CT-ND"
 			(at 121.92 85.09 0)
 			(effects
 				(font
@@ -1500,6 +1518,15 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
+			(at 146.05 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "720-1754-1-ND"
 			(at 146.05 73.66 0)
 			(effects
 				(font

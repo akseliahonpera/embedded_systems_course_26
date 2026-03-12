@@ -1153,7 +1153,7 @@
 	)
 	(text "pin17 can be used to select lower bit of i2c slave address, no idea what that means"
 		(exclude_from_sim no)
-		(at 250.444 60.96 0)
+		(at 248.158 29.21 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1246,12 +1246,6 @@
 		(uuid "080789ab-5033-4f50-bbc6-ea493cefc93b")
 	)
 	(junction
-		(at 102.87 52.07)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "140d4bc9-e120-48fb-8b91-0a404c2612f9")
-	)
-	(junction
 		(at 114.3 92.71)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1280,12 +1274,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "82d99033-3081-40bf-980a-5dd8adda10a7")
-	)
-	(junction
-		(at 154.94 52.07)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "904ec17f-ae83-4b8f-85b0-8f8316262079")
 	)
 	(junction
 		(at 123.19 35.56)
@@ -1579,16 +1567,6 @@
 	)
 	(wire
 		(pts
-			(xy 152.4 52.07) (xy 154.94 52.07)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "330110f1-5d66-4333-ad5d-ece5b490dad8")
-	)
-	(wire
-		(pts
 			(xy 36.83 99.06) (xy 46.99 99.06)
 		)
 		(stroke
@@ -1629,7 +1607,7 @@
 	)
 	(wire
 		(pts
-			(xy 102.87 52.07) (xy 102.87 60.96)
+			(xy 102.87 27.94) (xy 102.87 60.96)
 		)
 		(stroke
 			(width 0)
@@ -1759,16 +1737,6 @@
 	)
 	(wire
 		(pts
-			(xy 102.87 52.07) (xy 144.78 52.07)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7ce930f6-6843-4b25-8525-77bc5e58be3e")
-	)
-	(wire
-		(pts
 			(xy 119.38 92.71) (xy 114.3 92.71)
 		)
 		(stroke
@@ -1806,16 +1774,6 @@
 			(type default)
 		)
 		(uuid "9e462f4b-38f8-42db-a42b-6595a496bcc7")
-	)
-	(wire
-		(pts
-			(xy 102.87 27.94) (xy 102.87 52.07)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9ea55b28-76fe-4450-9ba3-c21a47921368")
 	)
 	(wire
 		(pts
@@ -3097,83 +3055,6 @@
 			(project ""
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/1d098c74-ef64-49cb-a95a-ee89cc8acd66"
 					(reference "U13")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 148.59 52.07 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "a08749fa-89aa-4aea-973a-9f8806a8447b")
-		(property "Reference" "R19"
-			(at 148.59 45.72 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "DNI"
-			(at 148.59 48.26 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
-			(at 148.59 53.848 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 148.59 52.07 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 148.59 52.07 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MNF PART NUMBER" ""
-			(at 148.59 52.07 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "574d172c-b7f2-4e97-8818-b28cf13e86f9")
-		)
-		(pin "2"
-			(uuid "97eaf843-d77e-4ac8-b753-2f7e90c95e55")
-		)
-		(instances
-			(project ""
-				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/1d098c74-ef64-49cb-a95a-ee89cc8acd66"
-					(reference "R19")
 					(unit 1)
 				)
 			)
