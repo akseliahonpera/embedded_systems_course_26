@@ -2613,6 +2613,17 @@
 		)
 		(uuid "bca3bc41-a557-4f61-8949-13f5bca65c0f")
 	)
+	(hierarchical_label "IMU_INT"
+		(shape input)
+		(at 204.47 132.08 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "bdd47b6c-9c52-42c4-a879-75c2a606392f")
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 154.94 57.15 0)

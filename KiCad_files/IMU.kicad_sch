@@ -2080,7 +2080,7 @@
 		(uuid "b7e1c17b-3dfd-400c-a28a-3d131bf637b4")
 	)
 	(hierarchical_label "HOST_INTN"
-		(shape input)
+		(shape output)
 		(at 29.21 142.24 180)
 		(effects
 			(font
