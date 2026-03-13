@@ -1276,18 +1276,6 @@
 		(uuid "9214e853-56f0-4e5a-ad04-0a305f0628b9")
 	)
 	(junction
-		(at 46.99 137.16)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "9380ba7a-f0e2-43e8-9216-418c4d9c1be3")
-	)
-	(junction
-		(at 36.83 132.08)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "aec4dab1-d29e-4b4f-8928-241735b34c13")
-	)
-	(junction
 		(at 102.87 27.94)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1310,12 +1298,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "edf4ff77-54c3-4628-9549-dbad5d1aee46")
-	)
-	(junction
-		(at 46.99 95.25)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "f7a60e52-017c-481f-b59b-ebecc5fbeaf5")
 	)
 	(junction
 		(at 243.84 100.33)
@@ -1595,16 +1577,6 @@
 	)
 	(wire
 		(pts
-			(xy 29.21 132.08) (xy 36.83 132.08)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "47f7d203-ef00-45f8-beb9-c51a8c248d50")
-	)
-	(wire
-		(pts
 			(xy 102.87 27.94) (xy 102.87 60.96)
 		)
 		(stroke
@@ -1625,23 +1597,13 @@
 	)
 	(wire
 		(pts
-			(xy 36.83 132.08) (xy 204.47 132.08)
+			(xy 29.21 132.08) (xy 204.47 132.08)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "570f6e3c-75cd-4827-8639-28cdd976a44f")
-	)
-	(wire
-		(pts
-			(xy 29.21 137.16) (xy 46.99 137.16)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "574c9c1b-0b32-4775-b953-68730f2f6488")
 	)
 	(wire
 		(pts
@@ -1685,16 +1647,6 @@
 	)
 	(wire
 		(pts
-			(xy 36.83 95.25) (xy 46.99 95.25)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "74a7a125-e6a3-4176-a24b-75097259143a")
-	)
-	(wire
-		(pts
 			(xy 199.39 67.31) (xy 199.39 90.17)
 		)
 		(stroke
@@ -1702,16 +1654,6 @@
 			(type default)
 		)
 		(uuid "7621069b-52e9-49c8-80f9-8cb91cb55b3b")
-	)
-	(wire
-		(pts
-			(xy 46.99 104.14) (xy 46.99 137.16)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "77ae88c9-ba99-4cd4-a2b1-390ce7564dd8")
 	)
 	(wire
 		(pts
@@ -1732,16 +1674,6 @@
 			(type default)
 		)
 		(uuid "7e749343-7ed4-4c53-9086-d716e5005c49")
-	)
-	(wire
-		(pts
-			(xy 36.83 96.52) (xy 36.83 95.25)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7e77f065-b2f2-4294-8bdb-a1471a13a25c")
 	)
 	(wire
 		(pts
@@ -1795,7 +1727,7 @@
 	)
 	(wire
 		(pts
-			(xy 46.99 137.16) (xy 209.55 137.16)
+			(xy 29.21 137.16) (xy 209.55 137.16)
 		)
 		(stroke
 			(width 0)
@@ -1822,16 +1754,6 @@
 			(type default)
 		)
 		(uuid "a5d6fa32-7252-4c96-90a4-a0594ceef4cc")
-	)
-	(wire
-		(pts
-			(xy 36.83 104.14) (xy 36.83 132.08)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ac60eb34-1328-4aa8-908e-d6495bfa9348")
 	)
 	(wire
 		(pts
@@ -1975,16 +1897,6 @@
 	)
 	(wire
 		(pts
-			(xy 46.99 96.52) (xy 46.99 95.25)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e8611ac1-f585-42b6-b2e6-0f6baecd75af")
-	)
-	(wire
-		(pts
 			(xy 154.94 58.42) (xy 207.01 58.42)
 		)
 		(stroke
@@ -2032,16 +1944,6 @@
 			(type default)
 		)
 		(uuid "fcab1292-9457-4723-92f7-68f0e4470c86")
-	)
-	(wire
-		(pts
-			(xy 46.99 95.25) (xy 55.88 95.25)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "fed85c98-ae7a-415e-95c6-56dd4bd1ef86")
 	)
 	(hierarchical_label "BNO_BOOTN"
 		(shape input)
@@ -2491,103 +2393,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
-		(at 36.83 100.33 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "50e0b434-6dd6-4d6c-92fb-bff330fd842d")
-		(property "Reference" "R18"
-			(at 39.37 99.0599 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "2.2k"
-			(at 39.37 101.5999 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
-			(at 35.052 100.33 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 36.83 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 36.83 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MNF PART NUMBER" ""
-			(at 36.83 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Type" ""
-			(at 36.83 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "DigiKey" "311-2.20KCRCT-ND"
-			(at 36.83 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "e683507e-f72a-49c1-949b-cf0f3ed9aa4f")
-		)
-		(pin "2"
-			(uuid "9c4b1875-a4d4-43b4-895a-2d1134c5fa32")
-		)
-		(instances
-			(project "esp"
-				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/1d098c74-ef64-49cb-a95a-ee89cc8acd66"
-					(reference "R18")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 203.2 52.07 0)
 		(unit 1)
@@ -2908,103 +2713,6 @@
 			(project ""
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/1d098c74-ef64-49cb-a95a-ee89cc8acd66"
 					(reference "#PWR054")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 46.99 100.33 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "890bd1b6-efa7-4109-a111-910cd45dfaad")
-		(property "Reference" "R17"
-			(at 49.53 99.0599 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "2.2k"
-			(at 49.53 101.5999 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
-			(at 45.212 100.33 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 46.99 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 46.99 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MNF PART NUMBER" ""
-			(at 46.99 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Type" ""
-			(at 46.99 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "DigiKey" "311-2.20KCRCT-ND"
-			(at 46.99 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "cc835880-9bed-4a02-b034-ed93ec87fb2c")
-		)
-		(pin "2"
-			(uuid "f7d6d447-99aa-49ff-a6c7-ecee32b1378f")
-		)
-		(instances
-			(project "esp"
-				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/1d098c74-ef64-49cb-a95a-ee89cc8acd66"
-					(reference "R17")
 					(unit 1)
 				)
 			)

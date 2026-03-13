@@ -598,12 +598,6 @@
 		(uuid "ab722220-4106-472b-bd41-73632904ee8a")
 	)
 	(junction
-		(at 203.2 93.98)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "2ac45134-5cda-454b-b1ae-e69a41956c6f")
-	)
-	(junction
 		(at 165.1 104.14)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -620,6 +614,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "d418c975-0aa0-4495-b0c0-e13b57da6be5")
+	)
+	(junction
+		(at 203.2 107.95)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "d65353cf-413c-4e2d-bb19-0c92399a8aaf")
 	)
 	(junction
 		(at 127 107.95)
@@ -647,6 +647,16 @@
 	)
 	(wire
 		(pts
+			(xy 185.42 93.98) (xy 199.39 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "06760291-b8b7-40d1-bb68-8c27cb1349dd")
+	)
+	(wire
+		(pts
 			(xy 187.96 101.6) (xy 142.24 101.6)
 		)
 		(stroke
@@ -654,16 +664,6 @@
 			(type default)
 		)
 		(uuid "0f3117a7-d2a0-4f0d-8456-8fd7b4f236f2")
-	)
-	(wire
-		(pts
-			(xy 185.42 93.98) (xy 203.2 93.98)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "153be946-a971-4836-bfb4-21eb15f907dc")
 	)
 	(wire
 		(pts
@@ -707,7 +707,7 @@
 	)
 	(wire
 		(pts
-			(xy 127 86.36) (xy 127 100.33)
+			(xy 127 86.36) (xy 127 93.98)
 		)
 		(stroke
 			(width 0)
@@ -777,6 +777,16 @@
 	)
 	(wire
 		(pts
+			(xy 127 101.6) (xy 127 107.95)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6cbe28a1-cd84-4f5d-8da9-87a2989cfbfc")
+	)
+	(wire
+		(pts
 			(xy 185.42 83.82) (xy 190.5 83.82)
 		)
 		(stroke
@@ -784,6 +794,16 @@
 			(type default)
 		)
 		(uuid "763c85d1-c1d5-466e-9ced-e9234a3e9e86")
+	)
+	(wire
+		(pts
+			(xy 199.39 107.95) (xy 203.2 107.95)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7b3932e7-97d8-4c8c-af28-e2473b5aa312")
 	)
 	(wire
 		(pts
@@ -804,6 +824,16 @@
 			(type default)
 		)
 		(uuid "8ef1e4fb-4e18-4565-a5a7-922a163af64f")
+	)
+	(wire
+		(pts
+			(xy 203.2 101.6) (xy 203.2 107.95)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "92f56fcb-8711-429e-bc26-9298a30ed508")
 	)
 	(wire
 		(pts
@@ -847,7 +877,17 @@
 	)
 	(wire
 		(pts
-			(xy 203.2 93.98) (xy 203.2 100.33)
+			(xy 199.39 93.98) (xy 199.39 107.95)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ae8f5c9d-4278-420d-8d4c-48f7083853ff")
+	)
+	(wire
+		(pts
+			(xy 203.2 88.9) (xy 203.2 93.98)
 		)
 		(stroke
 			(width 0)
@@ -864,6 +904,16 @@
 			(type default)
 		)
 		(uuid "bddc03c0-2438-404d-b6f8-0c723af37b35")
+	)
+	(wire
+		(pts
+			(xy 203.2 107.95) (xy 203.2 109.22)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c3c797fe-6cdb-467a-857d-f8f0b6fa566e")
 	)
 	(wire
 		(pts
@@ -887,16 +937,6 @@
 	)
 	(wire
 		(pts
-			(xy 203.2 107.95) (xy 203.2 109.22)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "cec1955a-ea08-4334-9902-6cfccf6e3166")
-	)
-	(wire
-		(pts
 			(xy 139.7 91.44) (xy 144.78 91.44)
 		)
 		(stroke
@@ -904,16 +944,6 @@
 			(type default)
 		)
 		(uuid "d922173d-700a-48e3-8bc0-4497210b1b38")
-	)
-	(wire
-		(pts
-			(xy 203.2 88.9) (xy 203.2 93.98)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "df7af82c-3f54-48c3-bed4-0b3cd55fe441")
 	)
 	(wire
 		(pts
@@ -1239,7 +1269,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 127 104.14 0)
+		(at 127 97.79 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1248,7 +1278,7 @@
 		(fields_autoplaced yes)
 		(uuid "b2a116e9-bd96-459a-8a06-2c558fe9c423")
 		(property "Reference" "R6"
-			(at 129.54 102.8699 0)
+			(at 129.54 96.5199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1257,7 +1287,7 @@
 			)
 		)
 		(property "Value" "5.1k"
-			(at 129.54 105.4099 0)
+			(at 129.54 99.0599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1266,7 +1296,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
-			(at 125.222 104.14 90)
+			(at 125.222 97.79 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1275,7 +1305,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 127 104.14 0)
+			(at 127 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1284,7 +1314,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 127 104.14 0)
+			(at 127 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1293,7 +1323,7 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
-			(at 127 104.14 0)
+			(at 127 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1302,7 +1332,7 @@
 			)
 		)
 		(property "DigiKey" "P5.1KDACT-ND"
-			(at 127 104.14 0)
+			(at 127 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1311,7 +1341,7 @@
 			)
 		)
 		(property "Sim.Type" ""
-			(at 127 104.14 0)
+			(at 127 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1336,7 +1366,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 203.2 104.14 0)
+		(at 203.2 97.79 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1344,7 +1374,7 @@
 		(dnp no)
 		(uuid "ffbe5814-e2db-4bd0-b3d4-2280b475d2d2")
 		(property "Reference" "R7"
-			(at 205.74 102.8699 0)
+			(at 205.74 96.5199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1353,7 +1383,7 @@
 			)
 		)
 		(property "Value" "5.1k"
-			(at 205.74 105.4099 0)
+			(at 205.74 99.0599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1362,7 +1392,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
-			(at 201.422 104.14 90)
+			(at 201.422 97.79 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1371,7 +1401,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 203.2 104.14 0)
+			(at 203.2 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1380,7 +1410,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 203.2 104.14 0)
+			(at 203.2 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1389,7 +1419,7 @@
 			)
 		)
 		(property "MNF PART NUMBER" ""
-			(at 203.2 104.14 0)
+			(at 203.2 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1398,7 +1428,7 @@
 			)
 		)
 		(property "DigiKey" "P5.1KDACT-ND"
-			(at 203.2 104.14 0)
+			(at 203.2 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1407,7 +1437,7 @@
 			)
 		)
 		(property "Sim.Type" ""
-			(at 203.2 104.14 0)
+			(at 203.2 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
