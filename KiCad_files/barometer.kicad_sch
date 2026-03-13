@@ -26,7 +26,7 @@
 					(hide yes)
 				)
 			)
-			(property "Footprint" ""
+			(property "Footprint" "1_project_library:QFN10_BMP581_BOS"
 				(at 0 0 0)
 				(effects
 					(font
@@ -44,7 +44,16 @@
 					(hide yes)
 				)
 			)
-			(property "Description" ""
+			(property "Description" "Barometer"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "DigiKey" "828-BMP581CT-ND"
 				(at 0 0 0)
 				(effects
 					(font
@@ -78,6 +87,14 @@
 				)
 			)
 			(symbol "BMP581_1_1"
+				(text private "BiDi vai Input?"
+					(at -16.002 -10.16 0)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
 				(text "${SYMBOL_NAME}"
 					(at 17.272 1.27 0)
 					(effects
@@ -104,7 +121,7 @@
 						)
 					)
 				)
-				(pin bidirectional line
+				(pin input line
 					(at -2.54 -10.16 0)
 					(length 2.54)
 					(name "SDI"
@@ -230,7 +247,7 @@
 						)
 					)
 				)
-				(pin bidirectional line
+				(pin passive line
 					(at 22.86 -7.62 180)
 					(length 2.54)
 					(name "SDO"
@@ -1276,16 +1293,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
-			(at 121.92 85.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MNF PART NUMBER" ""
+		(property "Description" "Barometer"
 			(at 121.92 85.09 0)
 			(effects
 				(font

@@ -187,6 +187,16 @@
 	)
 	(wire
 		(pts
+			(xy 87.63 173.99) (xy 105.41 173.99)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "72c5a6e6-34b4-4f4f-b63b-b7c7b2ef1530")
+	)
+	(wire
+		(pts
 			(xy 143.51 114.3) (xy 153.67 114.3)
 		)
 		(stroke
@@ -234,6 +244,16 @@
 			(type default)
 		)
 		(uuid "84568215-8e59-433e-b282-7041c49c96b2")
+	)
+	(wire
+		(pts
+			(xy 189.23 104.14) (xy 208.28 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8e4fb41a-3ee8-4a6c-88e6-122417efb96d")
 	)
 	(wire
 		(pts
@@ -755,6 +775,16 @@
 		)
 		(uuid "afa5fa6b-85e3-47aa-ba73-657c4f8020e2")
 	)
+	(label "JTAG_SEL"
+		(at 189.23 104.14 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b502b786-0543-4ac7-9358-bebbd0784a83")
+	)
 	(label "PWM_2"
 		(at 260.35 111.76 0)
 		(effects
@@ -874,6 +904,16 @@
 			(justify left bottom)
 		)
 		(uuid "f2d447c1-7ec3-4b35-80bf-ec0dda11f6c7")
+	)
+	(label "JTAG_SEL"
+		(at 87.63 173.99 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f4a9cb54-6e7b-4b9d-9781-f67c093e8478")
 	)
 	(label "GNSS_TX"
 		(at 368.3 187.96 0)
@@ -1447,6 +1487,16 @@
 				(justify left)
 			)
 		)
+		(pin "JTAG_SEL" input
+			(at 208.28 104.14 180)
+			(uuid "de3477fc-6a0c-483b-a625-984264c88a02")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 		(instances
 			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33"
@@ -1604,6 +1654,16 @@
 		(pin "PWM0" input
 			(at 105.41 189.23 180)
 			(uuid "823369b2-3892-46cf-80e6-5e4a6711991b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "JTAG_SEL" output
+			(at 105.41 173.99 180)
+			(uuid "7aafbe6f-7d34-4465-9bff-0e42f98d0e55")
 			(effects
 				(font
 					(size 1.27 1.27)

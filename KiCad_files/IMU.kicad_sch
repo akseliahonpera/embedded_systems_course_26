@@ -28,7 +28,7 @@
 					)
 				)
 			)
-			(property "Footprint" "LGA-28_CEV"
+			(property "Footprint" "1_project_library:BNO085"
 				(at 0 0 0)
 				(effects
 					(font
@@ -57,12 +57,13 @@
 					(hide yes)
 				)
 			)
-			(property "ki_locked" ""
+			(property "DigiKey" "1888-1006-1-ND"
 				(at 0 0 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(hide yes)
 				)
 			)
 			(property "ki_keywords" "BNO085"
@@ -276,24 +277,6 @@
 						)
 					)
 				)
-				(pin power_in line
-					(at 0 -20.32 0)
-					(length 7.62)
-					(name "CAP"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "9"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
 				(pin input line
 					(at 0 -22.86 0)
 					(length 7.62)
@@ -413,42 +396,6 @@
 						)
 					)
 					(number "27"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin output line
-					(at 71.12 -5.08 180)
-					(length 7.62)
-					(name "XOUT32/CLKSEL1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "26"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_out line
-					(at 71.12 -7.62 180)
-					(length 7.62)
-					(name "GND"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "25"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -629,6 +576,62 @@
 						)
 					)
 					(number "15"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "BNO085_1_1"
+				(pin passive line
+					(at 0 -20.32 0)
+					(length 7.62)
+					(name "CAP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 71.12 -5.08 180)
+					(length 7.62)
+					(name "XOUT32/CLKSEL1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "26"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 71.12 -7.62 180)
+					(length 7.62)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "25"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1304,6 +1307,14 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "fd826f00-868e-452d-8a15-ec7200636cf5")
+	)
+	(no_connect
+		(at 190.5 107.95)
+		(uuid "6cd930e6-59e3-4d1b-8dea-9db6be50cce9")
+	)
+	(no_connect
+		(at 190.5 85.09)
+		(uuid "f0b76516-5e9b-4b35-ad4a-65d5e562b71b")
 	)
 	(wire
 		(pts
@@ -2765,24 +2776,6 @@
 			)
 		)
 		(property "Description" ""
-			(at 119.38 82.55 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MNF PART NUMBER" ""
-			(at 119.38 82.55 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Type" ""
 			(at 119.38 82.55 0)
 			(effects
 				(font

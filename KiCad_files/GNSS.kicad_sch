@@ -28,7 +28,7 @@
 					)
 				)
 			)
-			(property "Footprint" "1060_KEY"
+			(property "Footprint" "1_project_library:1060_KEY"
 				(at 0 0 0)
 				(effects
 					(font
@@ -57,12 +57,13 @@
 					(hide yes)
 				)
 			)
-			(property "ki_locked" ""
+			(property "DigiKey" "36-1060-ND"
 				(at 0 0 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(hide yes)
 				)
 			)
 			(property "ki_keywords" "1060"
@@ -132,7 +133,9 @@
 						(type none)
 					)
 				)
-				(pin unspecified line
+			)
+			(symbol "1060_1_1"
+				(pin passive line
 					(at 0 0 0)
 					(length 7.62)
 					(name "1"
@@ -150,7 +153,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin passive line
 					(at 40.64 0 180)
 					(length 7.62)
 					(name "2"
@@ -1680,6 +1683,12 @@
 		(uuid "9967c931-2cef-4925-88f3-6a07c710ac3b")
 	)
 	(junction
+		(at 121.92 167.64)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "b08632f6-8129-40f8-9d90-b9c2d1754e96")
+	)
+	(junction
 		(at 134.62 123.19)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1726,12 +1735,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e3dc4e6e-0204-49a2-81c2-2891c3f35175")
-	)
-	(junction
-		(at 121.92 167.64)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "ebda4557-6127-44d9-b30d-68844079cdb6")
 	)
 	(junction
 		(at 160.02 99.06)
@@ -2644,72 +2647,6 @@
 		(uuid "fa2b5e02-5ad3-40aa-9a68-c15b8d6f08b4")
 	)
 	(symbol
-		(lib_id "power:PWR_FLAG")
-		(at 121.92 167.64 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "030e60fc-28d9-43d9-b00a-88e3c109362b")
-		(property "Reference" "#FLG03"
-			(at 121.92 165.735 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "PWR_FLAG"
-			(at 121.92 162.56 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 121.92 167.64 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 121.92 167.64 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Special symbol for telling ERC where power comes from"
-			(at 121.92 167.64 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "d8eab904-6539-4be6-83ae-442e1bca1e6d")
-		)
-		(instances
-			(project ""
-				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/58061273-0348-4c5f-98ae-c78a02c73d37"
-					(reference "#FLG03")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 190.5 127 0)
 		(unit 1)
@@ -2867,6 +2804,72 @@
 			(project ""
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/58061273-0348-4c5f-98ae-c78a02c73d37"
 					(reference "C11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 121.92 167.64 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "157a4498-f658-4be1-9890-5a791936b922")
+		(property "Reference" "#FLG03"
+			(at 121.92 165.735 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 121.92 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 121.92 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 121.92 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 121.92 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8c420ef7-7c4b-4eb8-be25-676b63add11a")
+		)
+		(instances
+			(project ""
+				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/58061273-0348-4c5f-98ae-c78a02c73d37"
+					(reference "#FLG03")
 					(unit 1)
 				)
 			)
@@ -4099,15 +4102,6 @@
 			)
 		)
 		(property "DigiKey" "36-1060-ND"
-			(at 81.28 167.64 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Type" ""
 			(at 81.28 167.64 0)
 			(effects
 				(font

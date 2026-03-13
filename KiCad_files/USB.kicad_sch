@@ -28,7 +28,7 @@
 					)
 				)
 			)
-			(property "Footprint" "USB4105_GCT"
+			(property "Footprint" "1_project_library:USB4105_GCT"
 				(at 0 0 0)
 				(effects
 					(font
@@ -57,12 +57,13 @@
 					(hide yes)
 				)
 			)
-			(property "ki_locked" ""
+			(property "DigiKey" "2073-USB4105-GF-ACT-ND"
 				(at 0 0 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(hide yes)
 				)
 			)
 			(property "ki_keywords" "USB4105-GF-A"
@@ -130,42 +131,6 @@
 					)
 					(fill
 						(type none)
-					)
-				)
-				(pin power_out line
-					(at 0 0 0)
-					(length 7.62)
-					(name "GND"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "A1-B12"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 0 -2.54 0)
-					(length 7.62)
-					(name "VBUS"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "A4-B9"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
 					)
 				)
 				(pin bidirectional line
@@ -312,7 +277,45 @@
 						)
 					)
 				)
-				(pin power_in line
+			)
+			(symbol "USB4105-GF-A_1_1"
+				(pin passive line
+					(at 0 0 0)
+					(length 7.62)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A1-B12"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -2.54 0)
+					(length 7.62)
+					(name "VBUS"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A4-B9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
 					(at 40.64 -10.16 180)
 					(length 7.62)
 					(name "VBUS"
@@ -330,7 +333,7 @@
 						)
 					)
 				)
-				(pin power_out line
+				(pin passive line
 					(at 40.64 -12.7 180)
 					(length 7.62)
 					(name "GND"
@@ -1192,6 +1195,115 @@
 		)
 	)
 	(symbol
+		(lib_id "1_projektin osat:USB4105-GF-A")
+		(at 144.78 81.28 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "545437df-00be-49df-82cb-f013265b1a51")
+		(property "Reference" "J2"
+			(at 165.1 71.12 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "USB4105-GF-A"
+			(at 165.1 73.66 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "1_project_library:USB4105_GCT"
+			(at 144.78 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "USB4105-GF-A"
+			(at 144.78 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 144.78 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "2073-USB4105-GF-ACT-ND"
+			(at 144.78 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "A7"
+			(uuid "d92a1d70-dac2-4b8b-ac5f-5d463abc22af")
+		)
+		(pin "B4-A9"
+			(uuid "14a56461-a9c3-4ba6-9bc3-a76d453c130a")
+		)
+		(pin "B8"
+			(uuid "d2423980-b6ea-4562-ba0d-193a861895eb")
+		)
+		(pin "B5"
+			(uuid "e866e804-6cc2-4729-8074-a50293cd0717")
+		)
+		(pin "B6"
+			(uuid "61ee5820-780f-446e-af26-8c440e594bb0")
+		)
+		(pin "A5"
+			(uuid "2cccca0a-2879-40e8-8173-0c1cf3a06cc6")
+		)
+		(pin "A6"
+			(uuid "b852815a-b414-4e24-a477-633b54d31d98")
+		)
+		(pin "A1-B12"
+			(uuid "ac879a6e-62f9-4a9f-a00e-2080c4e857ce")
+		)
+		(pin "A8"
+			(uuid "88379616-dde2-4f52-a36c-289928d99abd")
+		)
+		(pin "B1-A12"
+			(uuid "76121ec9-6f3d-4911-a0d6-e10b6e8481fa")
+		)
+		(pin "A4-B9"
+			(uuid "05e43533-0e88-446a-b0ca-718ca00f731b")
+		)
+		(pin "B7"
+			(uuid "c14c2343-7c6a-4d92-9b06-ec3e8cca5387")
+		)
+		(instances
+			(project ""
+				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/dce605b2-bfca-4721-a3b2-461c5c7ec909"
+					(reference "J2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:PWR_FLAG")
 		(at 115.57 83.82 0)
 		(unit 1)
@@ -1252,133 +1364,6 @@
 			(project ""
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/dce605b2-bfca-4721-a3b2-461c5c7ec909"
 					(reference "#FLG01")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "1_projektin osat:USB4105-GF-A")
-		(at 144.78 81.28 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "9e6d63ca-b3b2-4d0c-a37b-cc281d218b57")
-		(property "Reference" "J2"
-			(at 165.1 71.12 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-			)
-		)
-		(property "Value" "USB4105-GF-A"
-			(at 165.1 73.66 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-			)
-		)
-		(property "Footprint" "1_project_library:USB4105_GCT"
-			(at 144.78 81.28 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "USB4105-GF-A"
-			(at 144.78 81.28 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 144.78 81.28 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MNF PART NUMBER" ""
-			(at 144.78 81.28 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "DigiKey" "2073-USB4105-GF-ACT-ND"
-			(at 144.78 81.28 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Type" ""
-			(at 144.78 81.28 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "B8"
-			(uuid "fe08feca-d619-474e-b769-a8c04f869d82")
-		)
-		(pin "A6"
-			(uuid "2af6c944-d238-40a4-8aae-b42692abb1d6")
-		)
-		(pin "A8"
-			(uuid "24f74cc9-3d82-4d49-be5a-7a5ebd058d4f")
-		)
-		(pin "B7"
-			(uuid "7b4684ee-996b-4107-a6c8-29b0cb1a9631")
-		)
-		(pin "B4-A9"
-			(uuid "3dd42af3-f387-43c5-a12f-d4562c83ef76")
-		)
-		(pin "B1-A12"
-			(uuid "e1222b9b-4620-4ef7-bd93-30f52ee011e0")
-		)
-		(pin "A4-B9"
-			(uuid "d337ef06-0729-419f-9910-8f28bed5d0a6")
-		)
-		(pin "A7"
-			(uuid "e2f04cd2-f6a7-4f36-bcbd-c62013df609a")
-		)
-		(pin "B6"
-			(uuid "397b124f-a371-4e3d-a4dc-e12311a26209")
-		)
-		(pin "B5"
-			(uuid "01d43016-9d4d-483f-b401-ce0f66b1ed87")
-		)
-		(pin "A1-B12"
-			(uuid "3e121688-2a0d-4492-86cf-a963c5dc07d6")
-		)
-		(pin "A5"
-			(uuid "b5538a00-1325-4174-9642-18043788e1ba")
-		)
-		(instances
-			(project ""
-				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/dce605b2-bfca-4721-a3b2-461c5c7ec909"
-					(reference "J2")
 					(unit 1)
 				)
 			)

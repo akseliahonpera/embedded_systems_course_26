@@ -25,7 +25,7 @@
 				)
 			)
 		)
-		(property "Footprint" "1060_KEY"
+		(property "Footprint" "1_project_library:1060_KEY"
 			(at 0 0 0)
 			(effects
 				(font
@@ -54,12 +54,13 @@
 				(hide yes)
 			)
 		)
-		(property "ki_locked" ""
+		(property "DigiKey" "36-1060-ND"
 			(at 0 0 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
 			)
 		)
 		(property "ki_keywords" "1060"
@@ -129,7 +130,9 @@
 					(type none)
 				)
 			)
-			(pin unspecified line
+		)
+		(symbol "1060_1_1"
+			(pin passive line
 				(at 0 0 0)
 				(length 7.62)
 				(name "1"
@@ -147,7 +150,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin passive line
 				(at 40.64 0 180)
 				(length 7.62)
 				(name "2"
@@ -191,7 +194,7 @@
 				)
 			)
 		)
-		(property "Footprint" "B3U-1000P"
+		(property "Footprint" "1_project_library:B3U-1000P"
 			(at 0 0 0)
 			(effects
 				(font
@@ -220,12 +223,13 @@
 				(hide yes)
 			)
 		)
-		(property "ki_locked" ""
+		(property "DigiKey" "SW1020CT-ND"
 			(at 0 0 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
 			)
 		)
 		(property "ki_keywords" "B3U-1000P"
@@ -331,7 +335,9 @@
 					(type none)
 				)
 			)
-			(pin unspecified line
+		)
+		(symbol "B3U-1000P_1_1"
+			(pin passive line
 				(at 0 0 0)
 				(length 7.62)
 				(name "1"
@@ -349,7 +355,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin passive line
 				(at 40.64 0 180)
 				(length 7.62)
 				(name "2"
@@ -391,7 +397,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "1_project_library:QFN10_BMP581_BOS"
 			(at 0 0 0)
 			(effects
 				(font
@@ -409,7 +415,16 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Barometer"
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "828-BMP581CT-ND"
 			(at 0 0 0)
 			(effects
 				(font
@@ -453,14 +468,6 @@
 			)
 			(text "${SYMBOL_NAME}"
 				(at 17.272 1.27 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(text private "BiDi vai Output?"
-				(at 41.91 -7.62 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -611,7 +618,7 @@
 					)
 				)
 			)
-			(pin output line
+			(pin passive line
 				(at 22.86 -7.62 180)
 				(length 2.54)
 				(name "SDO"
@@ -673,7 +680,7 @@
 				)
 			)
 		)
-		(property "Footprint" "LGA-28_CEV"
+		(property "Footprint" "1_project_library:BNO085"
 			(at 0 0 0)
 			(effects
 				(font
@@ -702,12 +709,13 @@
 				(hide yes)
 			)
 		)
-		(property "ki_locked" ""
+		(property "DigiKey" "1888-1006-1-ND"
 			(at 0 0 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
 			)
 		)
 		(property "ki_keywords" "BNO085"
@@ -921,24 +929,6 @@
 					)
 				)
 			)
-			(pin power_in line
-				(at 0 -20.32 0)
-				(length 7.62)
-				(name "CAP"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "9"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
 			(pin input line
 				(at 0 -22.86 0)
 				(length 7.62)
@@ -1058,42 +1048,6 @@
 					)
 				)
 				(number "27"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin output line
-				(at 71.12 -5.08 180)
-				(length 7.62)
-				(name "XOUT32/CLKSEL1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "26"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin power_out line
-				(at 71.12 -7.62 180)
-				(length 7.62)
-				(name "GND"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "25"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -1274,6 +1228,62 @@
 					)
 				)
 				(number "15"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(symbol "BNO085_1_1"
+			(pin passive line
+				(at 0 -20.32 0)
+				(length 7.62)
+				(name "CAP"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "9"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 71.12 -5.08 180)
+				(length 7.62)
+				(name "XOUT32/CLKSEL1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "26"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 71.12 -7.62 180)
+				(length 7.62)
+				(name "GND"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "25"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -1882,7 +1892,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Package_TO_SOT_SMD:TSOT-23-8"
 			(at 0 0 0)
 			(effects
 				(font
@@ -1900,7 +1910,16 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Regulator"
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "1589-1573-1-ND"
 			(at 0 0 0)
 			(effects
 				(font
@@ -2021,7 +2040,7 @@
 					)
 				)
 			)
-			(pin power_in line
+			(pin power_out line
 				(at 20.32 -5.08 180)
 				(length 2.54)
 				(name "VCC"
@@ -2101,7 +2120,7 @@
 				)
 			)
 		)
-		(property "Footprint" "SLW-171175-7A-N-D_SSD"
+		(property "Footprint" "1_project_library:SLW-171175-7A-N-D_SSD"
 			(at 0 0 0)
 			(effects
 				(font
@@ -2130,12 +2149,13 @@
 				(hide yes)
 			)
 		)
-		(property "ki_locked" ""
+		(property "DigiKey" "2223-SLW-171175-7A-N-D-ND"
 			(at 0 0 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
 			)
 		)
 		(property "ki_keywords" "SLW-171175-7A-N-D"
@@ -2487,7 +2507,9 @@
 					(type none)
 				)
 			)
-			(pin unspecified line
+		)
+		(symbol "SLW-171175-7A-N-D_1_1"
+			(pin passive line
 				(at 0 0 0)
 				(length 7.62)
 				(name "1"
@@ -2505,7 +2527,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin passive line
 				(at 0 -2.54 0)
 				(length 7.62)
 				(name "2"
@@ -2523,7 +2545,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin passive line
 				(at 0 -5.08 0)
 				(length 7.62)
 				(name "3"
@@ -2541,7 +2563,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin passive line
 				(at 25.4 0 180)
 				(length 7.62)
 				(name "6"
@@ -2559,7 +2581,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin passive line
 				(at 25.4 -2.54 180)
 				(length 7.62)
 				(name "5"
@@ -2577,7 +2599,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin passive line
 				(at 25.4 -5.08 180)
 				(length 7.62)
 				(name "4"
@@ -2621,7 +2643,7 @@
 				)
 			)
 		)
-		(property "Footprint" "IND_BOURNS_SRU1038"
+		(property "Footprint" "1_project_library:IND_BOURNS_SRU1038"
 			(at 0 0 0)
 			(effects
 				(font
@@ -2650,12 +2672,13 @@
 				(hide yes)
 			)
 		)
-		(property "ki_locked" ""
+		(property "DigiKey" "SRU1038-5R0YCT-ND"
 			(at 0 0 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
 			)
 		)
 		(property "ki_keywords" "SRU1038-5R0Y"
@@ -2785,7 +2808,7 @@
 					(type none)
 				)
 			)
-			(pin unspecified line
+			(pin passive line
 				(at 0 0 0)
 				(length 2.54)
 				(name "2"
@@ -2803,7 +2826,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin passive line
 				(at 15.24 0 180)
 				(length 2.54)
 				(name "1"
@@ -2993,7 +3016,7 @@
 				)
 			)
 		)
-		(property "Footprint" "USB4105_GCT"
+		(property "Footprint" "1_project_library:USB4105_GCT"
 			(at 0 0 0)
 			(effects
 				(font
@@ -3022,12 +3045,13 @@
 				(hide yes)
 			)
 		)
-		(property "ki_locked" ""
+		(property "DigiKey" "2073-USB4105-GF-ACT-ND"
 			(at 0 0 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
 			)
 		)
 		(property "ki_keywords" "USB4105-GF-A"
@@ -3095,42 +3119,6 @@
 				)
 				(fill
 					(type none)
-				)
-			)
-			(pin power_out line
-				(at 0 0 0)
-				(length 7.62)
-				(name "GND"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "A1-B12"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin power_in line
-				(at 0 -2.54 0)
-				(length 7.62)
-				(name "VBUS"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "A4-B9"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
 				)
 			)
 			(pin bidirectional line
@@ -3277,7 +3265,45 @@
 					)
 				)
 			)
-			(pin power_in line
+		)
+		(symbol "USB4105-GF-A_1_1"
+			(pin passive line
+				(at 0 0 0)
+				(length 7.62)
+				(name "GND"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "A1-B12"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 0 -2.54 0)
+				(length 7.62)
+				(name "VBUS"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "A4-B9"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
 				(at 40.64 -10.16 180)
 				(length 7.62)
 				(name "VBUS"
@@ -3295,7 +3321,7 @@
 					)
 				)
 			)
-			(pin power_out line
+			(pin passive line
 				(at 40.64 -12.7 180)
 				(length 7.62)
 				(name "GND"

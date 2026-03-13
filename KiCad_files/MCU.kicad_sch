@@ -28,7 +28,7 @@
 					)
 				)
 			)
-			(property "Footprint" "B3U-1000P"
+			(property "Footprint" "1_project_library:B3U-1000P"
 				(at 0 0 0)
 				(effects
 					(font
@@ -57,12 +57,13 @@
 					(hide yes)
 				)
 			)
-			(property "ki_locked" ""
+			(property "DigiKey" "SW1020CT-ND"
 				(at 0 0 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(hide yes)
 				)
 			)
 			(property "ki_keywords" "B3U-1000P"
@@ -168,7 +169,9 @@
 						(type none)
 					)
 				)
-				(pin unspecified line
+			)
+			(symbol "B3U-1000P_1_1"
+				(pin passive line
 					(at 0 0 0)
 					(length 7.62)
 					(name "1"
@@ -186,7 +189,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin passive line
 					(at 40.64 0 180)
 					(length 7.62)
 					(name "2"
@@ -2014,13 +2017,14 @@
 		)
 		(uuid "5770ded2-b1f3-4a7c-8d07-77f13d6cefc6")
 	)
-	(text "UART0 interface\nGPIO43\nGPIO44"
+	(text "UART0 interface		Can possibly use for something i nthe future,\nGPIO43				Leave floating for now\nGPIO44"
 		(exclude_from_sim no)
-		(at 210.566 80.518 0)
+		(at 196.85 80.264 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
+			(justify left)
 		)
 		(uuid "784444cf-c765-4096-a289-2e8467bb9da3")
 	)
@@ -2034,12 +2038,6 @@
 			(justify left)
 		)
 		(uuid "f32d64c5-72f2-4db4-9af3-f1c7b6180e65")
-	)
-	(junction
-		(at 99.06 91.44)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "020f74b9-803b-4db2-8cd4-7b554f83ebf4")
 	)
 	(junction
 		(at 100.33 68.58)
@@ -2078,6 +2076,12 @@
 		(uuid "91391df8-1209-4e4b-8776-90d49306a783")
 	)
 	(junction
+		(at 100.33 91.44)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "99a80655-bf90-4d2e-b959-f33b4860a7bc")
+	)
+	(junction
 		(at 143.51 50.8)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2102,8 +2106,16 @@
 		(uuid "1bcbafc4-0e90-48c7-bc9f-3da508f41a96")
 	)
 	(no_connect
+		(at 184.15 80.01)
+		(uuid "1dd8a37a-c829-469c-887b-a713fb10f483")
+	)
+	(no_connect
 		(at 144.78 87.63)
 		(uuid "2cf84f11-8d0c-4843-88ca-f981e279fc88")
+	)
+	(no_connect
+		(at 184.15 82.55)
+		(uuid "307e3dc0-e49e-4880-87e6-c9f119c338d6")
 	)
 	(no_connect
 		(at 144.78 102.87)
@@ -2309,7 +2321,7 @@
 	)
 	(wire
 		(pts
-			(xy 99.06 91.44) (xy 99.06 92.71)
+			(xy 100.33 91.44) (xy 100.33 92.71)
 		)
 		(stroke
 			(width 0)
@@ -2679,7 +2691,7 @@
 	)
 	(wire
 		(pts
-			(xy 50.8 91.44) (xy 99.06 91.44)
+			(xy 50.8 91.44) (xy 100.33 91.44)
 		)
 		(stroke
 			(width 0)
@@ -2746,16 +2758,6 @@
 			(type default)
 		)
 		(uuid "cf6fae3c-f6e0-4eb2-870f-7e5a72762a47")
-	)
-	(wire
-		(pts
-			(xy 99.06 91.44) (xy 100.33 91.44)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d0168f79-f4cf-4622-b674-243f1ba704b4")
 	)
 	(wire
 		(pts
@@ -3560,7 +3562,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 99.06 92.71 0)
+		(at 100.33 92.71 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3569,7 +3571,7 @@
 		(fields_autoplaced yes)
 		(uuid "77bbfbff-fb28-467f-a4b3-9749a23df7f3")
 		(property "Reference" "#PWR026"
-			(at 99.06 99.06 0)
+			(at 100.33 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3578,7 +3580,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 99.06 97.79 0)
+			(at 100.33 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3586,7 +3588,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 99.06 92.71 0)
+			(at 100.33 92.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3595,7 +3597,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 99.06 92.71 0)
+			(at 100.33 92.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3604,7 +3606,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 99.06 92.71 0)
+			(at 100.33 92.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3964,6 +3966,72 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+3.3V")
+		(at 143.51 48.26 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d23ac26f-e408-4d61-b878-f6b64308c3c2")
+		(property "Reference" "#PWR05"
+			(at 143.51 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3.3V"
+			(at 143.51 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 143.51 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 143.51 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
+			(at 143.51 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "18544971-a54e-45d4-b0d1-6538dbba6ded")
+		)
+		(instances
+			(project "esp"
+				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/da295ba5-5e07-44a9-8c1c-e3f6c5500b46"
+					(reference "#PWR05")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "1_projektin osat:B3U-1000P")
 		(at 55.88 80.01 0)
 		(unit 1)
@@ -3989,7 +4057,7 @@
 				)
 			)
 		)
-		(property "Footprint" "B3U-1000P"
+		(property "Footprint" "1_project_library:B3U-1000P"
 			(at 55.88 80.01 0)
 			(effects
 				(font
@@ -4019,15 +4087,6 @@
 			)
 		)
 		(property "DigiKey" "SW1020CT-ND"
-			(at 55.88 80.01 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MNF PART NUMBER" ""
 			(at 55.88 80.01 0)
 			(effects
 				(font
@@ -4477,72 +4536,6 @@
 			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/da295ba5-5e07-44a9-8c1c-e3f6c5500b46"
 					(reference "#PWR028")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+3.3V")
-		(at 143.51 48.26 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "ff7d24a7-a3e6-4821-82fe-24264a442c74")
-		(property "Reference" "#PWR027"
-			(at 143.51 52.07 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3.3V"
-			(at 143.51 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 143.51 48.26 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 143.51 48.26 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 143.51 48.26 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "41dfa499-991a-454a-bbe1-94be50b760a6")
-		)
-		(instances
-			(project "esp"
-				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/da295ba5-5e07-44a9-8c1c-e3f6c5500b46"
-					(reference "#PWR027")
 					(unit 1)
 				)
 			)
