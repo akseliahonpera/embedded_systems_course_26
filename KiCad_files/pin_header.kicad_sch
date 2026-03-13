@@ -750,11 +750,21 @@
 			(embedded_fonts no)
 		)
 	)
+	(text "Pull JTAG_SEL down during boot to enable auxiliary JTAG interface"
+		(exclude_from_sim no)
+		(at 176.53 88.138 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "3b8c324c-00fc-49dc-b1bf-cf685e0171c8")
+	)
 	(junction
-		(at 186.69 110.49)
+		(at 186.69 113.03)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "e21554cd-e771-4253-89ae-95684e145787")
+		(uuid "826dc65d-9abf-48c0-885f-09be0e789a35")
 	)
 	(wire
 		(pts
@@ -764,11 +774,11 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "01bb6d56-e8b8-4f4f-b9d5-49a69b125d5f")
+		(uuid "15400094-faaf-44a0-aedb-739918fa95d9")
 	)
 	(wire
 		(pts
-			(xy 186.69 110.49) (xy 190.5 110.49)
+			(xy 186.69 113.03) (xy 190.5 113.03)
 		)
 		(stroke
 			(width 0)
@@ -798,6 +808,26 @@
 	)
 	(wire
 		(pts
+			(xy 190.5 121.92) (xy 190.5 115.57)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "79313c0e-4e4d-4aaa-a661-b37c82f254fa")
+	)
+	(wire
+		(pts
+			(xy 161.29 113.03) (xy 186.69 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "893e7ba6-2aca-41e6-8388-f158cf035dee")
+	)
+	(wire
+		(pts
 			(xy 161.29 102.87) (xy 165.1 102.87)
 		)
 		(stroke
@@ -818,26 +848,6 @@
 	)
 	(wire
 		(pts
-			(xy 190.5 121.92) (xy 190.5 115.57)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a4b98b5e-5ec4-430c-9f83-b1a0290723f4")
-	)
-	(wire
-		(pts
-			(xy 161.29 110.49) (xy 186.69 110.49)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c022a836-bee2-428f-b8f1-b07d60f3da26")
-	)
-	(wire
-		(pts
 			(xy 177.8 118.11) (xy 161.29 118.11)
 		)
 		(stroke
@@ -855,6 +865,16 @@
 			(type default)
 		)
 		(uuid "f258774c-c9a7-479b-bb65-cf93d6e89b53")
+	)
+	(wire
+		(pts
+			(xy 161.29 110.49) (xy 165.1 110.49)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f357a7be-d235-4dea-8d81-83cd5e9261ae")
 	)
 	(hierarchical_label "PWM2"
 		(shape input)
@@ -891,7 +911,7 @@
 	)
 	(hierarchical_label "BAT"
 		(shape output)
-		(at 190.5 110.49 0)
+		(at 190.5 113.03 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -911,9 +931,20 @@
 		)
 		(uuid "c6024c6d-beef-4968-af24-c0dfa7f134a0")
 	)
+	(hierarchical_label "JTAG_SEL"
+		(shape output)
+		(at 165.1 110.49 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "efabc95c-ac1f-446d-b6dc-c689cda8555b")
+	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
-		(at 186.69 110.49 0)
+		(at 186.69 113.03 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -922,7 +953,7 @@
 		(fields_autoplaced yes)
 		(uuid "5731a7f7-8ce2-4fd3-a463-8d9c33785f7d")
 		(property "Reference" "#FLG02"
-			(at 186.69 108.585 0)
+			(at 186.69 111.125 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -931,7 +962,7 @@
 			)
 		)
 		(property "Value" "PWR_FLAG"
-			(at 186.69 105.41 0)
+			(at 186.69 107.95 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -939,7 +970,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 186.69 110.49 0)
+			(at 186.69 113.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -948,7 +979,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 186.69 110.49 0)
+			(at 186.69 113.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -957,7 +988,7 @@
 			)
 		)
 		(property "Description" "Special symbol for telling ERC where power comes from"
-			(at 186.69 110.49 0)
+			(at 186.69 113.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
