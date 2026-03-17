@@ -2707,6 +2707,16 @@
 			(embedded_fonts no)
 		)
 	)
+	(text "Extra pad so that extra capacitor can be added if needed"
+		(exclude_from_sim no)
+		(at 198.374 123.19 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "07173246-6f59-415e-99cb-eed63780aac1")
+	)
 	(text "Power flags everywhere to tell ERC to STFU"
 		(exclude_from_sim no)
 		(at 68.58 69.596 0)
@@ -2716,6 +2726,36 @@
 			)
 		)
 		(uuid "09d4580d-186d-47fe-bde9-c57a3e293c13")
+	)
+	(text "Power LED"
+		(exclude_from_sim no)
+		(at 272.288 75.946 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "87ecef73-5413-4f43-9491-872c31735dbe")
+	)
+	(text "Bootstrapping diode recommended by datasheet, since duty cycle expected be > 65% when powered through USB"
+		(exclude_from_sim no)
+		(at 192.278 31.242 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "d3784af4-cd86-4cd6-a39c-067fd6f25f60")
+	)
+	(text "DPDT switch because DPST switches with our power requirements were very expensive"
+		(exclude_from_sim no)
+		(at 57.658 77.978 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "e8567806-23a3-48aa-8a94-a97ce286782c")
 	)
 	(junction
 		(at 40.64 109.22)
