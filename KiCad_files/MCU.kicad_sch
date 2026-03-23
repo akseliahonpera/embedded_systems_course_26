@@ -4102,7 +4102,7 @@
 			(uuid "205d40c0-a8ee-42b3-b564-bc5508f07af2")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/da295ba5-5e07-44a9-8c1c-e3f6c5500b46"
 					(reference "U1")
 					(unit 1)

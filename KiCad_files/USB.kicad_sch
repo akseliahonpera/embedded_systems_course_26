@@ -1295,7 +1295,7 @@
 			(uuid "c14c2343-7c6a-4d92-9b06-ec3e8cca5387")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/dce605b2-bfca-4721-a3b2-461c5c7ec909"
 					(reference "J2")
 					(unit 1)
@@ -1361,7 +1361,7 @@
 			(uuid "32ca0b95-94f7-4317-b7b1-7cbf32018935")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/dce605b2-bfca-4721-a3b2-461c5c7ec909"
 					(reference "#FLG01")
 					(unit 1)

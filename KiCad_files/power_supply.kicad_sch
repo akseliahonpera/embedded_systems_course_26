@@ -2707,9 +2707,9 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "Extra pad so that extra capacitor can be added if needed"
+	(text "C25 and C26 are extra pad so that extra capacitor can be added if needed"
 		(exclude_from_sim no)
-		(at 198.374 123.19 0)
+		(at 162.814 109.982 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2717,15 +2717,35 @@
 		)
 		(uuid "07173246-6f59-415e-99cb-eed63780aac1")
 	)
-	(text "Power flags everywhere to tell ERC to STFU"
+	(text "SW1 is power switch. Turns power on/off from both input power sources (USB and battery)"
 		(exclude_from_sim no)
-		(at 68.58 69.596 0)
+		(at 58.166 53.848 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 		)
-		(uuid "09d4580d-186d-47fe-bde9-c57a3e293c13")
+		(uuid "25f29845-efc4-4340-9a20-df71633fb0d7")
+	)
+	(text "R12, R13, R14, C21 form feedback circuitry. From MPS DCDC-Designer tool"
+		(exclude_from_sim no)
+		(at 239.014 41.148 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "32532756-4a4c-4277-a4fe-3e675a2e1203")
+	)
+	(text "R11, C18, C19 and D3 form bootstrapping circuitry. 1n4148 diode recommended by datasheet when dutycycle > 65%"
+		(exclude_from_sim no)
+		(at 166.37 32.766 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "528c6aee-f4b0-4b29-90b1-6e6ed5003074")
 	)
 	(text "Power LED"
 		(exclude_from_sim no)
@@ -2737,19 +2757,39 @@
 		)
 		(uuid "87ecef73-5413-4f43-9491-872c31735dbe")
 	)
-	(text "Bootstrapping diode recommended by datasheet, since duty cycle expected be > 65% when powered through USB"
+	(text "R15 is pullup resistor for BAT_STAT. LTC4412 pull down when current flows from USB"
 		(exclude_from_sim no)
-		(at 192.278 31.242 0)
+		(at 235.712 148.082 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 		)
-		(uuid "d3784af4-cd86-4cd6-a39c-067fd6f25f60")
+		(uuid "8eabadfd-f2a6-4a6b-ba1b-493056506b36")
+	)
+	(text "LTC4412 is ideal diode. Uses reference design from datasheet"
+		(exclude_from_sim no)
+		(at 67.564 164.846 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "997a6982-a2b9-4279-bc66-ed98bbeab001")
+	)
+	(text "MP2235S is switching regulator (buck converter)"
+		(exclude_from_sim no)
+		(at 138.938 18.796 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "d9c81c00-aa37-41d6-9739-b64f5b5c27de")
 	)
 	(text "DPDT switch because DPST switches with our power requirements were very expensive"
 		(exclude_from_sim no)
-		(at 57.658 77.978 0)
+		(at 55.626 60.198 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4079,7 +4119,7 @@
 			(uuid "016b58a5-7775-4ffd-92ae-74783c9a2e7c")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
 					(reference "D1")
 					(unit 1)
@@ -4211,7 +4251,7 @@
 			(uuid "09e78c0b-3554-4b00-98dd-ee8675b3a115")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
 					(reference "#PWR01")
 					(unit 1)
@@ -4277,7 +4317,7 @@
 			(uuid "c1ddff24-ff9b-48d5-bfa8-c9fd7ca1be95")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
 					(reference "#FLG04")
 					(unit 1)
@@ -4374,7 +4414,7 @@
 			(uuid "1894824e-44ba-439e-9785-34813a91944a")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
 					(reference "C20")
 					(unit 1)
@@ -4471,7 +4511,7 @@
 			(uuid "47c77f86-d758-4d61-b3e5-4dadbbcb92ca")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
 					(reference "C21")
 					(unit 1)
@@ -4826,7 +4866,7 @@
 			(uuid "cb60ba2e-e754-4b01-b0d8-da9b565a916b")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
 					(reference "R15")
 					(unit 1)
@@ -5117,7 +5157,7 @@
 			(uuid "35365da2-1fda-4bf2-81e9-3f5539140b3a")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
 					(reference "R1")
 					(unit 1)
@@ -5446,7 +5486,7 @@
 			(uuid "26dd07e4-147a-4434-83a2-253c6157d2aa")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
 					(reference "L4")
 					(unit 1)
@@ -6113,7 +6153,7 @@
 			(uuid "f74465f8-d85d-45c4-880d-f2477066822a")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
 					(reference "D3")
 					(unit 1)
@@ -6179,7 +6219,7 @@
 			(uuid "06b5d9bf-dd08-47e8-902c-6eeca573d5dc")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
 					(reference "#PWR052")
 					(unit 1)
@@ -6311,7 +6351,7 @@
 			(uuid "6e2204d8-ba29-41db-9236-7e4f197c66e1")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
 					(reference "#FLG07")
 					(unit 1)
@@ -7024,7 +7064,7 @@
 			(uuid "a6c4ff77-afd0-42d0-a088-a7e658c31f42")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
 					(reference "#PWR020")
 					(unit 1)
@@ -7117,7 +7157,7 @@
 			(uuid "61c26b3a-7975-45df-839e-605d9cfec4c4")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/718dca9f-314d-4628-afec-7956f3606013"
 					(reference "SW1")
 					(unit 1)
