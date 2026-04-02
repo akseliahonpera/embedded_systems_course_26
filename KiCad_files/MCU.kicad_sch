@@ -2181,8 +2181,8 @@
 		(uuid a5214fb2-ba99-4ed7-9052-5675f79b623d)
 	)
 	(rectangle
-		(start 59.055 220.98)
-		(end 62.23 235.585)
+		(start 51.562 220.599)
+		(end 54.737 235.204)
 		(stroke
 			(width 0)
 			(type default)
@@ -2193,8 +2193,8 @@
 		(uuid ad4472d5-ffc1-4846-a06b-b14f5c122fb2)
 	)
 	(rectangle
-		(start 52.07 220.98)
-		(end 58.42 235.585)
+		(start 68.961 220.726)
+		(end 75.311 235.331)
 		(stroke
 			(width 0)
 			(type default)
@@ -2215,6 +2215,16 @@
 			(type none)
 		)
 		(uuid f7f661d1-18e7-4f4d-bb5d-2e7f64022ad2)
+	)
+	(text "Priority 1 fixed pin uart connection"
+		(exclude_from_sim no)
+		(at 115.062 130.048 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "009e6451-3d43-4d8c-a420-e81578d62f7a")
 	)
 	(text "1 mm test pads"
 		(exclude_from_sim no)
@@ -2258,7 +2268,7 @@
 	)
 	(text "to power"
 		(exclude_from_sim no)
-		(at 60.198 230.886 90)
+		(at 52.705 230.505 90)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2318,7 +2328,7 @@
 	)
 	(text "UART\nto\nGNSS"
 		(exclude_from_sim no)
-		(at 54.864 231.394 0)
+		(at 71.882 232.664 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2482,15 +2492,11 @@
 	)
 	(no_connect
 		(at 144.78 125.73)
-		(uuid "0634b548-1624-4ee8-b353-1ccba12f8008")
+		(uuid "18478a02-b031-4ad8-9624-aaf767d8c300")
 	)
 	(no_connect
-		(at 144.78 123.19)
-		(uuid "1c6b0729-c2cf-4439-b59e-f174e99155a3")
-	)
-	(no_connect
-		(at 144.78 128.27)
-		(uuid "43963bf5-a08f-4eee-a471-97db14c8d811")
+		(at 144.78 120.65)
+		(uuid "19e39c2f-d551-465c-9833-404495a1cde0")
 	)
 	(no_connect
 		(at 194.31 92.71)
@@ -2499,6 +2505,10 @@
 	(no_connect
 		(at 194.31 95.25)
 		(uuid "5ab8f128-cb6d-45c5-8f50-eaaf76d1f34d")
+	)
+	(no_connect
+		(at 144.78 123.19)
+		(uuid "68d4c50a-e061-4e44-99e9-58995f4507b1")
 	)
 	(no_connect
 		(at 194.31 100.33)
@@ -2513,8 +2523,8 @@
 		(uuid "9dfdf4ba-e4cb-4841-8344-fae3c093182f")
 	)
 	(no_connect
-		(at 144.78 130.81)
-		(uuid "e3498bd8-9ad1-4aed-b885-cff8dba4a923")
+		(at 144.78 118.11)
+		(uuid "cbefe82a-95a9-486e-a6ba-3a90ebe6121c")
 	)
 	(no_connect
 		(at 194.31 130.81)
@@ -3964,17 +3974,6 @@
 		)
 		(uuid "221d19e1-6372-44d4-988f-0140e9325a8f")
 	)
-	(hierarchical_label "BAT_STAT"
-		(shape input)
-		(at 144.78 120.65 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "2a107c28-b897-4142-9366-0743ee4927cc")
-	)
 	(hierarchical_label "GNSS_HW_R"
 		(shape output)
 		(at 144.78 110.49 180)
@@ -4063,6 +4062,17 @@
 		)
 		(uuid "757821aa-57a6-4d65-b407-fd49e2639da6")
 	)
+	(hierarchical_label "UART_RX"
+		(shape input)
+		(at 144.78 130.81 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "950807f2-16ee-495c-8f52-16169586fca6")
+	)
 	(hierarchical_label "GNSS_TM"
 		(shape input)
 		(at 144.78 107.95 180)
@@ -4107,8 +4117,8 @@
 		)
 		(uuid "9fc24602-24fc-475f-bc09-e3ba63505a88")
 	)
-	(hierarchical_label "UART_TX"
-		(shape output)
+	(hierarchical_label "BAT_STAT"
+		(shape input)
 		(at 144.78 115.57 180)
 		(effects
 			(font
@@ -4116,18 +4126,7 @@
 			)
 			(justify right)
 		)
-		(uuid "a8dbabfd-8d3c-42b7-898b-8ac9f67a00c7")
-	)
-	(hierarchical_label "UART_RX"
-		(shape input)
-		(at 144.78 118.11 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "b00af15f-1877-43b4-a51a-1aba76d6fc21")
+		(uuid "aab19bb8-3737-43e2-b1a7-fb0f7f3a214e")
 	)
 	(hierarchical_label "IO40"
 		(shape bidirectional)
@@ -4205,6 +4204,17 @@
 			(justify left)
 		)
 		(uuid "d52e737b-85f6-4a46-95cc-914dad80cffc")
+	)
+	(hierarchical_label "UART_TX"
+		(shape output)
+		(at 144.78 128.27 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "e8915625-9341-4272-92ec-cd0f886d0e93")
 	)
 	(hierarchical_label "IMU_NRST"
 		(shape output)
