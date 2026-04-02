@@ -1565,7 +1565,7 @@
 			(uuid "516df1cb-6169-4de0-995e-d37ecdda862c")
 		)
 		(instances
-			(project ""
+			(project "esp"
 				(path "/186d5500-054c-4b47-a89c-85f6ce2abe33/e57caa54-6ff3-4f9e-a4cf-b739534fbed5"
 					(reference "J3")
 					(unit 1)
