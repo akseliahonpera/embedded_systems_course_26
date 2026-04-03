@@ -2491,12 +2491,16 @@
 		(uuid "f5f7c13a-385c-4945-9f16-875058980014")
 	)
 	(no_connect
-		(at 144.78 125.73)
-		(uuid "18478a02-b031-4ad8-9624-aaf767d8c300")
+		(at 144.78 107.95)
+		(uuid "00f285ee-7f13-4b4e-95b9-3a963896ad1f")
 	)
 	(no_connect
-		(at 144.78 120.65)
-		(uuid "19e39c2f-d551-465c-9833-404495a1cde0")
+		(at 144.78 115.57)
+		(uuid "1f465d3b-a4af-47a4-999a-d5b2ee859e26")
+	)
+	(no_connect
+		(at 144.78 113.03)
+		(uuid "534e1081-726b-40ad-b295-b68af9a7d19a")
 	)
 	(no_connect
 		(at 194.31 92.71)
@@ -2507,10 +2511,6 @@
 		(uuid "5ab8f128-cb6d-45c5-8f50-eaaf76d1f34d")
 	)
 	(no_connect
-		(at 144.78 123.19)
-		(uuid "68d4c50a-e061-4e44-99e9-58995f4507b1")
-	)
-	(no_connect
 		(at 194.31 100.33)
 		(uuid "82922265-6b29-46b5-b446-6de54eab250d")
 	)
@@ -2519,16 +2519,16 @@
 		(uuid "8acb1805-4161-4b8a-9419-b0b8f20d6745")
 	)
 	(no_connect
+		(at 144.78 110.49)
+		(uuid "937fa393-71ba-4f9e-88d5-ae88b9c957dd")
+	)
+	(no_connect
+		(at 144.78 105.41)
+		(uuid "9a16c1b5-7c98-48de-aa70-a116e265cf20")
+	)
+	(no_connect
 		(at 194.31 97.79)
 		(uuid "9dfdf4ba-e4cb-4841-8344-fae3c093182f")
-	)
-	(no_connect
-		(at 144.78 118.11)
-		(uuid "cbefe82a-95a9-486e-a6ba-3a90ebe6121c")
-	)
-	(no_connect
-		(at 194.31 130.81)
-		(uuid "fb4be213-2f29-4cfc-bd98-8c2299f66d22")
 	)
 	(wire
 		(pts
@@ -3963,6 +3963,17 @@
 		)
 		(uuid "17f7a6c7-70fc-4e71-bd01-8b652877c028")
 	)
+	(hierarchical_label "GNSS_TM"
+		(shape input)
+		(at 144.78 123.19 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "1a335f67-b6f5-4f97-aab5-2474ace9ee29")
+	)
 	(hierarchical_label "IO39"
 		(shape bidirectional)
 		(at 194.31 113.03 0)
@@ -3974,17 +3985,6 @@
 		)
 		(uuid "221d19e1-6372-44d4-988f-0140e9325a8f")
 	)
-	(hierarchical_label "GNSS_HW_R"
-		(shape output)
-		(at 144.78 110.49 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "35283952-0464-42fd-8f90-e9a850166933")
-	)
 	(hierarchical_label "IO36"
 		(shape bidirectional)
 		(at 194.31 105.41 0)
@@ -3995,17 +3995,6 @@
 			(justify left)
 		)
 		(uuid "43738fe9-1744-47d8-85df-01da3caace6b")
-	)
-	(hierarchical_label "GNSS_FIX"
-		(shape input)
-		(at 144.78 105.41 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "4b1eb92a-8e87-45eb-9f45-30b9e46f7fe0")
 	)
 	(hierarchical_label "IMU_BOOTN"
 		(shape output)
@@ -4029,6 +4018,17 @@
 		)
 		(uuid "541c8870-4fa9-4084-8806-703735eb6b67")
 	)
+	(hierarchical_label "BAT_STAT"
+		(shape input)
+		(at 194.31 130.81 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "59023bbe-e128-42f7-a56b-2dc929fefc61")
+	)
 	(hierarchical_label "IO38"
 		(shape bidirectional)
 		(at 194.31 110.49 0)
@@ -4040,6 +4040,17 @@
 		)
 		(uuid "5bbd04d0-acf9-4764-8535-e1b9024e617c")
 	)
+	(hierarchical_label "GNSS_HW_R"
+		(shape output)
+		(at 144.78 125.73 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "67bbb090-4fd7-4204-af01-a37e16afe46b")
+	)
 	(hierarchical_label "IO42"
 		(shape bidirectional)
 		(at 194.31 120.65 0)
@@ -4050,6 +4061,17 @@
 			(justify left)
 		)
 		(uuid "67ca5a0b-1355-40f7-8f46-efe173a5d418")
+	)
+	(hierarchical_label "GNSS_FIX"
+		(shape input)
+		(at 144.78 120.65 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "6965ac2c-95fa-47c7-b3d7-99b0633c7a0b")
 	)
 	(hierarchical_label "USB_D-"
 		(shape bidirectional)
@@ -4073,28 +4095,6 @@
 		)
 		(uuid "950807f2-16ee-495c-8f52-16169586fca6")
 	)
-	(hierarchical_label "GNSS_TM"
-		(shape input)
-		(at 144.78 107.95 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "965d949e-f9eb-46db-9001-db5e79ff460a")
-	)
-	(hierarchical_label "GNSS_HW_S"
-		(shape output)
-		(at 144.78 113.03 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "98f8093e-8a97-4a94-a344-5be9e0e73e2f")
-	)
 	(hierarchical_label "IO37"
 		(shape bidirectional)
 		(at 194.31 107.95 0)
@@ -4116,17 +4116,6 @@
 			(justify left)
 		)
 		(uuid "9fc24602-24fc-475f-bc09-e3ba63505a88")
-	)
-	(hierarchical_label "BAT_STAT"
-		(shape input)
-		(at 144.78 115.57 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "aab19bb8-3737-43e2-b1a7-fb0f7f3a214e")
 	)
 	(hierarchical_label "IO40"
 		(shape bidirectional)
@@ -4193,6 +4182,17 @@
 			(justify left)
 		)
 		(uuid "ccece2c0-4579-43bc-b77e-924d95d4b02c")
+	)
+	(hierarchical_label "GNSS_HW_S"
+		(shape output)
+		(at 144.78 118.11 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "cda2748f-47cb-4573-a0d7-67fb11731795")
 	)
 	(hierarchical_label "IO43"
 		(shape bidirectional)
