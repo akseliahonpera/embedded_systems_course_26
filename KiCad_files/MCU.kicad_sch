@@ -3952,6 +3952,28 @@
 			"RU5ErkJggg=="
 		)
 	)
+	(hierarchical_label "UART_TX"
+		(shape output)
+		(at 144.78 120.65 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "023ab4d1-45dd-4a4a-8efa-01ebbaf467f2")
+	)
+	(hierarchical_label "GNSS_TM"
+		(shape input)
+		(at 144.78 128.27 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "08717f95-eb82-4e48-b914-d842dbbb1a94")
+	)
 	(hierarchical_label "BAROMETER_INT"
 		(shape input)
 		(at 144.78 102.87 180)
@@ -3963,17 +3985,6 @@
 		)
 		(uuid "17f7a6c7-70fc-4e71-bd01-8b652877c028")
 	)
-	(hierarchical_label "GNSS_TM"
-		(shape input)
-		(at 144.78 123.19 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "1a335f67-b6f5-4f97-aab5-2474ace9ee29")
-	)
 	(hierarchical_label "IO39"
 		(shape bidirectional)
 		(at 194.31 113.03 0)
@@ -3984,6 +3995,17 @@
 			(justify left)
 		)
 		(uuid "221d19e1-6372-44d4-988f-0140e9325a8f")
+	)
+	(hierarchical_label "GNSS_HW_R"
+		(shape output)
+		(at 144.78 130.81 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "3d588790-0395-4d55-8233-268a38795a02")
 	)
 	(hierarchical_label "IO36"
 		(shape bidirectional)
@@ -4040,17 +4062,6 @@
 		)
 		(uuid "5bbd04d0-acf9-4764-8535-e1b9024e617c")
 	)
-	(hierarchical_label "GNSS_HW_R"
-		(shape output)
-		(at 144.78 125.73 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "67bbb090-4fd7-4204-af01-a37e16afe46b")
-	)
 	(hierarchical_label "IO42"
 		(shape bidirectional)
 		(at 194.31 120.65 0)
@@ -4062,17 +4073,6 @@
 		)
 		(uuid "67ca5a0b-1355-40f7-8f46-efe173a5d418")
 	)
-	(hierarchical_label "GNSS_FIX"
-		(shape input)
-		(at 144.78 120.65 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "6965ac2c-95fa-47c7-b3d7-99b0633c7a0b")
-	)
 	(hierarchical_label "USB_D-"
 		(shape bidirectional)
 		(at 194.31 87.63 0)
@@ -4083,17 +4083,6 @@
 			(justify left)
 		)
 		(uuid "757821aa-57a6-4d65-b407-fd49e2639da6")
-	)
-	(hierarchical_label "UART_RX"
-		(shape input)
-		(at 144.78 130.81 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "950807f2-16ee-495c-8f52-16169586fca6")
 	)
 	(hierarchical_label "IO37"
 		(shape bidirectional)
@@ -4194,6 +4183,17 @@
 		)
 		(uuid "cda2748f-47cb-4573-a0d7-67fb11731795")
 	)
+	(hierarchical_label "UART_RX"
+		(shape input)
+		(at 144.78 123.19 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "d2822836-42be-4fc9-a1f7-d8b69887b89a")
+	)
 	(hierarchical_label "IO43"
 		(shape bidirectional)
 		(at 194.31 80.01 0)
@@ -4205,17 +4205,6 @@
 		)
 		(uuid "d52e737b-85f6-4a46-95cc-914dad80cffc")
 	)
-	(hierarchical_label "UART_TX"
-		(shape output)
-		(at 144.78 128.27 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "e8915625-9341-4272-92ec-cd0f886d0e93")
-	)
 	(hierarchical_label "IMU_NRST"
 		(shape output)
 		(at 144.78 97.79 180)
@@ -4226,6 +4215,17 @@
 			(justify right)
 		)
 		(uuid "f8b57dbe-56a7-4a8e-bde8-0be67eb18723")
+	)
+	(hierarchical_label "GNSS_FIX"
+		(shape input)
+		(at 144.78 125.73 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "fd6049ed-00d7-46db-a106-d15781f406cc")
 	)
 	(symbol
 		(lib_id "Connector:TestPoint")
