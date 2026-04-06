@@ -2495,10 +2495,6 @@
 		(uuid "00f285ee-7f13-4b4e-95b9-3a963896ad1f")
 	)
 	(no_connect
-		(at 144.78 115.57)
-		(uuid "1f465d3b-a4af-47a4-999a-d5b2ee859e26")
-	)
-	(no_connect
 		(at 144.78 113.03)
 		(uuid "534e1081-726b-40ad-b295-b68af9a7d19a")
 	)
@@ -2529,6 +2525,10 @@
 	(no_connect
 		(at 194.31 97.79)
 		(uuid "9dfdf4ba-e4cb-4841-8344-fae3c093182f")
+	)
+	(no_connect
+		(at 144.78 102.87)
+		(uuid "b4ab41d1-df37-4945-98ed-b42a7742cf57")
 	)
 	(wire
 		(pts
@@ -3974,17 +3974,6 @@
 		)
 		(uuid "08717f95-eb82-4e48-b914-d842dbbb1a94")
 	)
-	(hierarchical_label "BAROMETER_INT"
-		(shape input)
-		(at 144.78 102.87 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "17f7a6c7-70fc-4e71-bd01-8b652877c028")
-	)
 	(hierarchical_label "IO39"
 		(shape bidirectional)
 		(at 194.31 113.03 0)
@@ -4127,6 +4116,17 @@
 			(justify right)
 		)
 		(uuid "b069f637-4c61-46f9-9d6c-a39808bcd0cc")
+	)
+	(hierarchical_label "BAROMETER_INT"
+		(shape input)
+		(at 144.78 115.57 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "b938cd74-870b-405b-b143-18204f36d6d4")
 	)
 	(hierarchical_label "IMU_INT"
 		(shape input)
