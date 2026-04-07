@@ -59,7 +59,7 @@
     "ssh_key": ""
   },
   "meta": {
-    "filename": "powersupply.kicad_prl",
+    "filename": "esp.imu_pcb_v1.kicad_prl",
     "version": 5
   },
   "net_inspector_panel": {
