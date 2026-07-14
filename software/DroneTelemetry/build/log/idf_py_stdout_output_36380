@@ -1,0 +1,121 @@
+[0;32mI (108) esp_image: segment 1: paddr=0001bc68 vaddr=3fc929ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x403785c2
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x178c
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xcb8
+load:0x403cb700,len:0x2db0
+entry 0x403c8914
+[0;32mI (26) boot: ESP-IDF v5.3.1-dirty 2nd stage bootloader[0m
+[0;32mI (27) boot: compile time Jul 14 2026 14:57:20[0m
+[0;32mI (27) boot: Multicore bootloader[0m
+[0;32mI (30) boot: chip revision: v0.2[0m
+[0;32mI (34) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (39) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (44) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (48) boot: Enabling RNG early entropy source...[0m
+[0;32mI (54) boot: Partition Table:[0m
+[0;32mI (57) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (65) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (72) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (79) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (87) boot: End of partition table[0m
+[0;32mI (91) esp_image: segment 0: paddr=00010020 vaddr=3c020020 size=0bc40h ( 48192) map[0m
+[0;32mI (108) esp_image: segment 1: paddr=0001bc68 vaddr=3fc92900 size=02a64h ( 10852) load[0m
+[0;32mI (111) esp_image: segment 2: paddr=0001e6d4 vaddr=40374000 size=01944h (  6468) load[0m
+[0;32mI (118) esp_image: segment 3: paddr=00020020 vaddr=42000020 size=1c320h (115488) map[0m
+[0;32mI (146) esp_image: segment 4: paddr=0003c348 vaddr=40375944 size=0ceb8h ( 52920) load[0m
+[0;32mI (164) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (164) boot: Disabling RNG early entropy source...[0m
+[0;32mI (176) cpu_start: Multicore app[0m
+[0;32mI (185) cpu_start: Pro cpu start user code[0m
+[0;32mI (185) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (185) app_init: Application information:[0m
+[0;32mI (188) app_init: Project name:     DroneTelemetry[0m
+[0;32mI (193) app_init: App version:      227b841-dirty[0m
+[0;32mI (199) app_init: Compile time:     Jul 14 2026 14:57:02[0m
+[0;32mI (205) app_init: ELF file SHA256:  982e9931c...[0m
+[0;32mI (210) app_init: ESP-IDF:          v5.3.1-dirty[0m
+[0;32mI (215) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (220) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (225) efuse_init: Chip rev:         v0.2[0m
+[0;32mI (230) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (237) heap_init: At 3FC95C58 len 00053AB8 (334 KiB): RAM[0m
+[0;32mI (243) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (249) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (255) heap_init: At 600FE100 len 00001EE8 (7 KiB): RTCRAM[0m
+[0;32mI (263) spi_flash: detected chip: gd[0m
+[0;32mI (266) spi_flash: flash io: dio[0m
+[0;33mW (270) spi_flash: Detected size(8192k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (283) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (290) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (297) main_task: Started on CPU0[0m
+[0;32mI (307) main_task: Calling app_main()[0m
+[0;32mI (307) MAIN: Älkää välittäkö pull-up varotuksesta, esp valittaa tästä aina jos sisäset pullupit disabloidaan, koska se ei voi tietää onko ulkosia pull-uppeja.[0m
+[0;33mW (3317) i2c.master: Please check pull-up resistances whether be connected properly. Otherwise unexpected behavior would happen. For more detailed information, please read docs[0m
+[0;32mI (3317) gpio: GPIO[8]| InputEn: 1| OutputEn: 1| OpenDrain: 1| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (3327) gpio: GPIO[9]| InputEn: 1| OutputEn: 1| OpenDrain: 1| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (5377) MAIN: Pressure: 101454.36 Pa (1014.54 hPa), Temperature: 28.37 C[0m
+[0;32mI (6377) MAIN: Pressure: 101454.62 Pa (1014.55 hPa), Temperature: 28.27 C[0m
+[0;32mI (7377) MAIN: Pressure: 101454.52 Pa (1014.55 hPa), Temperature: 28.24 C[0m
+[0;32mI (8377) MAIN: Pressure: 101455.27 Pa (1014.55 hPa), Temperature: 28.24 C[0m
+[0;32mI (9377) MAIN: Pressure: 101454.77 Pa (1014.55 hPa), Temperature: 28.24 C[0m
+[0;32mI (10377) MAIN: Pressure: 101454.48 Pa (1014.54 hPa), Temperature: 28.24 C[0m
+[0;32mI (11377) MAIN: Pressure: 101454.36 Pa (1014.54 hPa), Temperature: 28.22 C[0m
+[0;32mI (12377) MAIN: Pressure: 101454.41 Pa (1014.54 hPa), Temperature: 28.23 C[0m
+[0;32mI (13377) MAIN: Pressure: 101454.55 Pa (1014.55 hPa), Temperature: 28.21 C[0m
+[0;32mI (14377) MAIN: Pressure: 101454.44 Pa (1014.54 hPa), Temperature: 28.21 C[0m
+[0;32mI (15377) MAIN: Pressure: 101455.00 Pa (1014.55 hPa), Temperature: 28.22 C[0m
+[0;32mI (16377) MAIN: Pressure: 101452.53 Pa (1014.53 hPa), Temperature: 28.20 C[0m
+[0;32mI (17377) MAIN: Pressure: 101452.03 Pa (1014.52 hPa), Temperature: 28.21 C[0m
+[0;32mI (18377) MAIN: Pressure: 101452.17 Pa (1014.52 hPa), Temperature: 28.23 C[0m
+[0;32mI (19377) MAIN: Pressure: 101454.39 Pa (1014.54 hPa), Temperature: 28.20 C[0m
+[0;32mI (20377) MAIN: Pressure: 101455.05 Pa (1014.55 hPa), Temperature: 28.22 C[0m
+[0;32mI (21377) MAIN: Pressure: 101455.00 Pa (1014.55 hPa), Temperature: 28.20 C[0m
+[0;32mI (22377) MAIN: Pressure: 101454.95 Pa (1014.55 hPa), Temperature: 28.18 C[0m
+[0;32mI (23377) MAIN: Pressure: 101455.97 Pa (1014.56 hPa), Temperature: 28.18 C[0m
+[0;32mI (24377) MAIN: Pressure: 101456.30 Pa (1014.56 hPa), Temperature: 28.17 C[0m
+[0;32mI (25377) MAIN: Pressure: 101455.95 Pa (1014.56 hPa), Temperature: 28.15 C[0m
+[0;32mI (26377) MAIN: Pressure: 101456.02 Pa (1014.56 hPa), Temperature: 28.16 C[0m
+[0;32mI (27377) MAIN: Pressure: 101455.77 Pa (1014.56 hPa), Temperature: 28.16 C[0m
+[0;32mI (28377) MAIN: Pressure: 101455.84 Pa (1014.56 hPa), Temperature: 28.14 C[0m
+[0;32mI (29377) MAIN: Pressure: 101457.77 Pa (1014.58 hPa), Temperature: 28.16 C[0m
+[0;32mI (30377) MAIN: Pressure: 101457.31 Pa (1014.57 hPa), Temperature: 28.14 C[0m
+[0;32mI (31377) MAIN: Pressure: 101456.64 Pa (1014.57 hPa), Temperature: 28.12 C[0m
+[0;32mI (32377) MAIN: Pressure: 101456.75 Pa (1014.57 hPa), Temperature: 28.13 C[0m
+[0;32mI (33377) MAIN: Pressure: 101456.41 Pa (1014.56 hPa), Temperature: 28.14 C[0m
+[0;32mI (34377) MAIN: Pressure: 101456.42 Pa (1014.56 hPa), Temperature: 28.13 C[0m
+[0;32mI (35377) MAIN: Pressure: 101456.53 Pa (1014.57 hPa), Temperature: 28.14 C[0m
+[0;32mI (36377) MAIN: Pressure: 101456.66 Pa (1014.57 hPa), Temperature: 28.14 C[0m
+[0;32mI (37377) MAIN: Pressure: 101454.62 Pa (1014.55 hPa), Temperature: 28.13 C[0m
+[0;32mI (38377) MAIN: Pressure: 101452.00 Pa (1014.52 hPa), Temperature: 28.11 C[0m
+[0;32mI (39377) MAIN: Pressure: 101449.48 Pa (1014.49 hPa), Temperature: 28.11 C[0m
+[0;32mI (40377) MAIN: Pressure: 101448.91 Pa (1014.49 hPa), Temperature: 28.13 C[0m
+[0;32mI (41377) MAIN: Pressure: 101448.53 Pa (1014.49 hPa), Temperature: 28.13 C[0m
+[0;32mI (42377) MAIN: Pressure: 101448.75 Pa (1014.49 hPa), Temperature: 28.14 C[0m
+[0;32mI (43377) MAIN: Pressure: 101449.36 Pa (1014.49 hPa), Temperature: 28.15 C[0m
+[0;32mI (44377) MAIN: Pressure: 101450.69 Pa (1014.51 hPa), Temperature: 28.15 C[0m
+[0;32mI (45377) MAIN: Pressure: 101453.56 Pa (1014.54 hPa), Temperature: 28.13 C[0m
+[0;32mI (46377) MAIN: Pressure: 101455.56 Pa (1014.56 hPa), Temperature: 28.13 C[0m
+[0;32mI (47377) MAIN: Pressure: 101456.45 Pa (1014.56 hPa), Temperature: 28.12 C[0m
+[0;32mI (48377) MAIN: Pressure: 101456.62 Pa (1014.57 hPa), Temperature: 28.08 C[0m
+[0;32mI (49377) MAIN: Pressure: 101456.38 Pa (1014.56 hPa), Temperature: 28.06 C[0m
+[0;32mI (50377) MAIN: Pressure: 101456.41 Pa (1014.56 hPa), Temperature: 28.04 C[0m
+[0;32mI (51377) MAIN: Pressure: 101454.53 Pa (1014.55 hPa), Temperature: 28.02 C[0m
+[0;32mI (52377) MAIN: Pressure: 101450.77 Pa (1014.51 hPa), Temperature: 27.99 C[0m
+[0;32mI (53377) MAIN: Pressure: 101448.34 Pa (1014.48 hPa), Temperature: 28.01 C[0m
+[0;32mI (54377) MAIN: Pressure: 101446.55 Pa (1014.47 hPa), Temperature: 28.01 C[0m
+[0;32mI (55377) MAIN: Pressure: 101446.98 Pa (1014.47 hPa), Temperature: 28.02 C[0m
+[0;32mI (56377) MAIN: Pressure: 101447.59 Pa (1014.48 hPa), Temperature: 28.02 C[0m
+[0;32mI (57377) MAIN: Pressure: 101450.53 Pa (1014.51 hPa), Temperature: 28.03 C[0m
+[0;32mI (58377) MAIN: Pressure: 101452.88 Pa (1014.53 hPa), Temperature: 28.02 C[0m
+[0;32mI (59377) MAIN: Pressure: 101455.41 Pa (1014.55 hPa), Temperature: 28.02 C[0m
+[0;32mI (60377) MAIN: Pressure: 101456.45 Pa (1014.56 hPa), Temperature: 28.01 C[0m
+[0;32mI (61377) MAIN: Pressure: 101455.73 Pa (1014.56 hPa), Temperature: 28.00 C[0m
+[0;32mI (62377) MAIN: Pressure: 101455.72 Pa (1014.56 hPa), Temperature: 28.00 C[0m
+[0;32mI (63377) MAIN: Pressure: 101456.02 Pa (1014.56 hPa), Temperature: 27.99 C[0m
+[0;32mI (64377) MAIN: Pressure: 101456.20 Pa (1014.56 hPa), Temperature: 27.99 C[0m
+[0;32mI (65377) MAIN: Pressure: 101456.17 Pa (1014.56 hPa), Temperature: 27.98 C[0m
