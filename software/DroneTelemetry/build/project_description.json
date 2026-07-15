@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "DroneTelemetry",
-    "project_version":    "95a45f1-dirty",
+    "project_version":    "db7adb3-dirty",
     "project_path":       "C:/Users/JONIK/embedded_systems_project/software/DroneTelemetry",
     "idf_path":           "C:/Espressif/frameworks/esp-idf-v5.3.1",
     "build_dir":          "C:/Users/JONIK/embedded_systems_project/software/DroneTelemetry/build",

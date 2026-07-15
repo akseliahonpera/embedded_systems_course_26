@@ -51,10 +51,10 @@ BMP5_INTF_RET_TYPE bmp581_i2c_write(
 {
     (void)intf_ptr;
 
-    uint8_t tx[len + 1];
+    uint8_t tx[len + 1]; // sized for data plus register address
 
     tx[0] = reg_addr;
-    memcpy(&tx[1], reg_data, len);
+    memcpy(&tx[1], reg_data, len); // copy data into buffer
 
     esp_err_t err = i2c_master_transmit(
         bmp581_dev,

@@ -5,6 +5,7 @@
 
 static const char *TAG = "BAROMETER";
 
+// API device from bmp5_defs.h. Callbacks go into member variables.
 static struct bmp5_dev bmp_dev;
 static struct bmp5_osr_odr_press_config osr_odr_press_cfg;
 
@@ -18,6 +19,7 @@ esp_err_t barometer_init(i2c_master_bus_handle_t bus, uint32_t freq)
                         TAG,
                         "BMP581 reset failed");
 
+    // Tässä laitetaan callbackit HALista (bmp581_port.h) API-laitteeseen
     bmp_dev.intf = BMP5_I2C_INTF;
     bmp_dev.read = bmp581_i2c_read;
     bmp_dev.write = bmp581_i2c_write;

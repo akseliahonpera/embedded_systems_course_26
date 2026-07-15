@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BMP581_PORT_H
+#define BMP581_PORT_H
 
 #include "esp_err.h"
 #include "driver/i2c_master.h"
@@ -51,3 +52,5 @@ BMP5_INTF_RET_TYPE bmp581_i2c_write(
 void bmp581_delay_us(uint32_t period_us, void *intf_ptr);
 
 esp_err_t bmp581_soft_reset(void);
+
+#endif
