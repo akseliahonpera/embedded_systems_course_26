@@ -9,6 +9,10 @@ idf_component_register(
 
         "imu/sh2.c"
         "imu/bno085_port.c"
+        "imu/imu.c"
+        "imu/sh2_SensorValue.c"
+        "imu/shtp.c"
+        "imu/sh2_util.c"
 
     INCLUDE_DIRS
         "."

@@ -13,6 +13,9 @@
 #define BNO085_ADDR 0x4A
 #define BNO085_TIMEOUT_MS 1000
 
+// size of SHTP header
+#define HEADER_SIZE 4
+
 static i2c_master_dev_handle_t bno085_dev = NULL;
 
 esp_err_t bno085_port_init(i2c_master_bus_handle_t bus, uint32_t i2c_freq_hz)
@@ -81,24 +84,40 @@ static int hal_read(sh2_Hal_t *self,
                     unsigned len,
                     uint32_t *timestamp_us)
 {
+    // Read first 4 bytes to check packet header
     esp_err_t err = i2c_master_receive(
         bno085_dev,
         buffer,
-        SH2_HAL_MAX_TRANSFER_IN,
+        4,
         BNO085_TIMEOUT_MS);
 
     if (err != ESP_OK)
         return 0;
 
-    uint16_t packetLength =
+    // decode packet length
+    uint16_t packet_length =
         ((uint16_t)buffer[1] << 8 | buffer[0]) & 0x7FFF;
 
-    if (packetLength > len)
+    if (packet_length < HEADER_SIZE || packet_length > len || packet_length > SH2_HAL_MAX_TRANSFER_IN)
+    {
+        return 0;
+    }
+
+    // receive packet_length size i2c transaction
+    err = i2c_master_receive(
+        bno085_dev,
+        buffer,
+        packet_length,
+        BNO085_TIMEOUT_MS);
+
+    if (err != ESP_OK)
         return 0;
 
-    *timestamp_us = esp_timer_get_time();
+    if (timestamp_us != NULL) {
+        *timestamp_us = hal_getTimeUs(self);
+    }
 
-    return packetLength;
+    return packet_length;
 }
 
 // Global HAL object
