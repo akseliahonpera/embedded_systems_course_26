@@ -17,7 +17,7 @@ static const char *TAG = "MAIN";
 
 void app_main(void)
 {
-    ESP_LOGI(TAG, "Älkää välittäkö pull-up varotuksesta...");
+    ESP_LOGI(TAG, "Älkää välittäkö pull-up varotuksesta");
 
     i2c_master_bus_handle_t i2c_bus = NULL;
 
@@ -34,7 +34,6 @@ void app_main(void)
     // Initialize the shared I2C bus
     ESP_ERROR_CHECK(i2c_new_master_bus(&bus_cfg, &i2c_bus));
 
-    // 1. Give the entire hardware bus time to stabilize
     vTaskDelay(pdMS_TO_TICKS(100));
 
     /* Initialize the barometer first */
@@ -42,35 +41,30 @@ void app_main(void)
     ESP_ERROR_CHECK(barometer_init(i2c_bus, I2C_FREQ_HZ));
     ESP_LOGI(TAG, "Barometer initialized successfully.");
 
-    // 2. CRUCIAL COOLDOWN DELAY
-    // Let the barometer finish its boot up cycles and release its I2C hold
-    vTaskDelay(pdMS_TO_TICKS(500));
 
-    /* Initialize the IMU */
-    ESP_LOGI(TAG, "Initializing IMU...");
-    ESP_ERROR_CHECK(imu_init(i2c_bus));
-    ESP_LOGI(TAG, "IMU initialized successfully.");
+    vTaskDelay(pdMS_TO_TICKS(100));
+
+    // /* Initialize the IMU */
+    // ESP_LOGI(TAG, "Initializing IMU...");
+    // ESP_ERROR_CHECK(imu_init(i2c_bus));
+    // ESP_LOGI(TAG, "IMU initialized successfully.");
+
 
     while (1)
     {
+        float pressure;
+        float temperature;
+
+        if (barometer_read(&pressure, &temperature) == ESP_OK)
+        {
+            ESP_LOGI(TAG,
+                     "Pressure: %.2f Pa (%.2f hPa), Temperature: %.2f C",
+                     pressure,
+                     pressure / 100.0f,
+                     temperature);
+        }
+
         vTaskDelay(pdMS_TO_TICKS(1000));
+
     }
-
-    // while (1)
-    // {
-    //     float pressure;
-    //     float temperature;
-
-    //     if (barometer_read(&pressure, &temperature) == ESP_OK)
-    //     {
-    //         ESP_LOGI(TAG,
-    //                  "Pressure: %.2f Pa (%.2f hPa), Temperature: %.2f C",
-    //                  pressure,
-    //                  pressure / 100.0f,
-    //                  temperature);
-    //     }
-
-    //     vTaskDelay(pdMS_TO_TICKS(1000));
-
-    // }
 }
