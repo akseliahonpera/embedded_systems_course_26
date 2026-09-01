@@ -28,7 +28,6 @@ esp_err_t bno085_port_init(i2c_master_bus_handle_t bus,
                            gpio_num_t nrst_gpio,
                            gpio_num_t bootn_gpio)
 {
-    printf("bno085_port_init \n");
     if (bno085_dev != NULL) {
         return ESP_ERR_INVALID_STATE;
     }
@@ -66,15 +65,12 @@ esp_err_t bno085_port_init(i2c_master_bus_handle_t bus,
 
 bool bno085_port_data_ready(void)
 {
-    printf("port_data_ready \n");
     int hint = gpio_get_level(bno085_hint_gpio);
-    ESP_LOGI("BNO085", "HINT=%d", hint);
-    return bno085_dev != NULL && gpio_get_level(bno085_hint_gpio) == 0;
+    return bno085_dev != NULL && hint == 0;
 }
 
 static int hal_open(sh2_Hal_t *self)
 {
-    printf("hal_open \n");
     (void)self;
 
     /* BOOTN high selects normal SH-2 firmware, rather than the bootloader. */
@@ -84,27 +80,23 @@ static int hal_open(sh2_Hal_t *self)
     esp_rom_delay_us(100000);
     gpio_set_level(bno085_nrst_gpio, 1);
     esp_rom_delay_us(100000);
-    printf("hal_open complete \n");
     return SH2_OK;
 }
 
 static void hal_close(sh2_Hal_t *self)
 {
-    printf("hal_close \n");
     (void)self;
     gpio_set_level(bno085_nrst_gpio, 0);
 }
 
 static uint32_t hal_get_time_us(sh2_Hal_t *self)
 {
-    printf("hal_get_time_us \n");
     (void)self;
     return (uint32_t)esp_timer_get_time();
 }
 
 static int hal_write(sh2_Hal_t *self, uint8_t *buffer, unsigned len)
 {
-    printf("hal_write \n");
     (void)self;
     if (bno085_dev == NULL || len == 0 || len > SH2_HAL_MAX_TRANSFER_OUT) {
         return 0;
@@ -118,28 +110,25 @@ static int hal_write(sh2_Hal_t *self, uint8_t *buffer, unsigned len)
 static int hal_read(sh2_Hal_t *self, uint8_t *buffer, unsigned len,
                     uint32_t *timestamp_us)
 {
-    printf("hal_read \n");
     if (!bno085_port_data_ready() || len < SHTP_HEADER_SIZE) {
         return 0;
     }
 
-    ESP_LOGI("BNO085", "before: SDA=%d SCL=%d",
-         gpio_get_level(GPIO_NUM_8),
-         gpio_get_level(GPIO_NUM_9));
+    ESP_LOGI("BNO085", "before header: HINT=%d",
+         gpio_get_level(bno085_hint_gpio));
 
     esp_err_t err = i2c_master_receive(bno085_dev, buffer, SHTP_HEADER_SIZE,
                                        BNO085_TIMEOUT_MS);
 
-    ESP_LOGI("BNO085", "after:  SDA=%d SCL=%d err=%s",
-         gpio_get_level(GPIO_NUM_8),
-         gpio_get_level(GPIO_NUM_9),
-         esp_err_to_name(err));
+    ESP_LOGI("BNO085", "after header: HINT=%d",
+         gpio_get_level(bno085_hint_gpio));
 
     if (err != ESP_OK) {
         ESP_LOGE("BNO085", "header read failed: %s", esp_err_to_name(err));
         return 0;
     }
 
+    
     const uint16_t packet_length =
         (((uint16_t)buffer[1] << 8) | buffer[0]) & 0x7FFF;
     if (packet_length < SHTP_HEADER_SIZE || packet_length > len ||
@@ -147,14 +136,26 @@ static int hal_read(sh2_Hal_t *self, uint8_t *buffer, unsigned len,
         return 0;
     }
 
+    ESP_LOGI("BNO085", "header: %02X %02X %02X %02X, len=%u channel=%u seq=%u",
+         buffer[0], buffer[1], buffer[2], buffer[3],
+         packet_length, buffer[2], buffer[3]);
+
+    ESP_LOGI("BNO085", "before payload: HINT=%d",
+        gpio_get_level(bno085_hint_gpio));
+
     const uint16_t payload_length = packet_length - SHTP_HEADER_SIZE;
+    ESP_LOGI("BNO085", "reading payload: %u bytes", payload_length);
     if (payload_length > 0) {
         err = i2c_master_receive(bno085_dev, buffer + SHTP_HEADER_SIZE,
                                  payload_length, BNO085_TIMEOUT_MS);
         if (err != ESP_OK) {
+            ESP_LOGE("BNO085", "payload read failed: %s", esp_err_to_name(err));
             return 0;
         }
     }
+
+    ESP_LOGI("BNO085", "after payload: HINT=%d",
+         gpio_get_level(bno085_hint_gpio));
 
     if (timestamp_us != NULL) {
         *timestamp_us = hal_get_time_us(self);
