@@ -39,6 +39,7 @@ static void IRAM_ATTR hint_isr_handler(void *arg)
 
 static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
 {
+    printf("imu.c: sensor_event_handler \n");
     (void)cookie;
     sh2_SensorValue_t value;
 
@@ -57,6 +58,7 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
 
 static void sh2_event_handler(void *cookie, sh2_AsyncEvent_t *event)
 {
+    printf("imu.c: sh2_event_handler \n");
     (void)cookie;
     if (event->eventId == SH2_RESET) {
         imu_reset_complete = true;
@@ -66,6 +68,7 @@ static void sh2_event_handler(void *cookie, sh2_AsyncEvent_t *event)
 
 static void imu_task(void *arg)
 {
+    printf("imu.c: imu_task \n");
     (void)arg;
 
     for (;;) {
@@ -79,6 +82,7 @@ static void imu_task(void *arg)
 
 esp_err_t imu_init(i2c_master_bus_handle_t i2c_handle)
 {
+    printf("imu.c: imu_init \n");
     ESP_RETURN_ON_ERROR(bno085_port_init(i2c_handle, BNO085_HINT_GPIO,
                                          BNO085_NRST_GPIO, BNO085_BOOTN_GPIO),
                         TAG, "BNO085 port initialization failed");

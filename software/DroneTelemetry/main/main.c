@@ -36,10 +36,10 @@ void app_main(void)
 
     vTaskDelay(pdMS_TO_TICKS(100));
 
-    /* Initialize the barometer first */
-    ESP_LOGI(TAG, "Initializing Barometer...");
-    ESP_ERROR_CHECK(barometer_init(i2c_bus, I2C_FREQ_HZ));
-    ESP_LOGI(TAG, "Barometer initialized successfully.");
+    // /* Initialize the barometer first */
+    // ESP_LOGI(TAG, "Initializing Barometer...");
+    // ESP_ERROR_CHECK(barometer_init(i2c_bus, I2C_FREQ_HZ));
+    // ESP_LOGI(TAG, "Barometer initialized successfully.");
 
 
     vTaskDelay(pdMS_TO_TICKS(100));
@@ -59,17 +59,17 @@ void app_main(void)
 
     while (1)
     {
-        float pressure;
-        float temperature;
+        // float pressure;
+        // float temperature;
 
-        if (barometer_read(&pressure, &temperature) == ESP_OK)
-        {
-            ESP_LOGI(TAG,
-                     "Pressure: %.2f Pa (%.2f hPa), Temperature: %.2f C",
-                     pressure,
-                     pressure / 100.0f,
-                     temperature);
-        }
+        // if (barometer_read(&pressure, &temperature) == ESP_OK)
+        // {
+        //     ESP_LOGI(TAG,
+        //              "Pressure: %.2f Pa (%.2f hPa), Temperature: %.2f C",
+        //              pressure,
+        //              pressure / 100.0f,
+        //              temperature);
+        // }
 
         vTaskDelay(pdMS_TO_TICKS(1000));
 

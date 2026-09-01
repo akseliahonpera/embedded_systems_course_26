@@ -8,7 +8,7 @@
 
 #define BNO085_ADDR 0x4A
 #define BNO085_I2C_FREQ_HZ 100000
-#define BNO085_TIMEOUT_MS 100
+#define BNO085_TIMEOUT_MS 500
 #define SHTP_HEADER_SIZE 4
 
 static i2c_master_dev_handle_t bno085_dev;
@@ -28,6 +28,7 @@ esp_err_t bno085_port_init(i2c_master_bus_handle_t bus,
                            gpio_num_t nrst_gpio,
                            gpio_num_t bootn_gpio)
 {
+    printf("bno085_port_init \n");
     if (bno085_dev != NULL) {
         return ESP_ERR_INVALID_STATE;
     }
@@ -64,38 +65,44 @@ esp_err_t bno085_port_init(i2c_master_bus_handle_t bus,
 
 bool bno085_port_data_ready(void)
 {
+    printf("port_data_ready \n");
+    int hint = gpio_get_level(bno085_hint_gpio);
+    ESP_LOGI("BNO085", "HINT=%d", hint);
     return bno085_dev != NULL && gpio_get_level(bno085_hint_gpio) == 0;
 }
 
 static int hal_open(sh2_Hal_t *self)
 {
+    printf("hal_open \n");
     (void)self;
 
     /* BOOTN high selects normal SH-2 firmware, rather than the bootloader. */
-    gpio_set_level(bno085_nrst_gpio, 1);
     gpio_set_level(bno085_bootn_gpio, 1);
-    esp_rom_delay_us(10000);
+    esp_rom_delay_us(100000);
     gpio_set_level(bno085_nrst_gpio, 0);
-    esp_rom_delay_us(10000);
+    esp_rom_delay_us(100000);
     gpio_set_level(bno085_nrst_gpio, 1);
-    esp_rom_delay_us(50000);
+    esp_rom_delay_us(100000);
     return SH2_OK;
 }
 
 static void hal_close(sh2_Hal_t *self)
 {
+    printf("hal_close \n");
     (void)self;
     gpio_set_level(bno085_nrst_gpio, 0);
 }
 
 static uint32_t hal_get_time_us(sh2_Hal_t *self)
 {
+    printf("hal_get_time_us \n");
     (void)self;
     return (uint32_t)esp_timer_get_time();
 }
 
 static int hal_write(sh2_Hal_t *self, uint8_t *buffer, unsigned len)
 {
+    printf("hal_write \n");
     (void)self;
     if (bno085_dev == NULL || len == 0 || len > SH2_HAL_MAX_TRANSFER_OUT) {
         return 0;
@@ -109,6 +116,7 @@ static int hal_write(sh2_Hal_t *self, uint8_t *buffer, unsigned len)
 static int hal_read(sh2_Hal_t *self, uint8_t *buffer, unsigned len,
                     uint32_t *timestamp_us)
 {
+    printf("hal_read \n");
     if (!bno085_port_data_ready() || len < SHTP_HEADER_SIZE) {
         return 0;
     }
