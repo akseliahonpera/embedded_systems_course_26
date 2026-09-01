@@ -6,6 +6,7 @@
 #include "esp_err.h"
 #include "barometer.h"
 #include "imu.h"
+#include "esp_log.h"
 
 static const char *TAG = "MAIN";
 
@@ -17,7 +18,6 @@ static const char *TAG = "MAIN";
 
 void app_main(void)
 {
-    ESP_LOGI(TAG, "Älkää välittäkö pull-up varotuksesta");
 
     i2c_master_bus_handle_t i2c_bus = NULL;
 
@@ -44,10 +44,17 @@ void app_main(void)
 
     vTaskDelay(pdMS_TO_TICKS(100));
 
-    // /* Initialize the IMU */
-    // ESP_LOGI(TAG, "Initializing IMU...");
-    // ESP_ERROR_CHECK(imu_init(i2c_bus));
-    // ESP_LOGI(TAG, "IMU initialized successfully.");
+    
+    ESP_LOGI(TAG, "Initializing IMU...");
+    esp_err_t imu_err = imu_init(i2c_bus);
+    if (imu_err == ESP_OK)
+    {
+        ESP_LOGI(TAG, "IMU initialized successfully.");
+    }
+    else
+    {
+        ESP_LOGE(TAG, "IMU unavailable (%s)", esp_err_to_name(imu_err));
+    }
 
 
     while (1)

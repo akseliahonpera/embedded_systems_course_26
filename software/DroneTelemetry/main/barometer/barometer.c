@@ -2,6 +2,11 @@
 #include "bmp5.h"
 #include "bmp5_selftest.h"
 #include "bmp581_port.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_check.h"
+#include "esp_log.h"
+#include "esp_err.h"
 
 static const char *TAG = "BAROMETER";
 

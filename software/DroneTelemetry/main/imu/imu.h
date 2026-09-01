@@ -1,15 +1,14 @@
 #ifndef IMU_H
 #define IMU_H
 
-
+#include "driver/i2c_master.h"
 #include "esp_err.h"
 
 /**
- * @brief Initializes the BNO085 IMU hardware, opens the SH2 connection,
- *        and spawns the background processing task on Core 1.
- * 
- * @return esp_err_t ESP_OK on success, ESP_FAIL otherwise.
+ * @brief Initialize the BNO085 and start reporting rotation-vector samples.
+ *
+ * The BNO085 must be connected using the GPIO mapping in imu.c.
  */
 esp_err_t imu_init(i2c_master_bus_handle_t i2c_handle);
 
-#endif // IMU_H
+#endif /* IMU_H */

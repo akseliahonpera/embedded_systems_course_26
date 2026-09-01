@@ -19,4 +19,7 @@ idf_component_register(
         "barometer"
         "gps"
         "imu"
+    REQUIRES
+        driver
+        esp_timer
 )
