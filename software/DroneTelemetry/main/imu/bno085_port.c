@@ -59,6 +59,7 @@ esp_err_t bno085_port_init(i2c_master_bus_handle_t bus,
         .dev_addr_length = I2C_ADDR_BIT_LEN_7,
         .device_address = BNO085_ADDR,
         .scl_speed_hz = BNO085_I2C_FREQ_HZ,
+        .scl_wait_us = 20000,
     };
     return i2c_master_bus_add_device(bus, &dev_cfg, &bno085_dev);
 }
@@ -83,6 +84,7 @@ static int hal_open(sh2_Hal_t *self)
     esp_rom_delay_us(100000);
     gpio_set_level(bno085_nrst_gpio, 1);
     esp_rom_delay_us(100000);
+    printf("hal_open complete \n");
     return SH2_OK;
 }
 
@@ -121,9 +123,20 @@ static int hal_read(sh2_Hal_t *self, uint8_t *buffer, unsigned len,
         return 0;
     }
 
+    ESP_LOGI("BNO085", "before: SDA=%d SCL=%d",
+         gpio_get_level(GPIO_NUM_8),
+         gpio_get_level(GPIO_NUM_9));
+
     esp_err_t err = i2c_master_receive(bno085_dev, buffer, SHTP_HEADER_SIZE,
                                        BNO085_TIMEOUT_MS);
+
+    ESP_LOGI("BNO085", "after:  SDA=%d SCL=%d err=%s",
+         gpio_get_level(GPIO_NUM_8),
+         gpio_get_level(GPIO_NUM_9),
+         esp_err_to_name(err));
+
     if (err != ESP_OK) {
+        ESP_LOGE("BNO085", "header read failed: %s", esp_err_to_name(err));
         return 0;
     }
 
