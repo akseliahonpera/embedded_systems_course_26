@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "driver/i2c_master.h"
+#include "driver/i2c.h"
 #include "driver/gpio.h"
 #include "esp_err.h"
 #include "barometer.h"

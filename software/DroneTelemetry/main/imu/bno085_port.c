@@ -79,7 +79,7 @@ static int hal_open(sh2_Hal_t *self)
     gpio_set_level(bno085_nrst_gpio, 0);
     esp_rom_delay_us(100000);
     gpio_set_level(bno085_nrst_gpio, 1);
-    esp_rom_delay_us(100000);
+    esp_rom_delay_us(10000);
     return SH2_OK;
 }
 
@@ -143,10 +143,10 @@ static int hal_read(sh2_Hal_t *self, uint8_t *buffer, unsigned len,
     ESP_LOGI("BNO085", "before payload: HINT=%d",
         gpio_get_level(bno085_hint_gpio));
 
-    const uint16_t payload_length = packet_length - SHTP_HEADER_SIZE;
+    const uint16_t payload_length = packet_length;
     ESP_LOGI("BNO085", "reading payload: %u bytes", payload_length);
     if (payload_length > 0) {
-        err = i2c_master_receive(bno085_dev, buffer + SHTP_HEADER_SIZE,
+        err = i2c_master_receive(bno085_dev, buffer,
                                  payload_length, BNO085_TIMEOUT_MS);
         if (err != ESP_OK) {
             ESP_LOGE("BNO085", "payload read failed: %s", esp_err_to_name(err));

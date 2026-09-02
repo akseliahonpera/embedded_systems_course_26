@@ -73,7 +73,7 @@ static void imu_task(void *arg)
 
     for (;;) {
         /* HINT is active low.  The timeout also handles a missed edge. */
-        (void)ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(100));
+        (void)ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(10000));
         while (bno085_port_data_ready()) {
             sh2_service();
         }
