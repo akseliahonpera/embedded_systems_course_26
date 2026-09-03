@@ -14,13 +14,17 @@ idf_component_register(
         "imu/shtp.c"
         "imu/sh2_util.c"
 
+        "gps/gps.c"
+
     INCLUDE_DIRS
         "."
         "barometer"
         "imu"
+        "gps"
     REQUIRES
         driver
         esp_driver_i2c
         esp_driver_gpio
         esp_timer
+        esp_driver_uart
 )
