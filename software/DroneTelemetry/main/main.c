@@ -65,8 +65,10 @@ void app_main(void)
 
     Eli homma toimis suurinpiirtein näin:
     gps_task ---------|
-    imu_task ---------|---> QueueHandle_t sensor_fusion_queue --> sensor_fusion_task --> jono? --> datanlähetystaski
+    imu_task* --------|---> QueueHandle_t sensor_fusion_queue --> sensor_fusion_task --> jono? --> datanlähetystaski
     barometer_task ---|
+    *POIKKEUS: imun sh2-kirjasto käyttää callback-funktiota (sensor_event_handler). Tämä callback saa puskea datan jonoon itse.
+   
     */
 
     // Init I2C
@@ -108,25 +110,10 @@ void app_main(void)
     // }
 
     gps_init();
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    barometer_init(i2c_bus, I2C_FREQ_HZ);
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    imu_init(i2c_bus);
 
 
-    while (1)
-    {
-
-        // float pressure;
-        // float temperature;
-
-        // if (barometer_read(&pressure, &temperature) == ESP_OK)
-        // {
-        //     ESP_LOGI(TAG,
-        //              "Pressure: %.2f Pa (%.2f hPa), Temperature: %.2f C",
-        //              pressure,
-        //              pressure / 100.0f,
-        //              temperature);
-        // }
-
-        gps_read();
-        vTaskDelay(pdMS_TO_TICKS(1000));
-
-    }
 }

@@ -14,11 +14,13 @@
 #include "sh2_err.h"
 #include "bno085_port.h"
 
+#include "euler.h"
+
 static const char *TAG = "IMU";
 
 /* These are the ESP32-S3 GPIOs connected to the BNO085 */
-#define BNO085_HINT_GPIO  GPIO_NUM_5
-#define BNO085_NRST_GPIO  GPIO_NUM_6
+#define BNO085_HINT_GPIO GPIO_NUM_5
+#define BNO085_NRST_GPIO GPIO_NUM_6
 #define BNO085_BOOTN_GPIO GPIO_NUM_7
 
 #define BNO085_REPORT_INTERVAL_US 10000U /* 100 Hz */
@@ -31,7 +33,8 @@ static void IRAM_ATTR hint_isr_handler(void *arg)
     (void)arg;
 
     BaseType_t higher_priority_task_woken = pdFALSE;
-    if (imu_task_handle != NULL) {
+    if (imu_task_handle != NULL)
+    {
         vTaskNotifyGiveFromISR(imu_task_handle, &higher_priority_task_woken);
         portYIELD_FROM_ISR(higher_priority_task_woken);
     }
@@ -39,28 +42,54 @@ static void IRAM_ATTR hint_isr_handler(void *arg)
 
 static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
 {
-    printf("imu.c: sensor_event_handler \n");
+    // TODO: tähän xQueueSend(fusion_queue, imudata) -> sensor_fusion_task
     (void)cookie;
     sh2_SensorValue_t value;
 
-    if (sh2_decodeSensorEvent(&value, event) != SH2_OK) {
+    if (sh2_decodeSensorEvent(&value, event) != SH2_OK)
+    {
         return;
     }
 
-    if (value.sensorId == SH2_ROTATION_VECTOR) {
-        ESP_LOGI(TAG, "Rotation vector: r=%.3f i=%.3f j=%.3f k=%.3f",
-                 value.un.rotationVector.real,
-                 value.un.rotationVector.i,
-                 value.un.rotationVector.j,
-                 value.un.rotationVector.k);
+    float r = value.un.rotationVector.real;
+    float i = value.un.rotationVector.i;
+    float j = value.un.rotationVector.j;
+    float k = value.un.rotationVector.k;
+
+    // kerran kymmenessä sekunnissa asteet ulos
+    if (value.sensorId == SH2_ROTATION_VECTOR)
+    {
+        static TickType_t last_print_time = 0;
+        const TickType_t print_interval = pdMS_TO_TICKS(2000);
+        TickType_t current_time = xTaskGetTickCount();
+
+        if ((current_time - last_print_time) >= print_interval)
+        {
+            float roll_rad = 0.0f;
+            float pitch_rad = 0.0f;
+            float yaw_rad = 0.0f;
+
+            // kvaterniosta yaw pitch roll (euler.c)
+            q_to_ypr(r, i, j, k, &roll_rad, &pitch_rad, &yaw_rad);
+
+            float roll_deg = roll_rad * (180.0f / 3.14159265f);
+            float pitch_deg = pitch_rad * (180.0f / 3.14159265f);
+            float yaw_deg = yaw_rad * (180.0f / 3.14159265f);
+
+
+            ESP_LOGI(TAG, "Roll=%.1f°, Pitch=%.1f°, Yaw=%.1f°",
+                     roll_deg, pitch_deg, yaw_deg);
+
+            last_print_time = current_time;
+        }
     }
 }
 
 static void sh2_event_handler(void *cookie, sh2_AsyncEvent_t *event)
 {
-    printf("imu.c: sh2_event_handler \n");
     (void)cookie;
-    if (event->eventId == SH2_RESET) {
+    if (event->eventId == SH2_RESET)
+    {
         imu_reset_complete = true;
         ESP_LOGI(TAG, "BNO085 reset complete");
     }
@@ -68,13 +97,15 @@ static void sh2_event_handler(void *cookie, sh2_AsyncEvent_t *event)
 
 static void imu_task(void *arg)
 {
-    printf("imu.c: imu_task \n");
+    // This function waits for the HINT-activated ISR to wake it up, and notify the sh2 service to do it's thing.
     (void)arg;
 
-    for (;;) {
+    for (;;)
+    {
         /* HINT is active low.  The timeout also handles a missed edge. */
         (void)ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(10000));
-        while (bno085_port_data_ready()) {
+        while (bno085_port_data_ready())
+        {
             sh2_service();
         }
     }
@@ -82,7 +113,6 @@ static void imu_task(void *arg)
 
 esp_err_t imu_init(i2c_master_bus_handle_t i2c_handle)
 {
-    printf("imu.c: imu_init \n");
     ESP_RETURN_ON_ERROR(bno085_port_init(i2c_handle, BNO085_HINT_GPIO,
                                          BNO085_NRST_GPIO, BNO085_BOOTN_GPIO),
                         TAG, "BNO085 port initialization failed");
@@ -95,18 +125,21 @@ esp_err_t imu_init(i2c_master_bus_handle_t i2c_handle)
      */
     imu_reset_complete = false;
     int rc = sh2_open(&bno085_hal, sh2_event_handler, NULL);
-    if (rc != SH2_OK) {
+    if (rc != SH2_OK)
+    {
         ESP_LOGE(TAG, "sh2_open failed (%d)", rc);
         return ESP_FAIL;
     }
-    if (!imu_reset_complete) {
+    if (!imu_reset_complete)
+    {
         ESP_LOGE(TAG, "No reset advertisement from BNO085; check I2C, HINT, and SA0");
         sh2_close();
         return ESP_ERR_TIMEOUT;
     }
 
     rc = sh2_setSensorCallback(sensor_event_handler, NULL);
-    if (rc != SH2_OK) {
+    if (rc != SH2_OK)
+    {
         ESP_LOGE(TAG, "Could not register sensor callback (%d)", rc);
         return ESP_FAIL;
     }
@@ -115,26 +148,30 @@ esp_err_t imu_init(i2c_master_bus_handle_t i2c_handle)
         .reportInterval_us = BNO085_REPORT_INTERVAL_US,
     };
     rc = sh2_setSensorConfig(SH2_ROTATION_VECTOR, &rotation_vector_config);
-    if (rc != SH2_OK) {
+    if (rc != SH2_OK)
+    {
         ESP_LOGE(TAG, "Could not enable rotation vector (%d)", rc);
         return ESP_FAIL;
     }
 
     esp_err_t err = gpio_install_isr_service(0);
-    if (err != ESP_OK && err != ESP_ERR_INVALID_STATE) {
+    if (err != ESP_OK && err != ESP_ERR_INVALID_STATE)
+    {
         return err;
     }
     ESP_RETURN_ON_ERROR(gpio_isr_handler_add(BNO085_HINT_GPIO, hint_isr_handler, NULL),
                         TAG, "Could not install BNO085 interrupt handler");
 
-    BaseType_t task_created = xTaskCreate(imu_task, "bno085", 4096, NULL,
+    BaseType_t task_created = xTaskCreate(imu_task, "IMU_TASK", 4096, NULL,
                                           5, &imu_task_handle);
-    if (task_created != pdPASS) {
+    if (task_created != pdPASS)
+    {
         return ESP_ERR_NO_MEM;
     }
 
     /* Do not wait for another edge if a packet is already pending. */
-    if (bno085_port_data_ready()) {
+    if (bno085_port_data_ready())
+    {
         xTaskNotifyGive(imu_task_handle);
     }
 

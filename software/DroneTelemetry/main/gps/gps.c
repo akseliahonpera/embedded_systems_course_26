@@ -15,7 +15,7 @@ static const char *TAG = "GPS";
 #define UART_BUF_SIZE (1024 * 2) // 2kb
 #define UART_NUM (UART_NUM_2)    // UART 2 is unassigned, so use that for GPS
 #define UART_BAUD_RATE 9600
-#define UART_QUEUE_SIZE 10
+//#define UART_QUEUE_SIZE 10
 
 // GPIOs
 #define M20048_TX_GPIO GPIO_NUM_15 // esp rx
@@ -25,14 +25,48 @@ static const char *TAG = "GPS";
 #define M20048_HW_R_GPIO GPIO_NUM_18 // not used as of now
 #define M20048_HW_S_GPIO GPIO_NUM_13 // not used as of now
 
-// Though not mandatory, an event queue could be useful, so i'll add one.
-static QueueHandle_t uart_queue; // handle for event queue (uart_event_t)
+static TaskHandle_t gps_task_handle;
+
+static void gps_task(void *arg) // <- voi passata fuusiojonon handlen argumenttina
+{
+    // TODO: NMEA parsetus (esim. nmea_parser, minmea tjsp), datan passaus fuusiotaskille
+    // toistaseksi printtaa vaan terminaaliin 10 s välein
+
+    (void)arg;
+    uint8_t *data = malloc(512); // iso bufferi
+    if (data == NULL)
+    {
+        ESP_LOGE(TAG, "vituixmän");
+        vTaskDelete(NULL);
+    }
+
+    while (1)
+    {
+        vTaskDelay(pdMS_TO_TICKS(10000));
+
+        size_t buffered_len = 0;
+        uart_get_buffered_data_len(UART_NUM, &buffered_len);
+
+        if (buffered_len > 0)
+        {
+            size_t read_size = (buffered_len > (512 - 1)) ? (512 - 1) : buffered_len;
+
+            int len = uart_read_bytes(UART_NUM, data, read_size, pdMS_TO_TICKS(50));
+            if (len > 0)
+            {
+                data[len] = '\0';
+                ESP_LOGI(TAG, "GPS data dump:\n%s", (char *)data);
+            }
+        }
+    }
+    free(data);
+}
 
 esp_err_t gps_init()
 {
     // Init UART
     // I think a TX buffer is not needed since there is not that much traffic going from mcu to gps.
-    ESP_ERROR_CHECK(uart_driver_install(UART_NUM, UART_BUF_SIZE, 0, UART_QUEUE_SIZE, &uart_queue, 0));
+    ESP_ERROR_CHECK(uart_driver_install(UART_NUM, UART_BUF_SIZE, 0, 0, 0, 0));
 
     // Configure UART parameters
     uart_config_t uart_config = {
@@ -54,10 +88,19 @@ esp_err_t gps_init()
                                  UART_PIN_NO_CHANGE,
                                  UART_PIN_NO_CHANGE));
 
+    BaseType_t task_created = xTaskCreate(gps_task, "GPS_TASK", 4096, NULL,
+                                          5, &gps_task_handle);
+    if (task_created != pdPASS)
+    {
+        return ESP_ERR_NO_MEM;
+    }
+
     return ESP_OK;
 }
 
-void gps_read() {
+// left this here for debugging or stuff like that
+void gps_read()
+{
     uint8_t data[256];
 
     int len = uart_read_bytes(

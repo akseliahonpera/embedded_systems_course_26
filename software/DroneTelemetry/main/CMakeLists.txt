@@ -13,6 +13,7 @@ idf_component_register(
         "imu/sh2_SensorValue.c"
         "imu/shtp.c"
         "imu/sh2_util.c"
+        "imu/euler.c"
 
         "gps/gps.c"
 

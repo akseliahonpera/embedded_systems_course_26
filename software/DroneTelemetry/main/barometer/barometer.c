@@ -14,6 +14,38 @@ static const char *TAG = "BAROMETER";
 static struct bmp5_dev bmp_dev;
 static struct bmp5_osr_odr_press_config osr_odr_press_cfg;
 
+static TaskHandle_t barometer_task_handle;
+
+static void barometer_task(void *arg)
+{
+    // print every 10th second
+    (void)arg;
+    struct bmp5_sensor_data sensor_data;
+    float pressure_pa, temperature_c;
+
+    while (1)
+    {
+        vTaskDelay(pdMS_TO_TICKS(5000));
+        int8_t rslt = bmp5_get_sensor_data(
+            &sensor_data,
+            &osr_odr_press_cfg,
+            &bmp_dev);
+
+        if (rslt != BMP5_OK)
+        {
+            ESP_LOGE(TAG, "BMP581 read failed (%d)", rslt);
+        }
+        pressure_pa = sensor_data.pressure;
+        temperature_c = sensor_data.temperature;
+
+        ESP_LOGI(TAG,
+                 "Pressure: %.2f Pa (%.2f hPa), Temperature: %.2f C",
+                 pressure_pa,
+                 pressure_pa / 100.0f,
+                 temperature_c);
+    }
+}
+
 esp_err_t barometer_init(i2c_master_bus_handle_t bus, uint32_t freq)
 {
     ESP_RETURN_ON_ERROR(bmp581_port_init(bus, freq),
@@ -74,9 +106,17 @@ esp_err_t barometer_init(i2c_master_bus_handle_t bus, uint32_t freq)
         return ESP_FAIL;
     }
 
+    BaseType_t task_created = xTaskCreate(barometer_task, "BAROMETER_TASK", 4096, NULL,
+                                          5, &barometer_task_handle);
+    if (task_created != pdPASS)
+    {
+        return ESP_ERR_NO_MEM;
+    }
+
     return ESP_OK;
 }
 
+// left for debugging
 esp_err_t barometer_read(float *pressure_pa, float *temperature_c)
 {
     struct bmp5_sensor_data sensor_data;

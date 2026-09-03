@@ -4,11 +4,11 @@
 #include "esp_err.h"
 
 /**
- * @brief Initialize the M20048 module
+ * @brief Initialize the M20048 module and create the sensor task.
  *
  *
  */
-esp_err_t gps_init();
+esp_err_t gps_init(void);
 
 void gps_read();
 
