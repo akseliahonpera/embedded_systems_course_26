@@ -8,7 +8,7 @@
 #include "imu.h"
 #include "gps.h"
 #include "esp_log.h"
-
+#include "types.h"
 static const char *TAG = "MAIN";
 
 // I2C confs
