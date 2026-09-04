@@ -1,0 +1,15 @@
+Simppeli serveri joka printtaa lähetetyt viestit konsoliin. Viestin saannin jälkeen lähettää "ack"-viestin espille.
+Portiksi on asetettu 7777 mutta sen voi vaihtaa huvinsa mukaan.
+Ylipäätään helppo tehdä muutoksia jos huvittaa. 
+Tarvii toimivan node ja node package manager(npm) installaation toimiakseen sillä repossa  ei ole ajoymopäristöä.
+
+https://nodejs.org/en/download
+Allekirjoittaneella on raakana Windows-asennus.
+
+Node dependencyt: konsoli(git bash)-> Root-kansio -> npm install
+Kääntäminen: konsoli(git bash)-> Root-kansio -> npm run build 
+Käynnistys:  konsoli(git bash)-> Root-kansio -> npm start   
+		==> Pitäisi alkaa printtaamaan konsoliin saatuja udp-paketteja espiltä.(Tai miltä tahansa clientiltä.)
+
+
+- Akseli
