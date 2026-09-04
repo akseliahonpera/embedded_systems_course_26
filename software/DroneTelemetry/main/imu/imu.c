@@ -3,6 +3,7 @@
 #include <stdbool.h>
 
 #include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
 #include "freertos/task.h"
 #include "esp_attr.h"
 #include "esp_check.h"
@@ -14,6 +15,7 @@
 #include "sh2_err.h"
 #include "bno085_port.h"
 
+#include "types.h"
 #include "euler.h"
 
 static const char *TAG = "IMU";
@@ -27,6 +29,9 @@ static const char *TAG = "IMU";
 
 static TaskHandle_t imu_task_handle;
 static volatile bool imu_reset_complete;
+
+// Queue handle (to fusion task)
+static QueueHandle_t fusion_queue;
 
 static void IRAM_ATTR hint_isr_handler(void *arg)
 {
@@ -42,9 +47,10 @@ static void IRAM_ATTR hint_isr_handler(void *arg)
 
 static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
 {
-    // TODO: tähän xQueueSend(fusion_queue, imudata) -> sensor_fusion_task
     (void)cookie;
     sh2_SensorValue_t value;
+    sensor_msg_t msg;
+    msg.type = SENSOR_IMU;
 
     if (sh2_decodeSensorEvent(&value, event) != SH2_OK)
     {
@@ -82,6 +88,7 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
 
             last_print_time = current_time;
         }
+        xQueueSend(fusion_queue, &msg, 0);
     }
 }
 
@@ -111,8 +118,11 @@ static void imu_task(void *arg)
     }
 }
 
-esp_err_t imu_init(i2c_master_bus_handle_t i2c_handle)
+esp_err_t imu_init(QueueHandle_t fusion_queue_handle, i2c_master_bus_handle_t i2c_handle)
 {
+    // Obtain sensor fusion queue handle
+    fusion_queue = fusion_queue_handle;
+
     ESP_RETURN_ON_ERROR(bno085_port_init(i2c_handle, BNO085_HINT_GPIO,
                                          BNO085_NRST_GPIO, BNO085_BOOTN_GPIO),
                         TAG, "BNO085 port initialization failed");
@@ -175,6 +185,6 @@ esp_err_t imu_init(i2c_master_bus_handle_t i2c_handle)
         xTaskNotifyGive(imu_task_handle);
     }
 
-    ESP_LOGI(TAG, "BNO085 initialized; rotation vector enabled at 100 Hz");
+    ESP_LOGI(TAG, "IMU task started.");
     return ESP_OK;
 }

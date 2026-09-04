@@ -4,11 +4,16 @@
 #include "driver/i2c.h"
 #include "driver/gpio.h"
 #include "esp_err.h"
+#include "esp_log.h"
+#include "types.h"
+
 #include "barometer.h"
 #include "imu.h"
 #include "gps.h"
-#include "esp_log.h"
-#include "types.h"
+
+#include "telemetry.h"
+#include "fusion.h"
+
 static const char *TAG = "MAIN";
 
 // I2C confs
@@ -87,33 +92,20 @@ void app_main(void)
     // Initialize the shared I2C bus
     ESP_ERROR_CHECK(i2c_new_master_bus(&bus_cfg, &i2c_bus));
 
-    vTaskDelay(pdMS_TO_TICKS(100));
+    // Initialize queues
+    // Queue for sensor messages from sensor tasks to sensorfusion task
+    QueueHandle_t fusion_queue = xQueueCreate(10, sizeof(sensor_msg_t));
+    // Queue for fused data from sensorfusion task to telemetry task
+    QueueHandle_t telemetry_queue = xQueueCreate(10, sizeof(fusion_msg_t));
 
-    // /* Initialize the barometer first */
-    // ESP_LOGI(TAG, "Initializing Barometer...");
-    // ESP_ERROR_CHECK(barometer_init(i2c_bus, I2C_FREQ_HZ));
-    // ESP_LOGI(TAG, "Barometer initialized successfully.");
+    // Initialize fusion and telemetry tasks
+    fusion_init(fusion_queue, telemetry_queue);
+    telemetry_init(telemetry_queue);
 
-
-    vTaskDelay(pdMS_TO_TICKS(100));
-
-    
-    // ESP_LOGI(TAG, "Initializing IMU...");
-    // esp_err_t imu_err = imu_init(i2c_bus);
-    // if (imu_err == ESP_OK)
-    // {
-    //     ESP_LOGI(TAG, "IMU initialized successfully.");
-    // }
-    // else
-    // {
-    //     ESP_LOGE(TAG, "IMU unavailable (%s)", esp_err_to_name(imu_err));
-    // }
-
-    gps_init();
+    // Initialize sensor tasks
+    gps_init(fusion_queue);
     vTaskDelay(pdMS_TO_TICKS(1000));
-    barometer_init(i2c_bus, I2C_FREQ_HZ);
+    barometer_init(fusion_queue, i2c_bus, I2C_FREQ_HZ);
     vTaskDelay(pdMS_TO_TICKS(1000));
-    imu_init(i2c_bus);
-
-
+    imu_init(fusion_queue, i2c_bus);
 }

@@ -17,11 +17,17 @@ idf_component_register(
 
         "gps/gps.c"
 
+        "telemetry/telemetry.c"
+
+        "fusion/fusion.c"
+
     INCLUDE_DIRS
         "."
         "barometer"
         "imu"
         "gps"
+        "telemetry"
+        "fusion"
     REQUIRES
         driver
         esp_driver_i2c

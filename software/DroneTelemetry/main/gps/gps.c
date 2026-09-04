@@ -4,10 +4,13 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/queue.h"
 #include "esp_attr.h"
 #include "esp_check.h"
 #include "esp_log.h"
 #include "driver/gpio.h"
+
+#include "types.h"
 
 static const char *TAG = "GPS";
 
@@ -27,12 +30,18 @@ static const char *TAG = "GPS";
 
 static TaskHandle_t gps_task_handle;
 
-static void gps_task(void *arg) // <- voi passata fuusiojonon handlen argumenttina
+// Queue handle (to fusion task)
+static QueueHandle_t fusion_queue;
+
+static void gps_task(void *arg)
 {
     // TODO: NMEA parsetus (esim. nmea_parser, minmea tjsp), datan passaus fuusiotaskille
     // toistaseksi printtaa vaan terminaaliin 10 s välein
-
     (void)arg;
+
+    sensor_msg_t msg;
+    msg.type = SENSOR_GPS;
+
     uint8_t *data = malloc(512); // iso bufferi
     if (data == NULL)
     {
@@ -58,12 +67,15 @@ static void gps_task(void *arg) // <- voi passata fuusiojonon handlen argumentti
                 ESP_LOGI(TAG, "GPS data dump:\n%s", (char *)data);
             }
         }
+
+        xQueueSend(fusion_queue, &msg, 0);
     }
     free(data);
 }
 
-esp_err_t gps_init()
+esp_err_t gps_init(QueueHandle_t fusion_queue_handle)
 {
+    fusion_queue = fusion_queue_handle;
     // Init UART
     // I think a TX buffer is not needed since there is not that much traffic going from mcu to gps.
     ESP_ERROR_CHECK(uart_driver_install(UART_NUM, UART_BUF_SIZE, 0, 0, 0, 0));
@@ -94,7 +106,7 @@ esp_err_t gps_init()
     {
         return ESP_ERR_NO_MEM;
     }
-
+    ESP_LOGI(TAG, "GPS task started.");
     return ESP_OK;
 }
 

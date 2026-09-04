@@ -7,6 +7,7 @@
 #include "esp_check.h"
 #include "esp_log.h"
 #include "esp_err.h"
+#include "types.h"
 
 static const char *TAG = "BAROMETER";
 
@@ -15,6 +16,7 @@ static struct bmp5_dev bmp_dev;
 static struct bmp5_osr_odr_press_config osr_odr_press_cfg;
 
 static TaskHandle_t barometer_task_handle;
+static QueueHandle_t fusion_queue;
 
 static void barometer_task(void *arg)
 {
@@ -22,6 +24,8 @@ static void barometer_task(void *arg)
     (void)arg;
     struct bmp5_sensor_data sensor_data;
     float pressure_pa, temperature_c;
+    sensor_msg_t msg;
+    msg.type = SENSOR_BARO;
 
     while (1)
     {
@@ -43,11 +47,15 @@ static void barometer_task(void *arg)
                  pressure_pa,
                  pressure_pa / 100.0f,
                  temperature_c);
+
+        xQueueSend(fusion_queue, &msg, 0);
     }
 }
 
-esp_err_t barometer_init(i2c_master_bus_handle_t bus, uint32_t freq)
+esp_err_t barometer_init(QueueHandle_t fusion_queue_handle, i2c_master_bus_handle_t bus, uint32_t freq)
 {
+    fusion_queue = fusion_queue_handle;
+
     ESP_RETURN_ON_ERROR(bmp581_port_init(bus, freq),
                         TAG,
                         "Port init failed");
@@ -112,7 +120,7 @@ esp_err_t barometer_init(i2c_master_bus_handle_t bus, uint32_t freq)
     {
         return ESP_ERR_NO_MEM;
     }
-
+    ESP_LOGI(TAG, "Barometer task started.");
     return ESP_OK;
 }
 

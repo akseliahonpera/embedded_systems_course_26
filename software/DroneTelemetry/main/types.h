@@ -6,7 +6,8 @@
 #include <stdbool.h>
 #include <stdint.h> 
 
-//En tiiä tartteeko näitä, voi käyttää periaatteessa valmiitakin tietorakenteita muista headereista
+//TODO: En tiiä tartteeko näitä, voi käyttää periaatteessa valmiitakin tietorakenteita muista headereista
+// Tuota sh2_SensorValue_t:tä vois varmaa nvähän siistiä
 //-------------------------------------------------------------------------------------------------
 // Custom lightweight data structures:
 
@@ -37,12 +38,26 @@ typedef struct
 
 typedef struct
 {
-    bool paska;
-    /* TODO */
-    /* lat, longt, has_fix ?*/
+    double latitude;
+    double longtitude;
+    bool has_fix;
 } gps_data_t;
 //--------------------------------------------------------------------------------------------------
 
+// Drone's state as calculated by the fusion task.
+typedef struct {
+    float roll;
+    float pitch;
+    float yaw;
+
+    float altitude;
+    float velocity;
+
+    double latitude;
+    double longtitude;
+
+    float temperature;
+} fusion_state_t;
 
 typedef enum {
     SENSOR_BARO,
@@ -58,12 +73,18 @@ typedef union {
     gps_data_t gps;
 } sensor_payload_t;
 
+// This is the message sent to fusion task
 typedef struct {
     sensor_type_t type;
     int timestamp;
     sensor_payload_t data;
-} sensor_message_t;
+} sensor_msg_t;
 
+// message sent to telemetry task
+typedef struct {
+    fusion_state_t state;
+    int timestamp;
+} fusion_msg_t;
 
 
 #endif
