@@ -79,7 +79,7 @@ static int hal_open(sh2_Hal_t *self)
     gpio_set_level(bno085_nrst_gpio, 0);
     esp_rom_delay_us(100000);
     gpio_set_level(bno085_nrst_gpio, 1);
-    esp_rom_delay_us(100000);
+    esp_rom_delay_us(10000);
     return SH2_OK;
 }
 
@@ -114,14 +114,8 @@ static int hal_read(sh2_Hal_t *self, uint8_t *buffer, unsigned len,
         return 0;
     }
 
-    ESP_LOGI("BNO085", "before header: HINT=%d",
-         gpio_get_level(bno085_hint_gpio));
-
     esp_err_t err = i2c_master_receive(bno085_dev, buffer, SHTP_HEADER_SIZE,
                                        BNO085_TIMEOUT_MS);
-
-    ESP_LOGI("BNO085", "after header: HINT=%d",
-         gpio_get_level(bno085_hint_gpio));
 
     if (err != ESP_OK) {
         ESP_LOGE("BNO085", "header read failed: %s", esp_err_to_name(err));
@@ -136,26 +130,20 @@ static int hal_read(sh2_Hal_t *self, uint8_t *buffer, unsigned len,
         return 0;
     }
 
-    ESP_LOGI("BNO085", "header: %02X %02X %02X %02X, len=%u channel=%u seq=%u",
-         buffer[0], buffer[1], buffer[2], buffer[3],
-         packet_length, buffer[2], buffer[3]);
+    // ESP_LOGI("BNO085", "header: %02X %02X %02X %02X, len=%u channel=%u seq=%u",
+    //      buffer[0], buffer[1], buffer[2], buffer[3],
+    //      packet_length, buffer[2], buffer[3]);
 
-    ESP_LOGI("BNO085", "before payload: HINT=%d",
-        gpio_get_level(bno085_hint_gpio));
-
-    const uint16_t payload_length = packet_length - SHTP_HEADER_SIZE;
-    ESP_LOGI("BNO085", "reading payload: %u bytes", payload_length);
+    const uint16_t payload_length = packet_length;
+    // ESP_LOGI("BNO085", "reading payload: %u bytes", payload_length);
     if (payload_length > 0) {
-        err = i2c_master_receive(bno085_dev, buffer + SHTP_HEADER_SIZE,
+        err = i2c_master_receive(bno085_dev, buffer,
                                  payload_length, BNO085_TIMEOUT_MS);
         if (err != ESP_OK) {
             ESP_LOGE("BNO085", "payload read failed: %s", esp_err_to_name(err));
             return 0;
         }
     }
-
-    ESP_LOGI("BNO085", "after payload: HINT=%d",
-         gpio_get_level(bno085_hint_gpio));
 
     if (timestamp_us != NULL) {
         *timestamp_us = hal_get_time_us(self);
