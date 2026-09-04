@@ -17,9 +17,10 @@ idf_component_register(
     INCLUDE_DIRS
         "."
         "barometer"
-        "gps"
         "imu"
     REQUIRES
         driver
         esp_timer
+        esp_driver_i2c
+        esp_driver_gpio
 )
