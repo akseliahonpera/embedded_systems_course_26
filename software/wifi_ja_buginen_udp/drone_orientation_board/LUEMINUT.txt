@@ -1,0 +1,26 @@
+Tehty 6.0.2 IDF-versiolla.
+
+Nimet ei ole eksakteja.
+
+Sisältö: utils/
+- drone_state | Ajatus siitä miten dronen tilan voisi säilöä ja passata ympäri taskeja.
+- networking  | Sisältää käytännössä wifin toiminnallisuuden. Apinoitu ESP:n esimerkeistä, linkki löytyy filusta.
+- sanityChecks| Sisältää vain yhden funktion. Tarkoitus oli heittää debuggaus funktioita yms tuonne mutta ... jotain.
+- udp_client  | Sisältää esiasteen udp_clientistä. Apinoitu ESP:esimerkeistä. Tällä hetkellä laittaa viestin ja odottaa vastausta. 
+                Jos vastausta ei kuulu niin sulkee socketin ja avaa uuden. 
+                Saa osoittimen commBufferista (txBuffer ja rxBuffer)
+
+
+main.c 
+Kaikki alustetaan app_mainissa.
+
+Orientation_task tuottaa tällä hetkellä random kokonaislukuja orientation structiin.
+MSG_handler_task ottaa orientation structista datan ja kopioi sen txBufferiin.
+Mutex blokkaa muistin sorkkimisen kunnes orientation buffer on kopioitu txBufferiin.
+
+Jatkokehitysajatuksena rengaspuskuriin liikedata ja sieltä data txBufferiin. 
+Mahdollisesti kans jonkinlainen suodatus tms puskurista jos suodatusta ei ole jo tehty.
+Tätä varten joitakin koodinpätkiä kirjoitettu. Mahdollisesti kanssa joku handlaus rxBufferih datalle(?)
+
+
+- Akseli

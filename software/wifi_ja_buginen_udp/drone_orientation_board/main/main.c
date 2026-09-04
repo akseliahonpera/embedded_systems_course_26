@@ -18,7 +18,6 @@
 #define ORIENTATION_BUFFER_SIZE 32
 
 
-void sendWifiLarp(struct Orientation*msg);
 
 void init_semaphore( void * pvParameters );
 
@@ -94,13 +93,6 @@ static void orientation_task(void *arg){
 vTaskDelete(NULL);
 }
 
-void sendWifiLarp(struct Orientation*msg){
-    printf("\n%d , %d, %d, %d, %d, %d, %d, %d, %d",msg->x,msg->y,msg->z,msg->ax,msg->ay,msg->az,msg->latitude,msg->longitude,msg->time);
-    printf("\nwifi message sent");
-}
-void receiveWifiLarp(){
-    printf("\nwifi msg rcvd");
-}
 
 void init_semaphore( void * pvParameters ){
     struct Common_pointers* c_ptrs= (struct Common_pointers*)pvParameters;
