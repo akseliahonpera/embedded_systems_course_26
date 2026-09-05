@@ -38,8 +38,8 @@ typedef struct
 
 typedef struct
 {
-    double latitude;
-    double longtitude;
+    float latitude;
+    float longtitude;
     bool has_fix;
 } gps_data_t;
 //--------------------------------------------------------------------------------------------------

@@ -12,6 +12,7 @@
 
 #include "types.h"
 #include "nmea_parser.h"
+#include "esp_timer.h"
 
 static const char *TAG = "GPS";
 
@@ -32,7 +33,6 @@ static const char *TAG = "GPS";
 #define TIME_ZONE (+3)   // Oulu Time
 #define YEAR_BASE (2000) // date in GPS starts from 2000
 
-static TaskHandle_t gps_task_handle;
 
 // Queue handle (to fusion task)
 static QueueHandle_t fusion_queue;
@@ -82,49 +82,60 @@ static void gps_event_handler(void *event_handler_arg, esp_event_base_t event_ba
     case GPS_UPDATE:
         gps = (gps_t *)event_data;
 
-        ESP_LOGI(TAG, "%s", "--------------------------------------------------------------------------------");
-
+        const bool has_fix =
+            gps->valid &&
+            gps->fix != GPS_FIX_INVALID &&
+            gps->fix_mode != GPS_MODE_INVALID;
 
         ESP_LOGI(TAG,
-                 "Validity: (GLL/RMC)=%s, fix=%s, mode=%s",
-                 gps->valid ? "valid" : "invalid",
+                 "\n"
+                 "===================== GPS UPDATE =====================\n"
+                 " Navigation : %-7s | Fix: %-7s | Mode: %s\n"
+                 " UTC date   : %04u-%02u-%02u\n"
+                 " UTC time   : %02u:%02u:%02u.%03u\n"
+                 " Position   : lat=% .7f deg, lon=% .7f deg\n"
+                 " Altitude   : %.2f m\n"
+                 " Motion     : %.3f m/s, course=%.2f deg, variation=%.2f deg\n"
+                 " Precision  : HDOP=%.2f, PDOP=%.2f, VDOP=%.2f\n"
+                 " Satellites : %u used, %u in view\n"
+                 "======================================================",
+                 has_fix ? "VALID" : "INVALID",
                  gps_fix_name(gps->fix),
-                 gps_mode_name(gps->fix_mode));
-
-        ESP_LOGI(TAG,
-                 "Time: %02u:%02u:%02u.%03u UTC",
+                 gps_mode_name(gps->fix_mode),
+                 (unsigned)(YEAR_BASE + gps->date.year),
+                 (unsigned)gps->date.month,
+                 (unsigned)gps->date.day,
                  (unsigned)gps->tim.hour,
                  (unsigned)gps->tim.minute,
                  (unsigned)gps->tim.second,
-                 (unsigned)gps->tim.thousand);
-
-        ESP_LOGI(TAG,
-                 "Position: latitude=%.7f°, longitude=%.7f°",
+                 (unsigned)gps->tim.thousand,
                  gps->latitude,
-                 gps->longitude);
-
-        ESP_LOGI(TAG,
-                 "Altitude: %.2f m",
-                 gps->altitude);
-
-        ESP_LOGI(TAG,
-                 "Motion: speed=%.3f m/s, course=%.2f°, variation=%.2f°",
+                 gps->longitude,
+                 gps->altitude,
                  gps->speed,
                  gps->cog,
-                 gps->variation);
-
-        ESP_LOGI(TAG,
-                 "DOP: HDOP=%.2f, PDOP=%.2f, VDOP=%.2f",
+                 gps->variation,
                  gps->dop_h,
                  gps->dop_p,
-                 gps->dop_v);
-
-        ESP_LOGI(TAG,
-                 "Satellites: in-use=%u, in-view=%u",
+                 gps->dop_v,
                  (unsigned)gps->sats_in_use,
                  (unsigned)gps->sats_in_view);
 
-        ESP_LOGI(TAG, "%s", "--------------------------------------------------------------------------------");
+        sensor_msg_t msg = {
+            .type = SENSOR_GPS,
+            .timestamp = esp_timer_get_time(),
+            .data.gps = {
+                .latitude = gps->latitude,
+                .longtitude = gps->longitude,
+                .has_fix = has_fix,
+            },
+        };
+
+        if (xQueueSend(fusion_queue, &msg, 0) != pdTRUE)
+        {
+            ESP_LOGW(TAG, "Fusion queue full; GPS update discarded");
+        }
+
         break;
     default:
         break;
