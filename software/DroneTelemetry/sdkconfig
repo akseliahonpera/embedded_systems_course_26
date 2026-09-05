@@ -937,17 +937,11 @@ CONFIG_NMEA_PARSER_TASK_PRIORITY=2
 #
 # At least one statement must be selected
 #
-# default:
 CONFIG_NMEA_STATEMENT_GGA=y
-# default:
 CONFIG_NMEA_STATEMENT_GSA=y
-# default:
 CONFIG_NMEA_STATEMENT_GSV=y
-# default:
 CONFIG_NMEA_STATEMENT_RMC=y
-# default:
 CONFIG_NMEA_STATEMENT_GLL=y
-# default:
 CONFIG_NMEA_STATEMENT_VTG=y
 # end of NMEA Statement Support
 # end of Example Configuration
