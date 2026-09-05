@@ -84,8 +84,9 @@ static void gps_event_handler(void *event_handler_arg, esp_event_base_t event_ba
 
         ESP_LOGI(TAG, "%s", "--------------------------------------------------------------------------------");
 
+
         ESP_LOGI(TAG,
-                 "Validity: RMC=%s, fix=%s, mode=%s",
+                 "Validity: (GLL/RMC)=%s, fix=%s, mode=%s",
                  gps->valid ? "valid" : "invalid",
                  gps_fix_name(gps->fix),
                  gps_mode_name(gps->fix_mode));
