@@ -60,7 +60,9 @@ struct Mesh
         *transform = *other.transform;
     }
     friend void swap(Mesh &a, Mesh &b) {
-        std::swap(*a.transform, *b.transform);
+        using std::swap;
+
+        swap(*a.transform, *b.transform);
         swap(a.vertices, b.vertices);
         swap(a.uvs, b.uvs);
         swap(a.normals, b.normals);

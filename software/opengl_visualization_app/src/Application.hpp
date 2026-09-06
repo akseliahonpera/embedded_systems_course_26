@@ -2,6 +2,20 @@
 
 #include "Camera.hpp"
 #include "Mesh.hpp"
+#include <array>
+#include "Server.hpp"
+
+struct DroneModel
+{
+    DroneModel();
+
+    void render(const Camera &cam);
+    void update(float deltaTime);
+
+    Mesh body;
+    std::array<Mesh, 4> propellers;
+};
+
 
 struct Application
 {
@@ -13,6 +27,7 @@ struct Application
     void windowResized(int new_width, int new_height);
 private:
     void updateGui();
-    Mesh monkey;
+    DroneModel drone;
     Camera cam;
+    Server server;
 };
