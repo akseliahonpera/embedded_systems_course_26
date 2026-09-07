@@ -22,7 +22,8 @@ esp_err_t gps_init(QueueHandle_t fusion_queue_handle);
  * Writes are serialized with a mutex. Waits up to one second for the mutex
  * and up to one second for UART TX completion. ESP_OK means transmitted,
  * not acknowledged by the module. Replies use the existing NMEA event handler.
- * No commands are sent automatically; the terminal menu calls this function.
+ * The console task also configures and queries SBAS DGPS at startup and
+ * after software wake/full cold restart.
  * Returns ESP_ERR_INVALID_STATE before initialization, ESP_ERR_INVALID_ARG
  * for malformed packets, ESP_ERR_INVALID_CRC for bad checksums,
  * ESP_ERR_INVALID_SIZE for oversized packets, ESP_FAIL for an incomplete write,
