@@ -447,6 +447,12 @@ out:
  */
 static esp_err_t gps_decode(esp_gps_t *esp_gps, size_t len)
 {
+    // PMTK replies can contain long firmware strings. Forward the whole line
+    // before parsing NMEA fields into the small item_str buffer.
+    if (strncmp((const char *)esp_gps->buffer, "$PMTK", 5) == 0) {
+        return esp_event_post_to(esp_gps->event_loop_hdl, ESP_NMEA_EVENT, GPS_UNKNOWN,
+                                 esp_gps->buffer, len, pdMS_TO_TICKS(100));
+    }
     const uint8_t *d = esp_gps->buffer;
     while (*d) {
         /* Start of a statement */
