@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils.hpp"
 #include <string>
 #include <queue>
 #include <thread>
@@ -15,26 +16,54 @@ struct  __attribute__((__packed__)) Datagram
     float rotation[3];
     float pressure;
     float temperature;
-    float estimated_height;
 
     int packet_num;
     float time;
 };
 
+class CompareDatagramPacketNum
+{
+public:
+    bool operator() (const Datagram &a, const Datagram &b)
+    {
+        return (a.packet_num > b.packet_num);
+    }
+};
+
+typedef std::priority_queue<Datagram, std::vector<Datagram>, CompareDatagramPacketNum> DatagramBuffer;
+
 struct Client
 {
     Client(std::string addr) {
+        reset();
         client_addr = addr;
     }
 
     std::string client_addr;
 
-    void queueDatagram(const Datagram &dg);
-    bool dequeueDatagram(Datagram &dg);
-    bool dataAvailable();
+    void pushDatagram(const Datagram &dg);
+    bool popDatagram(Datagram &dg);
+    size_t dataAvailable();
+
+    void reset();
+
+    float lastReceiveServerTime() {
+        return last_receive_server_time;
+    }
+    float packetLoss();
+
 private:
-    std::queue<Datagram> buffer;
+    DatagramBuffer buffer;
     std::mutex buffer_lock;
+
+    float last_receive_server_time;
+
+    int last_received_packet_num;
+    int last_popped_packet_num;
+
+    int first_received_packet_num;
+
+    uint64_t received_mask;
 };
 
 typedef std::shared_ptr<Client> ClientPtr;

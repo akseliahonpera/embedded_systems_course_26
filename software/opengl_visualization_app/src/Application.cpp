@@ -4,6 +4,9 @@
 #include "imgui/imgui.h"
 #include "MeshRenderer.hpp"
 #include "Utils.hpp"
+#include <unordered_map>
+
+constexpr float client_timeout_time = 5.0f;
 
 DroneModel::DroneModel()
 {
@@ -27,6 +30,28 @@ DroneModel::DroneModel()
         propellers[i].transform->position.z = prop_locations[i].y;
         propellers[i].transform->rotation.y += 0.3*i;
     }
+}
+
+void ClientState::updateData(ClientPtr client)
+{
+    if (client->client_addr != client_addr) {
+        client_addr = client->client_addr;
+    }
+
+    while (client->dataAvailable()) {
+
+        Datagram dg;
+        if (client->popDatagram(dg)) {
+
+            rotation = glm::vec3(dg.rotation[0], dg.rotation[1], dg.rotation[2]);
+            coordinates = glm::vec2(dg.location[0], dg.location[1]);
+            pressure = dg.pressure;
+            temperature = dg.temperature;
+
+        }
+    }
+
+    packet_loss = client->packetLoss();
 }
 
 void DroneModel::render(const Camera &cam)
@@ -69,10 +94,38 @@ void Application::render()
 
 void Application::updateGui()
 {
+    glm::vec3 rotation(0.0f);
+    glm::vec2 coordinates(0.0f);
+    float pressure = 0;
+    float temperature = 0;
+
     ImGui::NewFrame();
 
+    ImGui::Begin("Clients");
+
+    for (auto &[addr, client_state] : active_clients) {
+        ImGui::Text("%s Packet loss %.1f%%", addr.c_str(), client_state.packet_loss*100.0f);
+
+        if (addr == show_client_addr) {
+            rotation = client_state.rotation;
+            coordinates = client_state.coordinates;
+            pressure = client_state.pressure;
+            temperature = client_state.temperature;
+        } else {
+            ImGui::SameLine();
+            ImGui::PushID(std::hash<std::string>{}(addr));
+            if (ImGui::Button("Track")) {
+                show_client_addr = addr;
+            }
+            ImGui::PopID();
+        }
+    }
+
+    ImGui::End();
+
+
     ImGui::Begin("Rotation");
-    ImGui::Text("Pitch %.2f, Yaw %.2f, Roll %.2f", 0.0f, 0.0f, 0.0f);
+    ImGui::Text("Pitch %.2f, Yaw %.2f, Roll %.2f", rotation.x, rotation.y, rotation.z);
     if (ImGui::Button("Calibrate")) {
         std::cout << "blablaa" << std::endl;
     }
@@ -80,14 +133,14 @@ void Application::updateGui()
     ImGui::End();
 
     ImGui::Begin("Location");
-    ImGui::Text("Latitude %.4f, Longitude %.4f", 0.0f, 0.0f);
+    ImGui::Text("Latitude %.4f, Longitude %.4f", coordinates.x, coordinates.y);
 
     ImGui::End();
 
     ImGui::Begin("Pressure");
 
-    ImGui::Text("%.2f hPa", 0.0f);
-    ImGui::Text("Estimated height %.1f m", 0.0f);
+    ImGui::Text("%.2f hPa", pressure);
+    ImGui::Text("Estimated height %.1f m", temperature);
     ImGui::SameLine();
     if (ImGui::Button("Reset zero")) {
         std::cout << "blabalaa" << std::endl;
@@ -98,6 +151,20 @@ void Application::updateGui()
 
 void Application::update(float deltaTime)
 {
+    float curr_time = Utils::getTimeStamp();
+    for (auto &clt : server.getClients()) {
+        if (curr_time - clt->lastReceiveServerTime() > client_timeout_time) {
+            if (active_clients.find(clt->client_addr) != active_clients.end()) {
+                active_clients.erase(clt->client_addr);
+            }
+            continue;
+        }
+        if (active_clients.find(clt->client_addr) == active_clients.end()) {
+            active_clients[clt->client_addr] = ClientState();
+        }
+        active_clients[clt->client_addr].updateData(clt);
+    }
+
     updateGui();
     drone.update(deltaTime);
 }

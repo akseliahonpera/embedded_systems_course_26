@@ -1,34 +1,82 @@
 #include "Server.hpp"
+#include "Utils.hpp"
 #include <cstring>
 #include <iostream>
+#include <bit>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <unistd.h>
 
+constexpr int DEDUBLICATION_WINDOW = 64;
 
-void Client::queueDatagram(const Datagram &dg) {
-    std::lock_guard guard(buffer_lock);
-    buffer.push(dg);
+float Client::packetLoss() {
+    return 1.0f - (static_cast<float>(std::popcount<uint64_t>(received_mask)) /
+                   std::min(64, last_received_packet_num - first_received_packet_num + 1));
 }
 
-bool Client::dequeueDatagram(Datagram &dg) {
+void Client::reset()
+{
+    buffer = DatagramBuffer();
+    last_receive_server_time = 0;
+    last_popped_packet_num = -1;
+    last_received_packet_num = -1;
+    received_mask = 0;
+    first_received_packet_num = -1;
+}
+
+void Client::pushDatagram(const Datagram &dg) {
+    float server_time = Utils::getTimeStamp();
+
+    std::lock_guard guard(buffer_lock);
+
+    if (server_time - last_receive_server_time > 5.0f) {
+        reset();
+    }
+    if (dg.packet_num > last_popped_packet_num &&
+        dg.packet_num + DEDUBLICATION_WINDOW > last_received_packet_num) {
+
+        if (dg.packet_num > last_received_packet_num) {
+            received_mask <<= dg.packet_num - last_received_packet_num;
+            last_received_packet_num = dg.packet_num;
+        }
+        uint64_t seq_mask = 1ull << (last_received_packet_num - dg.packet_num);
+        if ((received_mask & seq_mask) != 0) {
+            std::cout << "Dublicate packet dropped!" << std::endl;
+            return;
+        }
+        received_mask |= seq_mask;
+
+        last_receive_server_time = server_time;
+
+        if (first_received_packet_num < 0) {
+            first_received_packet_num = dg.packet_num;
+        }
+
+        buffer.push(dg);
+
+    }
+}
+
+bool Client::popDatagram(Datagram &dg) {
     std::lock_guard guard(buffer_lock);
     if (buffer.empty()) {
         return false;
     }
 
-    dg = buffer.front();
+    dg = buffer.top();
     buffer.pop();
+
+    last_popped_packet_num = dg.packet_num;
 
     return true;
 }
 
-bool Client::dataAvailable()
+size_t Client::dataAvailable()
 {
     std::lock_guard guard(buffer_lock);
-    return !buffer.empty();
+    return buffer.size();
 }
 
 Server::Server(int port)
@@ -99,12 +147,11 @@ void Server::serverThread()
 
         std::cout << "Received data from " << client_addr << std::endl;
 
-        if (known_clients.find(client_addr) != known_clients.end()) {
+        if (known_clients.find(client_addr) == known_clients.end()) {
             std::lock_guard lock(clients_mutex);
             known_clients[client_addr] = std::make_shared<Client>(client_addr);
         }
-
-        known_clients[client_addr]->queueDatagram(dg);
+        known_clients[client_addr]->pushDatagram(dg);
     }
     close(sockfd);
 }
