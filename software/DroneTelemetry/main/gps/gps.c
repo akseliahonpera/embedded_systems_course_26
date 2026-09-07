@@ -61,6 +61,45 @@ typedef enum {
 
 static atomic_int gps_aic_state = GPS_AIC_UNKNOWN;
 
+typedef enum {
+    GPS_CHN_UNKNOWN,
+    GPS_CHN_DISABLED,
+    GPS_CHN_ENABLED,
+    GPS_CHN_ENABLING,
+    GPS_CHN_DISABLING,
+} gps_channel_state_t;
+
+static atomic_int gps_channel_state = GPS_CHN_UNKNOWN;
+
+static const char *gps_channel_state_name(void)
+{
+    switch (atomic_load(&gps_channel_state)) {
+    case GPS_CHN_DISABLED: return "DISABLED (confirmed)";
+    case GPS_CHN_ENABLED: return "ENABLED (confirmed)";
+    case GPS_CHN_ENABLING: return "UNKNOWN (waiting for enable acknowledgment)";
+    case GPS_CHN_DISABLING: return "UNKNOWN (waiting for disable acknowledgment)";
+    default: return "UNKNOWN (not confirmed since startup/reset)";
+    }
+}
+
+// PMTK314 field 18 controls PMTKCHN; zero disables it, nonzero enables it.
+static int gps_channel_request_state(const char *packet)
+{
+    const char *field = packet + 9; // Skip "$PMTK314,".
+    for (int i = 0; i < 18; i++) {
+        field += strcspn(field, ",*");
+        if (*field != ',') {
+            return GPS_CHN_UNKNOWN; // Includes the restore-defaults command.
+        }
+        field++;
+    }
+    size_t digits = strspn(field, "0123456789");
+    if (digits == 0 || (field[digits] != '*' && field[digits] != ',')) {
+        return GPS_CHN_UNKNOWN;
+    }
+    return strspn(field, "0") == digits ? GPS_CHN_DISABLING : GPS_CHN_ENABLING;
+}
+
 static const char *gps_aic_state_name(void)
 {
     switch (atomic_load(&gps_aic_state)) {
@@ -123,6 +162,16 @@ static esp_err_t gps_write_uart(const char *data, size_t length)
     bool sets_aic = length == sizeof("$PMTK286,1*23\r\n") - 1 &&
                     strncmp(data, "$PMTK286,", 9) == 0 &&
                     (data[9] == '0' || data[9] == '1');
+    bool sets_channel_output = strncmp(data, "$PMTK314,", 9) == 0;
+    if (sets_channel_output) {
+        int state = atomic_load(&gps_channel_state);
+        if (state == GPS_CHN_ENABLING || state == GPS_CHN_DISABLING) {
+            xSemaphoreGive(gps_tx_mutex);
+            ESP_LOGW(TAG, "Still waiting for the previous NMEA output acknowledgment");
+            return ESP_ERR_INVALID_STATE;
+        }
+        atomic_store(&gps_channel_state, gps_channel_request_state(data));
+    }
     if (sets_aic) {
         int state = atomic_load(&gps_aic_state);
         if (state == GPS_AIC_ENABLING || state == GPS_AIC_DISABLING) {
@@ -134,6 +183,7 @@ static esp_err_t gps_write_uart(const char *data, size_t length)
         atomic_store(&gps_aic_state, data[9] == '1' ? GPS_AIC_ENABLING : GPS_AIC_DISABLING);
     } else if (strncmp(data, "$PMTK104*", 9) == 0 || strncmp(data, "$PMTK161,", 9) == 0) {
         atomic_store(&gps_aic_state, GPS_AIC_UNKNOWN);
+        atomic_store(&gps_channel_state, GPS_CHN_UNKNOWN);
     }
     int written = uart_write_bytes(UART_NUM, data, length);
     esp_err_t err = written == (int)length
@@ -141,6 +191,9 @@ static esp_err_t gps_write_uart(const char *data, size_t length)
                         : ESP_FAIL;
     if (sets_aic && err != ESP_OK) {
         atomic_store(&gps_aic_state, GPS_AIC_UNKNOWN);
+    }
+    if (sets_channel_output && err != ESP_OK) {
+        atomic_store(&gps_channel_state, GPS_CHN_UNKNOWN);
     }
     xSemaphoreGive(gps_tx_mutex);
     return err;
@@ -160,7 +213,7 @@ esp_err_t gps_send_command(const char *packet)
     return err;
 }
 
-static void gps_update_aic_from_reply(const char *reply)
+static void gps_update_settings_from_reply(const char *reply)
 {
     gps_uart_packet_t packet;
     // Raw RX is still printed, but corrupt replies must not confirm a state.
@@ -170,6 +223,30 @@ static void gps_update_aic_from_reply(const char *reply)
     if (strncmp(packet.data, "$PMTK010,001*", 13) == 0 ||
         strncmp(packet.data, "$PMTK011,", 9) == 0) {
         atomic_store(&gps_aic_state, GPS_AIC_UNKNOWN);
+        atomic_store(&gps_channel_state, GPS_CHN_UNKNOWN);
+        return;
+    }
+    if (strncmp(packet.data, "$PMTKCHN,", 9) == 0) {
+        int state = atomic_load(&gps_channel_state);
+        // Reports buffered before an output change must not consume its ACK.
+        if (state != GPS_CHN_ENABLING && state != GPS_CHN_DISABLING) {
+            atomic_compare_exchange_strong(&gps_channel_state, &state, GPS_CHN_ENABLED);
+        }
+        return;
+    }
+    if (packet.length == sizeof("$PMTK001,314,3*36\r\n") - 1 &&
+        strncmp(packet.data, "$PMTK001,314,", 13) == 0 &&
+        packet.data[13] >= '0' && packet.data[13] <= '3') {
+        int pending = atomic_load(&gps_channel_state);
+        if (pending == GPS_CHN_ENABLING || pending == GPS_CHN_DISABLING) {
+            int confirmed = packet.data[13] == '3'
+                                ? (pending == GPS_CHN_ENABLING ? GPS_CHN_ENABLED : GPS_CHN_DISABLED)
+                                : GPS_CHN_UNKNOWN;
+            if (atomic_compare_exchange_strong(&gps_channel_state, &pending, confirmed)) {
+                ESP_LOGI(TAG, "PMTKCHN channel reports: %s (ACK status %c)",
+                         gps_channel_state_name(), packet.data[13]);
+            }
+        }
         return;
     }
     if (packet.length != sizeof("$PMTK001,286,3*3C\r\n") - 1 ||
@@ -196,7 +273,7 @@ static void gps_print_menu(void)
            "  1  Standby\n"
            "  2  Wake from command standby\n"
            "  3  Query firmware version\n"
-           "  4  Set selected NMEA output (disables GLL/VTG)\n"
+           "  4  Toggle PMTKCHN channel reports and printing (keeps standard NMEA enabled)\n"
            "  5  Enable interference cancellation\n"
            "  6  Full cold restart (clears GPS configuration)\n"
            "  7  Toggle GPS_UPDATE printing\n"
@@ -205,9 +282,10 @@ static void gps_print_menu(void)
            "  m  Show this menu\n"
            "GPS_UPDATE printing: %s\n"
            "Active Interference Cancellation: %s\n"
+           "PMTKCHN channel reports: %s\n"
            "Press a key to select an action.\n",
            atomic_load_explicit(&gps_update_print_enabled, memory_order_relaxed) ? "ON" : "OFF",
-           gps_aic_state_name());
+           gps_aic_state_name(), gps_channel_state_name());
     fflush(stdout);
 }
 
@@ -231,9 +309,22 @@ static void gps_handle_menu_key(int key)
     case '3':
         packet = "$PMTK605*31";
         break;
-    case '4':
-        packet = "$PMTK314,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0*35";
+    case '4': {
+        int state = atomic_load(&gps_channel_state);
+        if (state == GPS_CHN_ENABLING || state == GPS_CHN_DISABLING) {
+            ESP_LOGW(TAG, "Wait for the channel report acknowledgment before toggling again");
+            return;
+        }
+        // Keep GLL, RMC, VTG, GGA, GSA and GSV enabled in both modes.
+        // If the current state is unknown, establish DISABLED first.
+        if (state == GPS_CHN_UNKNOWN) {
+            ESP_LOGI(TAG, "PMTKCHN state unknown; requesting DISABLED first");
+        }
+        packet = state == GPS_CHN_DISABLED
+                     ? "$PMTK314,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1*29"
+                     : "$PMTK314,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28";
         break;
+    }
     case '5':
         packet = "$PMTK286,1*23";
         break;
@@ -329,10 +420,16 @@ static void gps_event_handler(void *event_handler_arg, esp_event_base_t event_ba
 
     case GPS_UNKNOWN: {
         const char *reply = (const char *)event_data;
+        if (reply != NULL && strncmp(reply, "$PMTKCHN,", 9) == 0) {
+            // Print reports whenever the GPS sends them; option 4 controls transmission.
+            ESP_LOGI(TAG, "GPS channel status: %.*s", (int)strcspn(reply, "\r\n"), reply);
+            gps_update_settings_from_reply(reply);
+            break;
+        }
         if (reply != NULL && strncmp(reply, "$PMTK", 5) == 0) {
             // Command replies remain visible when GPS_UPDATE printing is off.
             ESP_LOGI(TAG, "UART RX: %.*s", (int)strcspn(reply, "\r\n"), reply);
-            gps_update_aic_from_reply(reply);
+            gps_update_settings_from_reply(reply);
         } else {
             ESP_LOGW(TAG, "Disabled or unknown NMEA statement: %s", reply != NULL ? reply : "(null)");
         }
