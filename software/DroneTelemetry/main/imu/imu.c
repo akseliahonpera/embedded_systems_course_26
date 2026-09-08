@@ -76,7 +76,7 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
             float yaw_rad = 0.0f;
 
             // kvaterniosta yaw pitch roll (euler.c)
-            q_to_ypr(r, i, j, k, &roll_rad, &pitch_rad, &yaw_rad);
+            q_to_ypr(r, i, j, k, &yaw_rad, &pitch_rad, &roll_rad);
 
             float roll_deg = roll_rad * (180.0f / 3.14159265f);
             float pitch_deg = pitch_rad * (180.0f / 3.14159265f);
@@ -163,6 +163,8 @@ esp_err_t imu_init(QueueHandle_t fusion_queue_handle, i2c_master_bus_handle_t i2
         ESP_LOGE(TAG, "Could not enable rotation vector (%d)", rc);
         return ESP_FAIL;
     }
+
+
 
     esp_err_t err = gpio_install_isr_service(0);
     if (err != ESP_OK && err != ESP_ERR_INVALID_STATE)
