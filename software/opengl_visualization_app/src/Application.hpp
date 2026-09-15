@@ -5,12 +5,16 @@
 #include <array>
 #include "Server.hpp"
 
+struct ClientState;
+
 struct DroneModel
 {
     DroneModel();
 
     void render(const Camera &cam);
-    void update(float deltaTime);
+    void update(float deltaTime, ClientState *show_client);
+
+    std::shared_ptr<Transform> transform;
 
     Mesh body;
     std::array<Mesh, 4> propellers;

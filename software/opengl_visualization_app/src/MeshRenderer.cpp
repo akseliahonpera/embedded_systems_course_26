@@ -1,6 +1,5 @@
 #include "Utils.hpp"
 #include "MeshRenderer.hpp"
-#include <glm/gtc/type_ptr.hpp>
 
 MeshRenderer::MeshRenderer() {
     vertex_src_text = Utils::readTextFile("shaders/vertex.glsl");

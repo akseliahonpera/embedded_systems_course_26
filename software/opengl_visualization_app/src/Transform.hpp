@@ -1,6 +1,7 @@
 #pragma once
 
 #include "includes.hpp"
+#include <glm/gtc/quaternion.hpp>
 
 struct Transform
 {

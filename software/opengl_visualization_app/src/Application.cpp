@@ -1,4 +1,4 @@
-#include <glm/ext/scalar_constants.hpp>
+#include <glm/gtc/constants.hpp>
 #include <iostream>
 #include "Application.hpp"
 #include "imgui/imgui.h"
@@ -6,13 +6,33 @@
 #include "Utils.hpp"
 #include <unordered_map>
 
+
 constexpr float client_timeout_time = 5.0f;
+
+
+glm::vec3 convertAngles(glm::vec3 angles)
+{
+    float roll  = glm::radians(angles[0]);
+    float pitch = glm::radians(angles[1]);
+    float yaw   = glm::radians(angles[2]);
+
+    glm::quat q = glm::angleAxis(yaw,   glm::vec3(0.0f, 1.0f, 0.0f))
+                * glm::angleAxis(pitch, glm::vec3(1.0f, 0.0f, 0.0f))
+                * glm::angleAxis(roll,  glm::vec3(0.0f, 0.0f, 1.0f));
+
+    return glm::eulerAngles(q);
+}
+
 
 DroneModel::DroneModel()
 {
+    transform = std::make_shared<Transform>();
+
     body = Mesh::fromObj(ObjLoader::loadObj("assets/drone.obj"));
 
     body.transform->scale = glm::vec3(0.4f);
+    body.transform->setParent(transform);
+    body.transform->rotation.y += glm::half_pi<float>();
 
     Mesh prop = Mesh::fromObj(ObjLoader::loadObj("assets/prop.obj"));
 
@@ -65,10 +85,11 @@ void DroneModel::render(const Camera &cam)
     }
 }
 
-void DroneModel::update(float deltaTime)
+void DroneModel::update(float deltaTime, ClientState *show_client)
 {
-    body.transform->rotation.x = glm::sin(Utils::getTimeStamp()*0.5f)*0.5f;
-    body.transform->rotation.y = glm::cos(Utils::getTimeStamp()*1.5f)*0.75f - glm::pi<float>()/2;
+    if (show_client) {
+        transform->rotation = convertAngles(show_client->rotation);
+    }
 
     for (auto &prop : propellers) {
         prop.transform->rotation.y += 25.0f * deltaTime;
@@ -125,7 +146,7 @@ void Application::updateGui()
 
 
     ImGui::Begin("Rotation");
-    ImGui::Text("Pitch %.2f, Yaw %.2f, Roll %.2f", rotation.x, rotation.y, rotation.z);
+    ImGui::Text("Roll %.2f, Pitch %.2f, Yaw %.2f", rotation[0], rotation[1], rotation[2]);
     if (ImGui::Button("Calibrate")) {
         std::cout << "blablaa" << std::endl;
     }
@@ -166,7 +187,13 @@ void Application::update(float deltaTime)
     }
 
     updateGui();
-    drone.update(deltaTime);
+
+    ClientState *show_client = nullptr;
+    if (active_clients.find(show_client_addr) != active_clients.end()) {
+        show_client = &active_clients[show_client_addr];
+    }
+
+    drone.update(deltaTime, show_client);
 }
 
 void Application::windowResized(int new_width, int new_height)
