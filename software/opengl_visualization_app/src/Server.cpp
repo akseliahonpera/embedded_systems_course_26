@@ -8,8 +8,10 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <cstdlib>
 
 constexpr int DEDUBLICATION_WINDOW = 64;
+constexpr float CTRL_RESEND_TIMER = 1.0f;
 
 float Client::packetLoss() {
     return 1.0f - (static_cast<float>(std::popcount<uint64_t>(received_mask)) /
@@ -79,6 +81,50 @@ size_t Client::dataAvailable()
     return buffer.size();
 }
 
+void Client::sendControlCommand(ControlCommand cmd)
+{
+    std::lock_guard guard(ctrl_cmd_mutex);
+
+    ControlDatagram dg;
+    dg.command = cmd;
+    dg.packed_num = ctrl_cmd_sequence_num++;
+
+    ctrl_cmd_buffer.push_back({-1.0f, dg});
+}
+
+
+void Client::controlCommandAct(int packet_num)
+{
+    std::lock_guard guard(ctrl_cmd_mutex);
+
+    for (size_t i = 0; i < ctrl_cmd_buffer.size(); i++) {
+        if (ctrl_cmd_buffer[i].second.packed_num == packet_num) {
+            std::swap(ctrl_cmd_buffer[i], ctrl_cmd_buffer.back());
+            ctrl_cmd_buffer.pop_back();
+            return;
+        }
+    }
+}
+
+std::vector<ControlDatagram> Client::queuedControlCommands(bool reset_timer)
+{
+    float curr_time = Utils::getTimeStamp();
+
+    std::lock_guard guard(ctrl_cmd_mutex);
+
+    std::vector<ControlDatagram> dgs;
+
+    for (auto &[resend_time, ctrl_dg] : ctrl_cmd_buffer) {
+        if (curr_time > resend_time) {
+            resend_time = curr_time + CTRL_RESEND_TIMER;
+            dgs.push_back(ctrl_dg);
+        }
+    }
+    return dgs;
+}
+
+
+
 Server::Server(int port)
 {
     port_to_listen = port;
@@ -100,6 +146,20 @@ std::string sockaddr_to_string(const sockaddr_in& addr) {
     uint16_t port = ntohs(addr.sin_port);
 
     return std::string(ip_buffer) + ":" + std::to_string(port);
+}
+
+sockaddr_in string_to_sockaddr(std::string addr_str) {
+    sockaddr_in addr;
+    std::memset(&addr, 0, sizeof(sockaddr_in));
+
+    auto delim = addr_str.find(":");
+    std::string host = addr_str.substr(0, delim);
+    int port = std::atoi(addr_str.substr(delim+1, addr_str.length()-delim-1).c_str());
+
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(port);
+    inet_pton(AF_INET, host.c_str(), &addr.sin_addr);
+    return addr;
 }
 
 
@@ -127,25 +187,51 @@ void Server::serverThread()
 
 
     struct timeval tv;
-    tv.tv_sec = 2;
+    tv.tv_sec = 1;
     tv.tv_usec = 0;
     setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
 
     socklen_t len = sizeof(cliaddr);
 
     while (running) {
-        Datagram dg;
+        for (auto [client_addr, client] : known_clients) {
+            for (auto cmd : client->queuedControlCommands(true)) {
+                std::cout << "Sending CTRL packet with seq " << cmd.packed_num << " to " << client_addr << std::endl;
+
+                sockaddr_in saddr = string_to_sockaddr(client_addr);
+                sendto(sockfd, &cmd, sizeof(cmd), 0, (sockaddr*)&saddr, sizeof(sockaddr_in));
+            }
+        }
+
+        union {
+            Datagram dg;
+            ControlDatagram ctrl_dg;
+        };
 
         int received = recvfrom(sockfd, (char*)&dg, sizeof(dg), MSG_WAITALL, (struct sockaddr*)&cliaddr, &len);
+
+        std::string client_addr = sockaddr_to_string(cliaddr);
+
+        if (received == sizeof(ControlDatagram) && ctrl_dg.command == CMD_ACT) {
+            if (known_clients.find(client_addr) == known_clients.end()) {
+                std::cout << "Received act from unknown client!" << std::endl;
+                return;
+            }
+
+            std::cout << "Received ACT with seq " << ctrl_dg.packed_num << " from " << client_addr << std::endl;
+
+            known_clients[client_addr]->controlCommandAct(ctrl_dg.packed_num);
+
+            continue;
+        }
 
         if (received != sizeof(Datagram)) {
             std::cout << "No data received!" << std::endl;
             continue;
         }
 
-        std::string client_addr = sockaddr_to_string(cliaddr);
 
-        std::cout << "Received data from " << client_addr << std::endl;
+        //std::cout << "Received data from " << client_addr << std::endl;
 
         if (known_clients.find(client_addr) == known_clients.end()) {
             std::lock_guard lock(clients_mutex);
@@ -164,4 +250,13 @@ std::vector<ClientPtr> Server::getClients()
         clients.push_back(value);
     }
     return clients;
+}
+
+ClientPtr Server::getClient(std::string addr)
+{
+    std::lock_guard lock(clients_mutex);
+    if (known_clients.find(addr) == known_clients.end()) {
+        return nullptr;
+    }
+    return known_clients[addr];
 }

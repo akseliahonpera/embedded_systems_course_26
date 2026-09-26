@@ -1,6 +1,7 @@
 #include <glm/gtc/constants.hpp>
 #include <iostream>
 #include "Application.hpp"
+#include "Server.hpp"
 #include "imgui/imgui.h"
 #include "MeshRenderer.hpp"
 #include "Utils.hpp"
@@ -147,8 +148,13 @@ void Application::updateGui()
 
     ImGui::Begin("Rotation");
     ImGui::Text("Roll %.2f, Pitch %.2f, Yaw %.2f", rotation[0], rotation[1], rotation[2]);
-    if (ImGui::Button("Calibrate")) {
-        std::cout << "blablaa" << std::endl;
+    if (ImGui::Button("Calibrate IMU")) {
+        std::cout << "send IMU calcmd" << std::endl;
+        sendCommandToActiveClient(CMD_CALIBRATE_IMU);
+    }
+    if (ImGui::Button("Calibrate compass")) {
+        std::cout << "send compass calcmd" << std::endl;
+        sendCommandToActiveClient(CMD_CALIBRATE_COMPASS);
     }
 
     ImGui::End();
@@ -163,8 +169,9 @@ void Application::updateGui()
     ImGui::Text("%.2f hPa", pressure);
     ImGui::Text("Estimated height %.1f m", temperature);
     ImGui::SameLine();
-    if (ImGui::Button("Reset zero")) {
-        std::cout << "blabalaa" << std::endl;
+    if (ImGui::Button("Calibrate")) {
+        std::cout << "send barometer calcmd" << std::endl;
+        sendCommandToActiveClient(CMD_CALIBRATE_BAROMETER);
     }
 
     ImGui::End();
@@ -194,6 +201,14 @@ void Application::update(float deltaTime)
     }
 
     drone.update(deltaTime, show_client);
+}
+
+void Application::sendCommandToActiveClient(ControlCommand cmd)
+{
+    auto client = server.getClient(show_client_addr);
+    if (client != nullptr) {
+        client->sendControlCommand(cmd);
+    }
 }
 
 void Application::windowResized(int new_width, int new_height)

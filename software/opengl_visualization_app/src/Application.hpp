@@ -50,6 +50,7 @@ struct Application
     void update(float deltaTime);
     void windowResized(int new_width, int new_height);
 private:
+    void sendCommandToActiveClient(ControlCommand cmd);
     void updateGui();
     DroneModel drone;
     Camera cam;
