@@ -11,6 +11,25 @@
 //-------------------------------------------------------------------------------------------------
 // Custom lightweight data structures:
 
+typedef struct 
+{
+    float real;       // Quaternion real component
+    float i;          // Quaternion i-component
+    float j;          // Quaternion j-component
+    float k;          // Quaternion k-component
+    float accuracy;   // Accuracy estimate [radians]
+
+} imu_rotation_data_t;
+
+typedef struct 
+{
+    float acc_x;       
+    float acc_y;          
+    float acc_z;          
+
+} imu_acceleration_data_t;
+
+
 // Struct for barometer, derived from bmp5_defs.h
 typedef struct
 {
@@ -18,14 +37,18 @@ typedef struct
     float temperature;  // temperature (°C)
 } baro_data_t;
 
+
 // Struct for imu, derived from sh2_SensorValue.h
 typedef struct
 {
-    float real;       // Quaternion real component
-    float i;          // Quaternion i-component
-    float j;          // Quaternion j-component
-    float k;          // Quaternion k-component
-    float accuracy;   // Accuracy estimate [radians]
+    enum {ROTATION_DATA, ACCELERATION_DATA} data_type;
+    
+    union 
+    {
+        imu_rotation_data_t rotation_data;
+        imu_acceleration_data_t acceleration_data;
+    } data;
+
     uint8_t status;   // Reliability status of sensor (0=Unreliable ... 3=High)
     // From sh2_SensorValue.h:
     /* Status of a sensor
