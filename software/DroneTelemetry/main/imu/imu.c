@@ -32,9 +32,20 @@ static const char *TAG = "IMU";
 static TaskHandle_t imu_task_handle;
 static volatile bool imu_reset_complete;
 
-
 // Queue handle (to fusion task)
 static QueueHandle_t fusion_queue;
+
+static void IRAM_ATTR hint_isr_handler(void *arg)
+{
+    (void)arg;
+
+    BaseType_t higher_priority_task_woken = pdFALSE;
+    if (imu_task_handle != NULL)
+    {
+        vTaskNotifyGiveFromISR(imu_task_handle, &higher_priority_task_woken);
+        portYIELD_FROM_ISR(higher_priority_task_woken);
+    }
+}
 
 static void calculate_rotation_matrix(float r, float i, float j, float k, float matrix[3][3])
 {
@@ -59,55 +70,27 @@ static void calculate_rotation_matrix(float r, float i, float j, float k, float 
     matrix[2][0] = 2 * (xz - wy);
     matrix[2][1] = 2 * (yz + wx);
     matrix[2][2] = 1.0f - 2 * (xx + yy);
-
-
-}
-
-static bool normalize_quaternion(float* r, float* i, float* j, float* k) {
-
-    float norm = sqrtf(*r * *r + *i * *i + *j * *j + *k * *k);
-
-    if (!isfinite(norm) || norm < 1e-6f)
-    {
-        return false;
-    }
-
-    *r /= norm;
-    *i /= norm;
-    *j /= norm;
-    *k /= norm;
-
-    return true;
-
-}
-
-
-static void IRAM_ATTR hint_isr_handler(void *arg)
-{
-    (void)arg;
-
-    BaseType_t higher_priority_task_woken = pdFALSE;
-    if (imu_task_handle != NULL)
-    {
-        vTaskNotifyGiveFromISR(imu_task_handle, &higher_priority_task_woken);
-        portYIELD_FROM_ISR(higher_priority_task_woken);
-    }
 }
 
 static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
 {
     (void)cookie;
     sh2_SensorValue_t value;
-    sensor_msg_t msg;
-    msg.type = SENSOR_IMU; 
 
     if (sh2_decodeSensorEvent(&value, event) != SH2_OK)
     {
         return;
     }
 
-    // Toistaiseksi static ja täällä
-    static bool has_rotation_matrix = false;
+    sensor_msg_t msg;
+    msg.type = SENSOR_IMU;
+    msg.timestamp = esp_timer_get_time();
+
+    // static bool has_rotation_matrix = false;
+
+    // Ideana myöhemmin siirtää rotaatiomatriisin laskenta fuusiotaskiin
+    // ja poistaa kaikki paikalliset muuttujat täältä ja latoa arvot suoraan structeihin ja
+    // siitä fusionqueen.
     static float r, i, j, k;
     static float acc_x, acc_y, acc_z, world_acc_x, world_acc_y, world_acc_z;
     static float roll_rad, pitch_rad, yaw_rad;
@@ -121,12 +104,10 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
         j = value.un.rotationVector.j;
         k = value.un.rotationVector.k;
 
-        bool is_valid = normalize_quaternion(&r, &i, &j, &k);
-        if (!is_valid) return;
-        
         calculate_rotation_matrix(r, i, j, k, rotation_matrix);
+        // has_rotation_matrix = true;
+
         q_to_ypr(r, i, j, k, &yaw_rad, &pitch_rad, &roll_rad);
-        has_rotation_matrix = true;
 
         msg.data.imu.data_type = ROTATION_DATA;
         msg.data.imu.status = value.status;
@@ -134,31 +115,37 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
         msg.data.imu.data.rotation_data.i = i;
         msg.data.imu.data.rotation_data.j = j;
         msg.data.imu.data.rotation_data.k = k;
-    
+        msg.data.imu.data.rotation_data.yaw_angle = yaw_rad * (180.0f / 3.14159265f);
+        msg.data.imu.data.rotation_data.pitch_angle = pitch_rad * (180.0f / 3.14159265f);
+        msg.data.imu.data.rotation_data.roll_angle = roll_rad * (180.0f / 3.14159265f);
+
         break;
     case SH2_LINEAR_ACCELERATION:
         acc_x = value.un.linearAcceleration.x;
         acc_y = value.un.linearAcceleration.y;
         acc_z = value.un.linearAcceleration.z;
 
-        if (!has_rotation_matrix) return;
+        // if (!has_rotation_matrix) return;
 
         world_acc_x = rotation_matrix[0][0] * acc_x + rotation_matrix[0][1] * acc_y + rotation_matrix[0][2] * acc_z;
         world_acc_y = rotation_matrix[1][0] * acc_x + rotation_matrix[1][1] * acc_y + rotation_matrix[1][2] * acc_z;
         world_acc_z = rotation_matrix[2][0] * acc_x + rotation_matrix[2][1] * acc_y + rotation_matrix[2][2] * acc_z;
-    
-        
-        
+
+        msg.data.imu.data_type = ACCELERATION_DATA;
+        msg.data.imu.status = value.status;
+        msg.data.imu.data.acceleration_data.acc_x = world_acc_x;
+        msg.data.imu.data.acceleration_data.acc_y = world_acc_y;
+        msg.data.imu.data.acceleration_data.acc_z = world_acc_z;
+
         break;
     default:
         return;
     }
 
-
-    msg.timestamp = esp_timer_get_time();
-    xQueueSend(fusion_queue, &msg, 0);
-
-
+    if (xQueueSend(fusion_queue, &msg, 0) != pdTRUE)
+    {
+        ESP_LOGW(TAG, "Fusion queue full; IMU update discarded");
+    }
     // static TickType_t last_print_time = 0;
     // const TickType_t print_interval = pdMS_TO_TICKS(500);
     // TickType_t current_time = xTaskGetTickCount();

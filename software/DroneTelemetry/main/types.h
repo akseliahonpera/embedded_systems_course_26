@@ -18,6 +18,9 @@ typedef struct
     float j;          // Quaternion j-component
     float k;          // Quaternion k-component
     float accuracy;   // Accuracy estimate [radians]
+    float roll_angle;
+    float pitch_angle;
+    float yaw_angle;
 
 } imu_rotation_data_t;
 
@@ -25,8 +28,8 @@ typedef struct
 {
     float acc_x;       
     float acc_y;          
-    float acc_z;          
-
+    float acc_z;         
+    
 } imu_acceleration_data_t;
 
 
@@ -42,7 +45,7 @@ typedef struct
 typedef struct
 {
     enum {ROTATION_DATA, ACCELERATION_DATA} data_type;
-    
+
     union 
     {
         imu_rotation_data_t rotation_data;
@@ -99,7 +102,7 @@ typedef union {
 // This is the message sent to fusion task
 typedef struct {
     sensor_type_t type;
-    int timestamp;
+    int64_t timestamp;    // Some reason not uint64_t in esp_timer_get_time()
     sensor_payload_t data;
 } sensor_msg_t;
 
@@ -108,6 +111,21 @@ typedef struct {
     fusion_state_t state;
     int timestamp;
 } fusion_msg_t;
+
+
+typedef struct {
+    float position_east;
+    float position_north;
+    float position_up;      // Currently not used
+    float velocity_east;
+    float velocity_north;
+    float velocity_up;      // Currently not used
+    float origo_latitude;
+    float origo_longitude;
+    float origo_altitude;    // Currently not used
+
+} kalman_state;
+
 
 
 #endif
