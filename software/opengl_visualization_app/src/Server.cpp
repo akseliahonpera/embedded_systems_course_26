@@ -90,6 +90,10 @@ void Client::sendControlCommand(ControlCommand cmd)
     dg.packed_num = ctrl_cmd_sequence_num++;
 
     ctrl_cmd_buffer.push_back({-1.0f, dg});
+
+    if (cmd == CMD_PING) {
+        last_ping_time = Utils::getTimeStamp();
+    }
 }
 
 
@@ -99,11 +103,19 @@ void Client::controlCommandAct(int packet_num)
 
     for (size_t i = 0; i < ctrl_cmd_buffer.size(); i++) {
         if (ctrl_cmd_buffer[i].second.packed_num == packet_num) {
+            roundtrip_latency = Utils::getTimeStamp() - ctrl_cmd_buffer[i].first + CTRL_RESEND_TIMER;
+
             std::swap(ctrl_cmd_buffer[i], ctrl_cmd_buffer.back());
             ctrl_cmd_buffer.pop_back();
             return;
         }
     }
+}
+
+int Client::controlCommandsWaiting()
+{
+    std::lock_guard guard(ctrl_cmd_mutex);
+    return ctrl_cmd_buffer.size();
 }
 
 std::vector<ControlDatagram> Client::queuedControlCommands(bool reset_timer)
@@ -116,7 +128,9 @@ std::vector<ControlDatagram> Client::queuedControlCommands(bool reset_timer)
 
     for (auto &[resend_time, ctrl_dg] : ctrl_cmd_buffer) {
         if (curr_time > resend_time) {
-            resend_time = curr_time + CTRL_RESEND_TIMER;
+            if (reset_timer)
+                resend_time = curr_time + CTRL_RESEND_TIMER;
+
             dgs.push_back(ctrl_dg);
         }
     }
@@ -194,7 +208,14 @@ void Server::serverThread()
     socklen_t len = sizeof(cliaddr);
 
     while (running) {
+        float curr_time = Utils::getTimeStamp();
         for (auto [client_addr, client] : known_clients) {
+
+            if (!client->controlCommandsWaiting() &&
+                curr_time - client->getLastPingTime() > 1.0f) {
+                client->sendControlCommand(CMD_PING);
+            }
+
             for (auto cmd : client->queuedControlCommands(true)) {
                 std::cout << "Sending CTRL packet with seq " << cmd.packed_num << " to " << client_addr << std::endl;
 

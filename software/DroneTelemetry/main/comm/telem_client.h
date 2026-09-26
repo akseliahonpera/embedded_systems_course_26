@@ -11,10 +11,11 @@ typedef struct
 {
     udp_client_t *udp_client;
 
-    int32_t telem_packet_seq;
+    int32_t telem_pkt_seq;
     int ctrl_pkt_seq;
     uint64_t ctrl_pkt_seq_mask;
 
+    uint64_t last_valid_cmd_time;
 } telem_client_t;
 
 

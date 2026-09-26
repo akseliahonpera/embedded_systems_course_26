@@ -73,6 +73,7 @@ void ClientState::updateData(ClientPtr client)
     }
 
     packet_loss = client->packetLoss();
+    latency = client->getRoundTripLatency();
 }
 
 void DroneModel::render(const Camera &cam)
@@ -126,7 +127,7 @@ void Application::updateGui()
     ImGui::Begin("Clients");
 
     for (auto &[addr, client_state] : active_clients) {
-        ImGui::Text("%s Packet loss %.1f%%", addr.c_str(), client_state.packet_loss*100.0f);
+        ImGui::Text("%s Packet loss %.1f%%  Ping %.1f ms", addr.c_str(), client_state.packet_loss*100.0f, client_state.latency*1000.0f);
 
         if (addr == show_client_addr) {
             rotation = client_state.rotation;

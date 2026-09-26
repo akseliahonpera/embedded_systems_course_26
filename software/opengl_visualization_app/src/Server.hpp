@@ -84,7 +84,13 @@ struct Client
         return last_receive_server_time;
     }
     float packetLoss();
-
+    float getRoundTripLatency() {
+        return roundtrip_latency;
+    }
+    float getLastPingTime() {
+        return last_ping_time;
+    }
+    int controlCommandsWaiting();
     void controlCommandAct(int packet_num);
     std::vector<ControlDatagram> queuedControlCommands(bool reset_resend_timer);
 
@@ -100,6 +106,9 @@ private:
     int first_received_packet_num;
 
     uint64_t received_mask;
+
+    float roundtrip_latency;
+    float last_ping_time;
 
     std::mutex ctrl_cmd_mutex;
     int32_t ctrl_cmd_sequence_num;

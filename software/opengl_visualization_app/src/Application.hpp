@@ -35,6 +35,7 @@ struct ClientState
     float pressure;
     float temperature;
     float packet_loss;
+    float latency;
 
     std::string client_addr;
 
