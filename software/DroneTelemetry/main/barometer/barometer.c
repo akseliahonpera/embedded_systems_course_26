@@ -42,11 +42,11 @@ static void barometer_task(void *arg)
         pressure_pa = sensor_data.pressure;
         temperature_c = sensor_data.temperature;
 
-        ESP_LOGI(TAG,
-                 "Pressure: %.2f Pa (%.2f hPa), Temperature: %.2f C",
-                 pressure_pa,
-                 pressure_pa / 100.0f,
-                 temperature_c);
+        // ESP_LOGI(TAG,
+        //          "Pressure: %.2f Pa (%.2f hPa), Temperature: %.2f C",
+        //          pressure_pa,
+        //          pressure_pa / 100.0f,
+        //          temperature_c);
 
         xQueueSend(fusion_queue, &msg, 0);
     }

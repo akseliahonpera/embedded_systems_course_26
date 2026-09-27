@@ -87,39 +87,39 @@ static void gps_event_handler(void *event_handler_arg, esp_event_base_t event_ba
             gps->fix != GPS_FIX_INVALID &&
             gps->fix_mode != GPS_MODE_INVALID;
 
-        ESP_LOGI(TAG,
-                 "\n"
-                 "===================== GPS UPDATE =====================\n"
-                 " Navigation : %-7s | Fix: %-7s | Mode: %s\n"
-                 " UTC date   : %04u-%02u-%02u\n"
-                 " UTC time   : %02u:%02u:%02u.%03u\n"
-                 " Position   : lat=% .7f deg, lon=% .7f deg\n"
-                 " Altitude   : %.2f m\n"
-                 " Motion     : %.3f m/s, course=%.2f deg, variation=%.2f deg\n"
-                 " Precision  : HDOP=%.2f, PDOP=%.2f, VDOP=%.2f\n"
-                 " Satellites : %u used, %u in view\n"
-                 "======================================================",
-                 has_fix ? "VALID" : "INVALID",
-                 gps_fix_name(gps->fix),
-                 gps_mode_name(gps->fix_mode),
-                 (unsigned)(YEAR_BASE + gps->date.year),
-                 (unsigned)gps->date.month,
-                 (unsigned)gps->date.day,
-                 (unsigned)gps->tim.hour,
-                 (unsigned)gps->tim.minute,
-                 (unsigned)gps->tim.second,
-                 (unsigned)gps->tim.thousand,
-                 gps->latitude,
-                 gps->longitude,
-                 gps->altitude,
-                 gps->speed,
-                 gps->cog,
-                 gps->variation,
-                 gps->dop_h,
-                 gps->dop_p,
-                 gps->dop_v,
-                 (unsigned)gps->sats_in_use,
-                 (unsigned)gps->sats_in_view);
+        // ESP_LOGI(TAG,
+        //          "\n"
+        //          "===================== GPS UPDATE =====================\n"
+        //          " Navigation : %-7s | Fix: %-7s | Mode: %s\n"
+        //          " UTC date   : %04u-%02u-%02u\n"
+        //          " UTC time   : %02u:%02u:%02u.%03u\n"
+        //          " Position   : lat=% .7f deg, lon=% .7f deg\n"
+        //          " Altitude   : %.2f m\n"
+        //          " Motion     : %.3f m/s, course=%.2f deg, variation=%.2f deg\n"
+        //          " Precision  : HDOP=%.2f, PDOP=%.2f, VDOP=%.2f\n"
+        //          " Satellites : %u used, %u in view\n"
+        //          "======================================================",
+        //          has_fix ? "VALID" : "INVALID",
+        //          gps_fix_name(gps->fix),
+        //          gps_mode_name(gps->fix_mode),
+        //          (unsigned)(YEAR_BASE + gps->date.year),
+        //          (unsigned)gps->date.month,
+        //          (unsigned)gps->date.day,
+        //          (unsigned)gps->tim.hour,
+        //          (unsigned)gps->tim.minute,
+        //          (unsigned)gps->tim.second,
+        //          (unsigned)gps->tim.thousand,
+        //          gps->latitude,
+        //          gps->longitude,
+        //          gps->altitude,
+        //          gps->speed,
+        //          gps->cog,
+        //          gps->variation,
+        //          gps->dop_h,
+        //          gps->dop_p,
+        //          gps->dop_v,
+        //          (unsigned)gps->sats_in_use,
+        //          (unsigned)gps->sats_in_view);
 
         sensor_msg_t msg = {
             .type = SENSOR_GPS,

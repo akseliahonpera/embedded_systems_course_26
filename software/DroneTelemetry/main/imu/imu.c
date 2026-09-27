@@ -8,6 +8,7 @@
 #include "esp_attr.h"
 #include "esp_check.h"
 #include "esp_log.h"
+#include "esp_timer.h"
 #include "driver/gpio.h"
 
 #include "sh2.h"
@@ -17,6 +18,7 @@
 
 #include "types.h"
 #include "euler.h"
+#include "math.h"
 
 static const char *TAG = "IMU";
 
@@ -45,51 +47,119 @@ static void IRAM_ATTR hint_isr_handler(void *arg)
     }
 }
 
+static void calculate_rotation_matrix(float r, float i, float j, float k, float matrix[3][3])
+{
+    const float xx = i * i;
+    const float yy = j * j;
+    const float zz = k * k;
+    const float xy = i * j;
+    const float xz = i * k;
+    const float yz = j * k;
+    const float wx = r * i;
+    const float wy = r * j;
+    const float wz = r * k;
+
+    matrix[0][0] = 1.0f - (2 * (yy + zz));
+    matrix[0][1] = 2 * (xy - wz);
+    matrix[0][2] = 2 * (xz + wy);
+
+    matrix[1][0] = 2 * (xy + wz);
+    matrix[1][1] = 1.0f - (2 * (xx + zz));
+    matrix[1][2] = 2 * (yz - wx);
+
+    matrix[2][0] = 2 * (xz - wy);
+    matrix[2][1] = 2 * (yz + wx);
+    matrix[2][2] = 1.0f - 2 * (xx + yy);
+}
+
 static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
 {
     (void)cookie;
     sh2_SensorValue_t value;
-    sensor_msg_t msg;
-    msg.type = SENSOR_IMU;
 
     if (sh2_decodeSensorEvent(&value, event) != SH2_OK)
     {
         return;
     }
 
-    float r = value.un.rotationVector.real;
-    float i = value.un.rotationVector.i;
-    float j = value.un.rotationVector.j;
-    float k = value.un.rotationVector.k;
+    sensor_msg_t msg;
+    msg.type = SENSOR_IMU;
+    msg.timestamp = esp_timer_get_time();
 
-    // kerran kymmenessä sekunnissa asteet ulos
-    if (value.sensorId == SH2_ROTATION_VECTOR)
+    // static bool has_rotation_matrix = false;
+
+    // Ideana myöhemmin siirtää rotaatiomatriisin laskenta fuusiotaskiin
+    // ja poistaa kaikki paikalliset muuttujat täältä ja latoa arvot suoraan structeihin ja
+    // siitä fusionqueen.
+    static float r, i, j, k;
+    static float acc_x, acc_y, acc_z, world_acc_x, world_acc_y, world_acc_z;
+    static float roll_rad, pitch_rad, yaw_rad;
+    static float rotation_matrix[3][3] = {0};
+
+    switch (value.sensorId)
     {
-        static TickType_t last_print_time = 0;
-        const TickType_t print_interval = pdMS_TO_TICKS(2000);
-        TickType_t current_time = xTaskGetTickCount();
+    case SH2_ROTATION_VECTOR:
+        r = value.un.rotationVector.real;
+        i = value.un.rotationVector.i;
+        j = value.un.rotationVector.j;
+        k = value.un.rotationVector.k;
 
-        if ((current_time - last_print_time) >= print_interval)
-        {
-            float roll_rad = 0.0f;
-            float pitch_rad = 0.0f;
-            float yaw_rad = 0.0f;
+        calculate_rotation_matrix(r, i, j, k, rotation_matrix);
+        // has_rotation_matrix = true;
 
-            // kvaterniosta yaw pitch roll (euler.c)
-            q_to_ypr(r, i, j, k, &roll_rad, &pitch_rad, &yaw_rad);
+        q_to_ypr(r, i, j, k, &yaw_rad, &pitch_rad, &roll_rad);
 
-            float roll_deg = roll_rad * (180.0f / 3.14159265f);
-            float pitch_deg = pitch_rad * (180.0f / 3.14159265f);
-            float yaw_deg = yaw_rad * (180.0f / 3.14159265f);
+        msg.data.imu.data_type = ROTATION_DATA;
+        msg.data.imu.status = value.status;
+        msg.data.imu.data.rotation_data.real = r;
+        msg.data.imu.data.rotation_data.i = i;
+        msg.data.imu.data.rotation_data.j = j;
+        msg.data.imu.data.rotation_data.k = k;
+        msg.data.imu.data.rotation_data.yaw_angle = yaw_rad * (180.0f / 3.14159265f);
+        msg.data.imu.data.rotation_data.pitch_angle = pitch_rad * (180.0f / 3.14159265f);
+        msg.data.imu.data.rotation_data.roll_angle = roll_rad * (180.0f / 3.14159265f);
 
+        break;
+    case SH2_LINEAR_ACCELERATION:
+        acc_x = value.un.linearAcceleration.x;
+        acc_y = value.un.linearAcceleration.y;
+        acc_z = value.un.linearAcceleration.z;
 
-            ESP_LOGI(TAG, "Roll=%.1f°, Pitch=%.1f°, Yaw=%.1f°",
-                     roll_deg, pitch_deg, yaw_deg);
+        // if (!has_rotation_matrix) return;
 
-            last_print_time = current_time;
-        }
-        xQueueSend(fusion_queue, &msg, 0);
+        world_acc_x = rotation_matrix[0][0] * acc_x + rotation_matrix[0][1] * acc_y + rotation_matrix[0][2] * acc_z;
+        world_acc_y = rotation_matrix[1][0] * acc_x + rotation_matrix[1][1] * acc_y + rotation_matrix[1][2] * acc_z;
+        world_acc_z = rotation_matrix[2][0] * acc_x + rotation_matrix[2][1] * acc_y + rotation_matrix[2][2] * acc_z;
+
+        msg.data.imu.data_type = ACCELERATION_DATA;
+        msg.data.imu.status = value.status;
+        msg.data.imu.data.acceleration_data.acc_x = world_acc_x;
+        msg.data.imu.data.acceleration_data.acc_y = world_acc_y;
+        msg.data.imu.data.acceleration_data.acc_z = world_acc_z;
+
+        break;
+    default:
+        return;
     }
+
+    if (xQueueSend(fusion_queue, &msg, 0) != pdTRUE)
+    {
+        ESP_LOGW(TAG, "Fusion queue full; IMU update discarded");
+    }
+    // static TickType_t last_print_time = 0;
+    // const TickType_t print_interval = pdMS_TO_TICKS(500);
+    // TickType_t current_time = xTaskGetTickCount();
+    // if ((current_time - last_print_time) >= print_interval)
+    // {
+    //     float roll_deg = roll_rad * (180.0f / 3.14159265f);
+    //     float pitch_deg = pitch_rad * (180.0f / 3.14159265f);
+    //     float yaw_deg = yaw_rad * (180.0f / 3.14159265f);
+    //     // ESP_LOGI(TAG, "Roll=%.1f°, Pitch=%.1f°, Yaw=%.1f°",
+    //     //          roll_deg, pitch_deg, yaw_deg);
+    //     ESP_LOGI(TAG, "acc_x=%.5f, acc_y=%.5f, acc_z=%.5f",
+    //              world_acc_x, world_acc_y, world_acc_z);
+    //     last_print_time = current_time;
+    // }
 }
 
 static void sh2_event_handler(void *cookie, sh2_AsyncEvent_t *event)
@@ -109,8 +179,8 @@ static void imu_task(void *arg)
 
     for (;;)
     {
-        /* HINT is active low.  The timeout also handles a missed edge. */
-        (void)ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(10000));
+        /* Wake periodically to report zero counts even if IMU reports stop. */
+        (void)ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(100));
         while (bno085_port_data_ready())
         {
             sh2_service();
@@ -158,9 +228,22 @@ esp_err_t imu_init(QueueHandle_t fusion_queue_handle, i2c_master_bus_handle_t i2
         .reportInterval_us = BNO085_REPORT_INTERVAL_US,
     };
     rc = sh2_setSensorConfig(SH2_ROTATION_VECTOR, &rotation_vector_config);
+
     if (rc != SH2_OK)
     {
         ESP_LOGE(TAG, "Could not enable rotation vector (%d)", rc);
+        return ESP_FAIL;
+    }
+
+    const sh2_SensorConfig_t linear_accelerometer_config = {
+        .reportInterval_us = BNO085_REPORT_INTERVAL_US,
+    };
+
+    rc = sh2_setSensorConfig(SH2_LINEAR_ACCELERATION, &linear_accelerometer_config);
+
+    if (rc != SH2_OK)
+    {
+        ESP_LOGE(TAG, "Could not enable linear accelerometer (%d)", rc);
         return ESP_FAIL;
     }
 
