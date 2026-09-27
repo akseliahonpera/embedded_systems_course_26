@@ -23,28 +23,71 @@ static double deg_to_rad(double deg) {
     return deg * M_PI / 180.0;
 }
 
-static void predict_next_state(kalman_state* state, const sensor_msg_t* imu_data) {
 
-    if (imu_data->timestamp <= state->last_update || !state->init) return;
-
+static void adjust_for_declination(float* adjusted_x, float* adjusted_y, const float original_x, const float original_y) {
     const float declination_rad = (12.64 * M_PI) / 180.0;
-    float acc_x_adjusted = cosf(declination_rad) * imu_data->data.imu.data.acceleration_data.acc_x +  sinf(declination_rad) * imu_data->data.imu.data.acceleration_data.acc_y;
-    float acc_y_adjusted = -sinf(declination_rad) * imu_data->data.imu.data.acceleration_data.acc_x +  cosf(declination_rad) * imu_data->data.imu.data.acceleration_data.acc_y;
 
-    float elapsed_time_in_seconds = (1.0e-6) * (imu_data->timestamp - state->last_update);
-    float next_east = (1 * state->position_east + (elapsed_time_in_seconds) * state->velocity_east) + (0.5f * acc_x_adjusted * elapsed_time_in_seconds* elapsed_time_in_seconds);
-    float next_north = (1 * state->position_north + (elapsed_time_in_seconds) * state->velocity_north) + (0.5f * acc_y_adjusted * elapsed_time_in_seconds * elapsed_time_in_seconds);
-    float next_velocity_east = state->velocity_east + (elapsed_time_in_seconds) * acc_x_adjusted;
-    float next_velocity_north = state->velocity_north + (elapsed_time_in_seconds) * acc_y_adjusted;
+    const float cosine = cosf(declination_rad);
+    const float sine = sinf(declination_rad);
+
+    *adjusted_x = cosine * original_x +  sine * original_y;
+    *adjusted_y = -sine * original_x +  cosine * original_y;
+}
+
+
+static void predict_phase(kalman_state* state, const sensor_msg_t* imu_data, const float P[6][6], const float sigma[3]){
+
+    if (!state->init ||imu_data->timestamp <= state->last_update) return;
+
+    // Predict state
+    float acc_east, acc_north;
+    adjust_for_declination(&acc_east, &acc_north, imu_data->data.imu.data.acceleration_data.acc_x, imu_data->data.imu.data.acceleration_data.acc_y);
+    float dt = (1.0e-6) * (imu_data->timestamp - state->last_update);
+    float dt2 = dt * dt;
+    float dt3 = dt2 * dt;
+    float dt4 = dt3 * dt; 
+
+
+    
+    float next_position_east = state->position_east + (state->velocity_east * dt) + (0.5f * dt2 * acc_east);
+    float next_position_north = state->position_north + (state->velocity_north * dt) + (0.5f * dt2 * acc_north);
+    float next_velocity_east = state->velocity_east + dt * acc_east;
+    float next_velocity_north = state->velocity_north + dt * acc_north;
     // float next_up = 0;        // Otetaan sit joskus käyttöön
     // float next_velocity_up = 0;
 
+    // Adjust state estimate error covariance
 
-    state->position_east = next_east;
-    state->position_north = next_north;
+    float Q[6][6] = {0.0};
+    Q[0][0] = 0.25 * dt4 * sigma[0];
+    Q[0][3] = 0.5 * dt3 * sigma[0];
+    Q[1][1] = 0.25 * dt4 * sigma[1];
+    Q[1][4] = 0.5 * dt3 * sigma[1];
+    Q[2][2] = 0.25 * dt4 * sigma[2];
+    Q[2][5] = 0.5 * dt3 * sigma[2];
+    Q[3][0] = 0.5 * dt3 * sigma[0];
+    Q[3][3] = dt2 * sigma[0];
+    Q[4][1] = 0.5 * dt3 * sigma[1];
+    Q[4][4] = dt2 * sigma[1];
+    Q[5][2] = 0.5 * dt3 * sigma[2];
+    Q[5][5] = dt2 * sigma[2];
+
+
+    // float P_11_next = P[1][1] + 2 * dt * P[1][4] + dt2 * P[4][4]; 
+
+
+
+
+
+    state->position_east = next_position_east;
+    state->position_north = next_position_north;
     state->velocity_east = next_velocity_east;
     state->velocity_north = next_velocity_north;
     state->last_update = imu_data->timestamp;
+
+    
+
+
 
     
 }
@@ -128,7 +171,7 @@ static void fusion_task(void *arg)
 
             case SENSOR_IMU:
                 if (msg.data.imu.data_type == ACCELERATION_DATA) {
-                    predict_next_state(&state, &msg);
+                    
                 }
                 break;
 
