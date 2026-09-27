@@ -124,6 +124,7 @@ typedef struct {
     float origo_longitude;
     float origo_altitude;    
     int64_t last_update;
+    bool init;
 
 } kalman_state;
 

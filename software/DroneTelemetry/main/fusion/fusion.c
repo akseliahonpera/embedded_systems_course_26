@@ -5,6 +5,7 @@
 #include "freertos/queue.h"
 #include "esp_log.h"
 #include "types.h"
+#include <math.h>
 
 
 #define M_PI 3.14159265358979323846
@@ -24,15 +25,20 @@ static double deg_to_rad(double deg) {
 
 static void predict_next_state(kalman_state* state, const sensor_msg_t* imu_data) {
 
-    if (imu_data->timestamp <= state->last_update) return;
+    if (imu_data->timestamp <= state->last_update || !state->init) return;
+
+    const float declination_rad = (12.64 * M_PI) / 180.0;
+    float acc_x_adjusted = cosf(declination_rad) * imu_data->data.imu.data.acceleration_data.acc_x +  sinf(declination_rad) * imu_data->data.imu.data.acceleration_data.acc_y;
+    float acc_y_adjusted = -sinf(declination_rad) * imu_data->data.imu.data.acceleration_data.acc_x +  cosf(declination_rad) * imu_data->data.imu.data.acceleration_data.acc_y;
 
     float elapsed_time_in_seconds = (1.0e-6) * (imu_data->timestamp - state->last_update);
-    float next_east = (1 * state->position_east + (elapsed_time_in_seconds) * state->velocity_east) + (0.5f * imu_data->data.imu.data.acceleration_data.acc_x * pow(elapsed_time_in_seconds, 2));
-    float next_north = (1 * state->position_north + (elapsed_time_in_seconds) * state->velocity_north) + (0.5f * imu_data->data.imu.data.acceleration_data.acc_y * pow(elapsed_time_in_seconds, 2));
-    float next_velocity_east = state->velocity_east + (elapsed_time_in_seconds) * imu_data->data.imu.data.acceleration_data.acc_x;
-    float next_velocity_north = state->velocity_north + (elapsed_time_in_seconds) * imu_data->data.imu.data.acceleration_data.acc_y;
+    float next_east = (1 * state->position_east + (elapsed_time_in_seconds) * state->velocity_east) + (0.5f * acc_x_adjusted * elapsed_time_in_seconds* elapsed_time_in_seconds);
+    float next_north = (1 * state->position_north + (elapsed_time_in_seconds) * state->velocity_north) + (0.5f * acc_y_adjusted * elapsed_time_in_seconds * elapsed_time_in_seconds);
+    float next_velocity_east = state->velocity_east + (elapsed_time_in_seconds) * acc_x_adjusted;
+    float next_velocity_north = state->velocity_north + (elapsed_time_in_seconds) * acc_y_adjusted;
     // float next_up = 0;        // Otetaan sit joskus käyttöön
     // float next_velocity_up = 0;
+
 
     state->position_east = next_east;
     state->position_north = next_north;
@@ -40,44 +46,44 @@ static void predict_next_state(kalman_state* state, const sensor_msg_t* imu_data
     state->velocity_north = next_velocity_north;
     state->last_update = imu_data->timestamp;
 
-
+    
 }
 
 
-static void wgs84_to_ecef(float lat, float lon, float alt, float *x, float *y, float *z) {
-    float rad_lat = deg_to_rad(lat);
-    float rad_lon = deg_to_rad(lon);
+static void wgs84_to_ecef(double lat, double lon, double alt, double *x, double *y, double *z) {
+    double rad_lat = deg_to_rad(lat);
+    double rad_lon = deg_to_rad(lon);
     
-    float sin_lat = sin(rad_lat);
-    float cos_lat = cos(rad_lat);
-    float sin_lon = sin(rad_lon);
-    float cos_lon = cos(rad_lon);
+    double sin_lat = sin(rad_lat);
+    double cos_lat = cos(rad_lat);
+    double sin_lon = sin(rad_lon);
+    double cos_lon = cos(rad_lon);
     
-    float N = WGS84_A / sqrt(1.0 - WGS84_E2 * sin_lat * sin_lat);
+    double N = WGS84_A / sqrt(1.0 - WGS84_E2 * sin_lat * sin_lat);
     
     *x = (N + alt) * cos_lat * cos_lon;
     *y = (N + alt) * cos_lat * sin_lon;
     *z = (N * (1.0 - WGS84_E2) + alt) * sin_lat;
 }
 
-static void ecef_to_enu(float x, float y, float z, 
-                 float lat0, float lon0, float alt0, 
-                 float *e, float *n, float *u) {
-    float x0, y0, z0;
+static void ecef_to_enu(double x, double y, double z, 
+                 double lat0, double lon0, double alt0, 
+                 double *e, double *n, double *u) {
+    double x0, y0, z0;
     
     wgs84_to_ecef(lat0, lon0, alt0, &x0, &y0, &z0);
     
-    float dx = x - x0;
-    float dy = y - y0;
-    float dz = z - z0;
+    double dx = x - x0;
+    double dy = y - y0;
+    double dz = z - z0;
     
-    float rad_lat0 = deg_to_rad(lat0);
-    float rad_lon0 = deg_to_rad(lon0);
+    double rad_lat0 = deg_to_rad(lat0);
+    double rad_lon0 = deg_to_rad(lon0);
     
-    float sin_lat0 = sin(rad_lat0);
-    float cos_lat0 = cos(rad_lat0);
-    float sin_lon0 = sin(rad_lon0);
-    float cos_lon0 = cos(rad_lon0);
+    double sin_lat0 = sin(rad_lat0);
+    double cos_lat0 = cos(rad_lat0);
+    double sin_lon0 = sin(rad_lon0);
+    double cos_lon0 = cos(rad_lon0);
     
     *e = -sin_lon0 * dx + cos_lon0 * dy;
     *n = -sin_lat0 * cos_lon0 * dx - sin_lat0 * sin_lon0 * dy + cos_lat0 * dz;
@@ -92,7 +98,13 @@ static void fusion_task(void *arg)
 
 
     kalman_state state;
-
+    state.position_east = 0;
+    state.position_north = 0;
+    state.position_up = 0;
+    state.velocity_east = 0;
+    state.velocity_north = 0;
+    state.velocity_up = 0;
+    state.init = false;
 
 
     sensor_msg_t msg;
@@ -115,11 +127,16 @@ static void fusion_task(void *arg)
                 break;
 
             case SENSOR_IMU:
-                /* code */
+                if (msg.data.imu.data_type == ACCELERATION_DATA) {
+                    predict_next_state(&state, &msg);
+                }
                 break;
 
             case SENSOR_GPS:
-                /* code */
+                
+                if (msg.data.gps.has_fix) {
+
+                }
                 break;
 
             default:

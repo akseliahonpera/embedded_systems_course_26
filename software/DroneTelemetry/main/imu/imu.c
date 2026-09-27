@@ -86,7 +86,7 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
     msg.type = SENSOR_IMU;
     msg.timestamp = esp_timer_get_time();
 
-    // static bool has_rotation_matrix = false;
+    static bool has_rotation_matrix = false;
 
     // Ideana myöhemmin siirtää rotaatiomatriisin laskenta fuusiotaskiin
     // ja poistaa kaikki paikalliset muuttujat täältä ja latoa arvot suoraan structeihin ja
@@ -105,7 +105,7 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
         k = value.un.rotationVector.k;
 
         calculate_rotation_matrix(r, i, j, k, rotation_matrix);
-        // has_rotation_matrix = true;
+        has_rotation_matrix = true;
 
         q_to_ypr(r, i, j, k, &yaw_rad, &pitch_rad, &roll_rad);
 
@@ -125,7 +125,7 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
         acc_y = value.un.linearAcceleration.y;
         acc_z = value.un.linearAcceleration.z;
 
-        // if (!has_rotation_matrix) return;
+        if (!has_rotation_matrix) return;
 
         world_acc_x = rotation_matrix[0][0] * acc_x + rotation_matrix[0][1] * acc_y + rotation_matrix[0][2] * acc_z;
         world_acc_y = rotation_matrix[1][0] * acc_x + rotation_matrix[1][1] * acc_y + rotation_matrix[1][2] * acc_z;
