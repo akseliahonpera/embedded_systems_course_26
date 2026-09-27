@@ -116,13 +116,14 @@ typedef struct {
 typedef struct {
     float position_east;
     float position_north;
-    float position_up;      // Currently not used
+    float position_up;      
     float velocity_east;
     float velocity_north;
-    float velocity_up;      // Currently not used
+    float velocity_up;      
     float origo_latitude;
     float origo_longitude;
-    float origo_altitude;    // Currently not used
+    float origo_altitude;    
+    int64_t last_update;
 
 } kalman_state;
 

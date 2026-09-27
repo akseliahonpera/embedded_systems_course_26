@@ -22,6 +22,27 @@ static double deg_to_rad(double deg) {
     return deg * M_PI / 180.0;
 }
 
+static void predict_next_state(kalman_state* state, const sensor_msg_t* imu_data) {
+
+    if (imu_data->timestamp <= state->last_update) return;
+
+    float elapsed_time_in_seconds = (1.0e-6) * (imu_data->timestamp - state->last_update);
+    float next_east = (1 * state->position_east + (elapsed_time_in_seconds) * state->velocity_east) + (0.5f * imu_data->data.imu.data.acceleration_data.acc_x * pow(elapsed_time_in_seconds, 2));
+    float next_north = (1 * state->position_north + (elapsed_time_in_seconds) * state->velocity_north) + (0.5f * imu_data->data.imu.data.acceleration_data.acc_y * pow(elapsed_time_in_seconds, 2));
+    float next_velocity_east = state->velocity_east + (elapsed_time_in_seconds) * imu_data->data.imu.data.acceleration_data.acc_x;
+    float next_velocity_north = state->velocity_north + (elapsed_time_in_seconds) * imu_data->data.imu.data.acceleration_data.acc_y;
+    // float next_up = 0;        // Otetaan sit joskus käyttöön
+    // float next_velocity_up = 0;
+
+    state->position_east = next_east;
+    state->position_north = next_north;
+    state->velocity_east = next_velocity_east;
+    state->velocity_north = next_velocity_north;
+    state->last_update = imu_data->timestamp;
+
+
+}
+
 
 static void wgs84_to_ecef(float lat, float lon, float alt, float *x, float *y, float *z) {
     float rad_lat = deg_to_rad(lat);
