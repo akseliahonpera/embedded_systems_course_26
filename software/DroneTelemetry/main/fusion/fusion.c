@@ -99,8 +99,8 @@ static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *
     if (!gps->has_fix)
         return;
 
-    float x, y, z;
-    float gps_east, gps_north, gps_up;
+    double x, y, z;
+    double gps_east, gps_north, gps_up;
 
     wgs84_to_ecef(gps->latitude, gps->longtitude, state->origo_altitude, &x, &y, &z);
     ecef_to_enu(x, y, z, state->origo_latitude, state->origo_longitude, state->origo_altitude, &gps_east, &gps_north, &gps_up);
