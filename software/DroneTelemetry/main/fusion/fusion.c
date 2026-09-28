@@ -35,58 +35,63 @@ static void adjust_for_declination(float* adjusted_x, float* adjusted_y, const f
 }
 
 
-static void predict_phase(kalman_state* state, const sensor_msg_t* imu_data, const float P[6][6], const float sigma[3]){
+static void predict_phase(kalman_state* state, const sensor_msg_t* imu_data, float P[6][6], const float sigma[3]){
 
     if (!state->init ||imu_data->timestamp <= state->last_update) return;
 
     // Predict state
     float acc_east, acc_north;
     adjust_for_declination(&acc_east, &acc_north, imu_data->data.imu.data.acceleration_data.acc_x, imu_data->data.imu.data.acceleration_data.acc_y);
-    float dt = (1.0e-6) * (imu_data->timestamp - state->last_update);
-    float dt2 = dt * dt;
-    float dt3 = dt2 * dt;
-    float dt4 = dt3 * dt; 
+    const float dt = (1.0e-6) * (imu_data->timestamp - state->last_update);
+    const float dt2 = dt * dt;
+    const float dt3 = dt2 * dt;
+    const float dt4 = dt3 * dt;
 
+    state->position_east  +=  (state->velocity_east * dt) + (0.5f * dt2 * acc_east);
+    state->position_north += (state->velocity_north * dt) + (0.5f * dt2 * acc_north);
+    state->velocity_east  +=  dt * acc_east;
+    state->velocity_north +=  dt * acc_north;
+    state->last_update = imu_data->timestamp;
 
-    
-    float next_position_east = state->position_east + (state->velocity_east * dt) + (0.5f * dt2 * acc_east);
-    float next_position_north = state->position_north + (state->velocity_north * dt) + (0.5f * dt2 * acc_north);
-    float next_velocity_east = state->velocity_east + dt * acc_east;
-    float next_velocity_north = state->velocity_north + dt * acc_north;
     // float next_up = 0;        // Otetaan sit joskus käyttöön
     // float next_velocity_up = 0;
 
-    // Adjust state estimate error covariance
+    // P = A P A^T for A = [I dt*I; 0 I], ordered as [position, velocity].
+    // Update all 3x3 blocks, including cross-axis covariances, in place.
+    for (int i = 0; i < 3; ++i)
+    {
+        for (int j = 0; j < 3; ++j)
+        {
+            const float pv = P[i][j + 3];
+            const float vp = P[i + 3][j];
+            const float dt_vv = dt * P[i + 3][j + 3];
 
-    float Q[6][6] = {0.0};
-    Q[0][0] = 0.25 * dt4 * sigma[0];
-    Q[0][3] = 0.5 * dt3 * sigma[0];
-    Q[1][1] = 0.25 * dt4 * sigma[1];
-    Q[1][4] = 0.5 * dt3 * sigma[1];
-    Q[2][2] = 0.25 * dt4 * sigma[2];
-    Q[2][5] = 0.5 * dt3 * sigma[2];
-    Q[3][0] = 0.5 * dt3 * sigma[0];
-    Q[3][3] = dt2 * sigma[0];
-    Q[4][1] = 0.5 * dt3 * sigma[1];
-    Q[4][4] = dt2 * sigma[1];
-    Q[5][2] = 0.5 * dt3 * sigma[2];
-    Q[5][5] = dt2 * sigma[2];
-
-
-    // float P_11_next = P[1][1] + 2 * dt * P[1][4] + dt2 * P[4][4]; 
-
-
-
-
-
-    state->position_east = next_position_east;
-    state->position_north = next_position_north;
-    state->velocity_east = next_velocity_east;
-    state->velocity_north = next_velocity_north;
-    state->last_update = imu_data->timestamp;
+            P[i][j] += dt * (pv + vp + dt_vv);
+            P[i][j + 3] = pv + dt_vv;
+            P[i + 3][j] = vp + dt_vv;
+        }
+    }
 
     
+    const float position_noise_scale = 0.25f * dt4;
+    const float cross_noise_scale = 0.5f * dt3;
+    const float cross_noise_0 = cross_noise_scale * sigma[0];
+    P[0][0] += position_noise_scale * sigma[0];
+    P[0][3] += cross_noise_0;
+    P[3][0] += cross_noise_0;
+    P[3][3] += dt2 * sigma[0];
 
+    const float cross_noise_1 = cross_noise_scale * sigma[1];
+    P[1][1] += position_noise_scale * sigma[1];
+    P[1][4] += cross_noise_1;
+    P[4][1] += cross_noise_1;
+    P[4][4] += dt2 * sigma[1];
+
+    const float cross_noise_2 = cross_noise_scale * sigma[2];
+    P[2][2] += position_noise_scale * sigma[2];
+    P[2][5] += cross_noise_2;
+    P[5][2] += cross_noise_2;
+    P[5][5] += dt2 * sigma[2];
 
 
     
@@ -149,6 +154,37 @@ static void fusion_task(void *arg)
     state.velocity_up = 0;
     state.init = false;
 
+    /*
+     [ σE²    0     0      0      0      0   ]
+     [  0    σN²    0      0      0      0   ]
+     [  0     0    σU²     0      0      0   ]
+     [  0     0     0     σvE²    0      0   ]
+     [  0     0     0      0     σvN²    0   ]
+     [  0     0     0      0      0     σvU² ]
+    */
+    float state_covariance[6][6] = {
+        {9.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+        {0.0f, 9.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 9.0f, 0.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f}};
+
+        
+
+    /*
+     [ σx²    0     0  ]
+     [  0    σy²    0  ]
+     [  0     0    σz² ]
+    */
+    // Tässä arvot vaan placeholderina
+    // Datasheetissä σ=0.35 => σ^2 = 0.125 ois raa'alle kiihtyvyydelle
+    // mutta tässä on muutanki prosessointia.
+    // Tää kannattaa alustaa kalibroinnilla, jossa mitataan
+    // imun kiihtyvyysdatan kovarianssia levossa.
+    float imu_covariance[3] = {
+        0.25f, 0.25f, 0.25f};
+
 
     sensor_msg_t msg;
     fusion_msg_t msg_out;
@@ -171,7 +207,7 @@ static void fusion_task(void *arg)
 
             case SENSOR_IMU:
                 if (msg.data.imu.data_type == ACCELERATION_DATA) {
-                    
+
                 }
                 break;
 
