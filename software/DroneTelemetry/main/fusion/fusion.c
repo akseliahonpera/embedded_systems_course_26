@@ -7,9 +7,8 @@
 #include "types.h"
 #include <math.h>
 
-
 #define M_PI 3.14159265358979323846
-#define WGS84_A 6378137.0  
+#define WGS84_A 6378137.0
 #define WGS84_E2 0.00669437999014
 
 static QueueHandle_t fusion_queue;
@@ -17,27 +16,27 @@ static QueueHandle_t telemetry_queue;
 
 static const char *TAG = "FUSION";
 
-
-
-static double deg_to_rad(double deg) {
+static double deg_to_rad(double deg)
+{
     return deg * M_PI / 180.0;
 }
 
-
-static void adjust_for_declination(float* adjusted_x, float* adjusted_y, const float original_x, const float original_y) {
+static void adjust_for_declination(float *adjusted_x, float *adjusted_y, const float original_x, const float original_y)
+{
     const float declination_rad = (12.64 * M_PI) / 180.0;
 
     const float cosine = cosf(declination_rad);
     const float sine = sinf(declination_rad);
 
-    *adjusted_x = cosine * original_x +  sine * original_y;
-    *adjusted_y = -sine * original_x +  cosine * original_y;
+    *adjusted_x = cosine * original_x + sine * original_y;
+    *adjusted_y = -sine * original_x + cosine * original_y;
 }
 
+static void predict_phase(kalman_state *state, const sensor_msg_t *imu_data, float P[6][6], const float sigma[3])
+{
 
-static void predict_phase(kalman_state* state, const sensor_msg_t* imu_data, float P[6][6], const float sigma[3]){
-
-    if (!state->init || imu_data->timestamp <= state->last_update) return;
+    if (!state->init || imu_data->timestamp <= state->last_update)
+        return;
 
     // Predict state
     float acc_east, acc_north;
@@ -47,17 +46,16 @@ static void predict_phase(kalman_state* state, const sensor_msg_t* imu_data, flo
     const float dt3 = dt2 * dt;
     const float dt4 = dt3 * dt;
 
-    state->position_east  +=  (state->velocity_east * dt) + (0.5f * dt2 * acc_east);
+    state->position_east += (state->velocity_east * dt) + (0.5f * dt2 * acc_east);
     state->position_north += (state->velocity_north * dt) + (0.5f * dt2 * acc_north);
-    state->velocity_east  +=  dt * acc_east;
-    state->velocity_north +=  dt * acc_north;
+    state->velocity_east += dt * acc_east;
+    state->velocity_north += dt * acc_north;
     state->last_update = imu_data->timestamp;
 
     // up suunta toistaseksi pois käytöstä eli
     // sijainti/nopeus arviointia ei päivitetä sille, mutta
     // alempana kuitenkin lasketaan noin ko-/varianssit jos halutaan laajentaa
     // 3D:hen.
-
 
     for (int i = 0; i < 3; ++i)
     {
@@ -73,7 +71,6 @@ static void predict_phase(kalman_state* state, const sensor_msg_t* imu_data, flo
         }
     }
 
-    
     const float position_noise_scale = 0.25f * dt4;
     const float cross_noise_scale = 0.5f * dt3;
     const float cross_noise_0 = cross_noise_scale * sigma[0];
@@ -93,11 +90,7 @@ static void predict_phase(kalman_state* state, const sensor_msg_t* imu_data, flo
     P[2][5] += cross_noise_2;
     P[5][2] += cross_noise_2;
     P[5][5] += dt2 * sigma[2];
-
-
-    
 }
-
 
 static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *gps_data, float P[6][6], const float R[2])
 {
@@ -137,59 +130,72 @@ static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *
         K[i][1] = P[i][0] * S[0][1] + P[i][1] * S[1][1];
     }
 
-    
+    const float innovation[2] = {
+        gps_east - state->position_east,
+        gps_north - state->position_north};
 
+    state->position_east += innovation[0] * K[0][0] + innovation[1] * K[0][1];
+    state->position_north += innovation[0] * K[1][0] + innovation[1] * K[1][1];
+    state->position_up += innovation[0] * K[2][0] + innovation[1] * K[2][1];
+    state->velocity_east += innovation[0] * K[3][0] + innovation[1] * K[3][1];
+    state->velocity_north += innovation[0] * K[4][0] + innovation[1] * K[4][1];
+    state->velocity_up += innovation[0] * K[5][0] + innovation[1] * K[5][1];
 
+    for (int j = 0; j < 6; ++j)
+    {
+
+        const float p_east = P[0][j];
+        const float p_north = P[1][j];
+        for (int i = 0; i < 6; ++i)
+            P[i][j] -= K[i][0] * p_east + K[i][1] * p_north;
+    }
 }
 
-
-
-static void wgs84_to_ecef(double lat, double lon, double alt, double *x, double *y, double *z) {
+static void wgs84_to_ecef(double lat, double lon, double alt, double *x, double *y, double *z)
+{
     double rad_lat = deg_to_rad(lat);
     double rad_lon = deg_to_rad(lon);
-    
+
     double sin_lat = sin(rad_lat);
     double cos_lat = cos(rad_lat);
     double sin_lon = sin(rad_lon);
     double cos_lon = cos(rad_lon);
-    
+
     double N = WGS84_A / sqrt(1.0 - WGS84_E2 * sin_lat * sin_lat);
-    
+
     *x = (N + alt) * cos_lat * cos_lon;
     *y = (N + alt) * cos_lat * sin_lon;
     *z = (N * (1.0 - WGS84_E2) + alt) * sin_lat;
 }
 
-static void ecef_to_enu(double x, double y, double z, 
-                 double lat0, double lon0, double alt0, 
-                 double *e, double *n, double *u) {
+static void ecef_to_enu(double x, double y, double z,
+                        double lat0, double lon0, double alt0,
+                        double *e, double *n, double *u)
+{
     double x0, y0, z0;
-    
+
     wgs84_to_ecef(lat0, lon0, alt0, &x0, &y0, &z0);
-    
+
     double dx = x - x0;
     double dy = y - y0;
     double dz = z - z0;
-    
+
     double rad_lat0 = deg_to_rad(lat0);
     double rad_lon0 = deg_to_rad(lon0);
-    
+
     double sin_lat0 = sin(rad_lat0);
     double cos_lat0 = cos(rad_lat0);
     double sin_lon0 = sin(rad_lon0);
     double cos_lon0 = cos(rad_lon0);
-    
+
     *e = -sin_lon0 * dx + cos_lon0 * dy;
     *n = -sin_lat0 * cos_lon0 * dx - sin_lat0 * sin_lon0 * dy + cos_lat0 * dz;
-    *u =  cos_lat0 * cos_lon0 * dx + cos_lat0 * sin_lon0 * dy + sin_lat0 * dz;
+    *u = cos_lat0 * cos_lon0 * dx + cos_lat0 * sin_lon0 * dy + sin_lat0 * dz;
 }
-
-
 
 static void fusion_task(void *arg)
 {
     (void)arg;
-
 
     kalman_state state;
     state.position_east = 0;
@@ -208,8 +214,8 @@ static void fusion_task(void *arg)
      [  0     0     0      0     σvN²    0   ]
      [  0     0     0      0      0     σvU² ]
     */
-   // Nää on hatusta, tässä 9.0 tarkoittaa että alun sijainnin keskihajonta 3m
-   // ja 1.0 tarkoittaa että alkunopeuden kekihajonta 1m/s. Käytännössä siis arvot alkutilan epävarmuudelle.
+    // Nää on hatusta, tässä 9.0 tarkoittaa että alun sijainnin keskihajonta 3m
+    // ja 1.0 tarkoittaa että alkunopeuden kekihajonta 1m/s. Käytännössä siis arvot alkutilan epävarmuudelle.
     float state_covariance[6][6] = {
         {9.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
         {0.0f, 9.0f, 0.0f, 0.0f, 0.0f, 0.0f},
@@ -217,8 +223,6 @@ static void fusion_task(void *arg)
         {0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
         {0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
         {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f}};
-
-        
 
     /*
      [ σx²    0     0  ]
@@ -233,10 +237,9 @@ static void fusion_task(void *arg)
     float imu_covariance[3] = {
         0.25f, 0.25f, 0.25f};
 
-
     // Nääkin vois määrittää kalibroinnilla,
     // mutta vaatii vähän enemmän työtä.
-    // Myös HDOP gps:ltä ois hyvä lisä epävarmuuden arvioinnissa 
+    // Myös HDOP gps:ltä ois hyvä lisä epävarmuuden arvioinnissa
     float gps_covariance[2] = {
         4.51f, 4.51f};
 
@@ -260,15 +263,15 @@ static void fusion_task(void *arg)
                 break;
 
             case SENSOR_IMU:
-                if (msg.data.imu.data_type == ACCELERATION_DATA) {
-
+                if (msg.data.imu.data_type == ACCELERATION_DATA)
+                {
                 }
                 break;
 
             case SENSOR_GPS:
-                
-                if (msg.data.gps.has_fix) {
 
+                if (msg.data.gps.has_fix)
+                {
                 }
                 break;
 
