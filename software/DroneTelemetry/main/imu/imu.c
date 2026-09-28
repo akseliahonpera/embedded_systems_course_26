@@ -84,7 +84,7 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
 
     sensor_msg_t msg;
     msg.type = SENSOR_IMU;
-    msg.timestamp = esp_timer_get_time();
+    
 
     static bool has_rotation_matrix = false;
 
@@ -110,7 +110,7 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
         q_to_ypr(r, i, j, k, &yaw_rad, &pitch_rad, &roll_rad);
 
         msg.data.imu.data_type = ROTATION_DATA;
-        msg.data.imu.status = value.status;
+        
         msg.data.imu.data.rotation_data.real = r;
         msg.data.imu.data.rotation_data.i = i;
         msg.data.imu.data.rotation_data.j = j;
@@ -132,7 +132,6 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
         world_acc_z = rotation_matrix[2][0] * acc_x + rotation_matrix[2][1] * acc_y + rotation_matrix[2][2] * acc_z;
 
         msg.data.imu.data_type = ACCELERATION_DATA;
-        msg.data.imu.status = value.status;
         msg.data.imu.data.acceleration_data.acc_x = world_acc_x;
         msg.data.imu.data.acceleration_data.acc_y = world_acc_y;
         msg.data.imu.data.acceleration_data.acc_z = world_acc_z;
@@ -141,7 +140,9 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
     default:
         return;
     }
-
+    msg.data.imu.status = value.status;
+    msg.data.imu.imu_internal_timestamp = value.timestamp;
+    msg.timestamp = esp_timer_get_time();
     if (xQueueSend(fusion_queue, &msg, 0) != pdTRUE)
     {
         ESP_LOGW(TAG, "Fusion queue full; IMU update discarded");

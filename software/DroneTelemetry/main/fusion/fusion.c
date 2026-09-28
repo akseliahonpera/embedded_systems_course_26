@@ -37,7 +37,7 @@ static void adjust_for_declination(float* adjusted_x, float* adjusted_y, const f
 
 static void predict_phase(kalman_state* state, const sensor_msg_t* imu_data, float P[6][6], const float sigma[3]){
 
-    if (!state->init ||imu_data->timestamp <= state->last_update) return;
+    if (!state->init || imu_data->timestamp <= state->last_update) return;
 
     // Predict state
     float acc_east, acc_north;
@@ -53,11 +53,12 @@ static void predict_phase(kalman_state* state, const sensor_msg_t* imu_data, flo
     state->velocity_north +=  dt * acc_north;
     state->last_update = imu_data->timestamp;
 
-    // float next_up = 0;        // Otetaan sit joskus käyttöön
-    // float next_velocity_up = 0;
+    // up suunta toistaseksi pois käytöstä eli
+    // sijainti/nopeus arviointia ei päivitetä sille, mutta
+    // alempana kuitenkin lasketaan noin ko-/varianssit jos halutaan laajentaa
+    // 3D:hen.
 
-    // P = A P A^T for A = [I dt*I; 0 I], ordered as [position, velocity].
-    // Update all 3x3 blocks, including cross-axis covariances, in place.
+
     for (int i = 0; i < 3; ++i)
     {
         for (int j = 0; j < 3; ++j)
@@ -96,6 +97,51 @@ static void predict_phase(kalman_state* state, const sensor_msg_t* imu_data, flo
 
     
 }
+
+
+static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *gps_data, float P[6][6], const float R[2])
+{
+
+    const gps_data_t *gps = &gps_data->data.gps;
+    if (!gps->has_fix)
+        return;
+
+    float x, y, z;
+    float gps_east, gps_north, gps_up;
+
+    wgs84_to_ecef(gps->latitude, gps->longtitude, state->origo_altitude, &x, &y, &z);
+    ecef_to_enu(x, y, z, state->origo_latitude, state->origo_longitude, state->origo_altitude, &gps_east, &gps_north, &gps_up);
+
+    float S[2][2] = {
+        {P[0][0], P[0][1]},
+        {P[1][0], P[1][1]}};
+
+    S[0][0] += R[0];
+    S[1][1] += R[1];
+
+    const float determinant = S[0][0] * S[1][1] - S[0][1] * S[1][0];
+    if (determinant == 0.0f)
+        return;
+
+    const float inverse_determinant = 1.0f / determinant;
+    const float s00 = S[0][0];
+    S[0][0] = S[1][1] * inverse_determinant;
+    S[0][1] *= -inverse_determinant;
+    S[1][0] *= -inverse_determinant;
+    S[1][1] = s00 * inverse_determinant;
+
+    float K[6][2];
+    for (int i = 0; i < 6; ++i)
+    {
+        K[i][0] = P[i][0] * S[0][0] + P[i][1] * S[1][0];
+        K[i][1] = P[i][0] * S[0][1] + P[i][1] * S[1][1];
+    }
+
+    
+
+
+}
+
 
 
 static void wgs84_to_ecef(double lat, double lon, double alt, double *x, double *y, double *z) {
@@ -162,6 +208,8 @@ static void fusion_task(void *arg)
      [  0     0     0      0     σvN²    0   ]
      [  0     0     0      0      0     σvU² ]
     */
+   // Nää on hatusta, tässä 9.0 tarkoittaa että alun sijainnin keskihajonta 3m
+   // ja 1.0 tarkoittaa että alkunopeuden kekihajonta 1m/s. Käytännössä siis arvot alkutilan epävarmuudelle.
     float state_covariance[6][6] = {
         {9.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
         {0.0f, 9.0f, 0.0f, 0.0f, 0.0f, 0.0f},
@@ -178,13 +226,19 @@ static void fusion_task(void *arg)
      [  0     0    σz² ]
     */
     // Tässä arvot vaan placeholderina
-    // Datasheetissä σ=0.35 => σ^2 = 0.125 ois raa'alle kiihtyvyydelle
-    // mutta tässä on muutanki prosessointia.
+    // Datasheetissä σ=0.35 => σ^2 = 0.125 ois raa'alle kiihtyvyydelle,
+    // mutta tässä on muutaki prosessointia.
     // Tää kannattaa alustaa kalibroinnilla, jossa mitataan
     // imun kiihtyvyysdatan kovarianssia levossa.
     float imu_covariance[3] = {
         0.25f, 0.25f, 0.25f};
 
+
+    // Nääkin vois määrittää kalibroinnilla,
+    // mutta vaatii vähän enemmän työtä.
+    // Myös HDOP gps:ltä ois hyvä lisä epävarmuuden arvioinnissa 
+    float gps_covariance[2] = {
+        4.51f, 4.51f};
 
     sensor_msg_t msg;
     fusion_msg_t msg_out;

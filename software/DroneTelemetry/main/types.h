@@ -5,6 +5,7 @@
 #include "sh2_SensorValue.h"
 #include <stdbool.h>
 #include <stdint.h> 
+#include "nmea_parser.h"
 
 //TODO: En tiiä tartteeko näitä, voi käyttää periaatteessa valmiitakin tietorakenteita muista headereista
 // Tuota sh2_SensorValue_t:tä vois varmaa nvähän siistiä
@@ -52,6 +53,7 @@ typedef struct
         imu_acceleration_data_t acceleration_data;
     } data;
 
+    uint64_t imu_internal_timestamp;
     uint8_t status;   // Reliability status of sensor (0=Unreliable ... 3=High)
     // From sh2_SensorValue.h:
     /* Status of a sensor
@@ -67,6 +69,7 @@ typedef struct
     float latitude;
     float longtitude;
     bool has_fix;
+    gps_time_t tim; 
 } gps_data_t;
 //--------------------------------------------------------------------------------------------------
 
