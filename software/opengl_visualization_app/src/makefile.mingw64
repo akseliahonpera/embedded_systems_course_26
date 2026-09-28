@@ -1,0 +1,58 @@
+CXX := x86_64-w64-mingw32-g++
+
+CXXFLAGS_RELEASE := -Wall -std=c++20 -O2 -march=native
+CXXFLAGS_DEBUG   := -Wall -std=c++20 -g -Og
+
+
+LDFLAGS_RELEASE  := -s -static
+LDFLAGS_DEBUG    :=
+
+BINARY_NAME := visualization_app
+
+
+LIBS := glew32.dll glfw3dll opengl32 gdi32 ws2_32
+SRCS := $(wildcard *.cpp) $(wildcard imgui/*.cpp) $(wildcard lodepng/*.cpp)
+OBJS_RELEASE := $(patsubst %.cpp, build/release/obj/%.o, $(SRCS)) $(patsubst %.c, build/release/obj/%.o, $(SRCS_C))
+OBJS_DEBUG := $(patsubst %.cpp, build/debug/obj/%.o, $(SRCS)) $(patsubst %.c, build/release/obj/%.o, $(SRCS_C))
+DEPS := $(OBJS_RELEASE:.o=.d) $(OBJS_DEBUG:.o=.d)
+
+DEPFLAGS := -MMD -MP
+
+TARGET_RELEASE := build/release/bin/$(BINARY_NAME)
+TARGET_DEBUG := build/debug/bin/$(BINARY_NAME)
+INC := ../include
+LIB := ../lib
+
+.PHONY: all debug clean
+
+all: $(TARGET_RELEASE)
+debug: $(TARGET_DEBUG)
+
+
+$(TARGET_RELEASE): $(OBJS_RELEASE)
+	@mkdir -p $(dir $@)
+
+	cp ../lib/glew32.dll build/release/bin/glew32.dll
+	cp ../lib/glfw3.dll build/release/bin/glfw3.dll
+	cp -r assets build/release/bin/assets
+	cp -r shaders build/release/bin/shaders
+
+	$(CXX) $(CXXFLAGS_RELEASE) $(LDFLAGS_RELEASE) -L$(LIB) -o $@ $^ $(addprefix -l,$(LIBS))
+
+$(TARGET_DEBUG): $(OBJS_DEBUG)
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS_DEBUG) $(LDFLAGS_DEBUG) -L$(LIB) -o $@ $^ $(addprefix -l,$(LIBS))
+
+build/release/obj/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS_RELEASE) $(DEPFLAGS) -I$(INC) -c $< -o $@
+
+build/debug/obj/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS_DEBUG) $(DEPFLAGS) -I$(INC) -c $< -o $@
+
+
+-include $(DEPS)
+
+clean:
+	rm -rf build

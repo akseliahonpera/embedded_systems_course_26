@@ -3,10 +3,19 @@
 #include <cstring>
 #include <iostream>
 #include <bit>
+
 #include <sys/types.h>
+
+#if defined(_WIN32)
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#else
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#endif
+
+
 #include <unistd.h>
 #include <cstdlib>
 
@@ -179,6 +188,12 @@ sockaddr_in string_to_sockaddr(std::string addr_str) {
 
 void Server::serverThread()
 {
+    #if defined(_WIN32)
+    WSAData data;
+    WSAStartup(MAKEWORD(2, 2), &data);
+    #endif
+
+
     struct sockaddr_in servaddr, cliaddr;
     int sockfd;
 
@@ -220,7 +235,7 @@ void Server::serverThread()
                 std::cout << "Sending CTRL packet with seq " << cmd.packed_num << " to " << client_addr << std::endl;
 
                 sockaddr_in saddr = string_to_sockaddr(client_addr);
-                sendto(sockfd, &cmd, sizeof(cmd), 0, (sockaddr*)&saddr, sizeof(sockaddr_in));
+                sendto(sockfd, (const char*)&cmd, sizeof(cmd), 0, (sockaddr*)&saddr, sizeof(sockaddr_in));
             }
         }
 
@@ -229,7 +244,7 @@ void Server::serverThread()
             ControlDatagram ctrl_dg;
         };
 
-        int received = recvfrom(sockfd, (char*)&dg, sizeof(dg), MSG_WAITALL, (struct sockaddr*)&cliaddr, &len);
+        int received = recvfrom(sockfd, (char*)&dg, sizeof(dg), 0, (struct sockaddr*)&cliaddr, &len);
 
         std::string client_addr = sockaddr_to_string(cliaddr);
 
@@ -247,7 +262,7 @@ void Server::serverThread()
         }
 
         if (received != sizeof(Datagram)) {
-            std::cout << "No data received!" << std::endl;
+            //std::cout << "No data received!" << std::endl;
             continue;
         }
 
@@ -261,6 +276,10 @@ void Server::serverThread()
         known_clients[client_addr]->pushDatagram(dg);
     }
     close(sockfd);
+
+    #if defined(_WIN32)
+    WSACleanup();
+    #endif
 }
 
 std::vector<ClientPtr> Server::getClients()
