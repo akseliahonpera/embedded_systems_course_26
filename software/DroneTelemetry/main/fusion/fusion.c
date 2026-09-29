@@ -7,10 +7,10 @@
 #include "types.h"
 #include <math.h>
 
-#define M_PI 3.14159265358979323846
+
 #define WGS84_A 6378137.0
 #define WGS84_E2 0.00669437999014
-
+#define M_PI 3.14159265358979323846
 static QueueHandle_t fusion_queue;
 static QueueHandle_t telemetry_queue;
 
@@ -21,16 +21,52 @@ static double deg_to_rad(double deg)
     return deg * M_PI / 180.0;
 }
 
-static void adjust_for_declination(float *adjusted_x, float *adjusted_y, const float original_x, const float original_y)
+
+
+static void enu_reference_init(enu_reference_t *ref,
+                               double lat0, double lon0, double alt0)
 {
-    const float declination_rad = (12.64 * M_PI) / 180.0;
+    const double lat0_rad = deg_to_rad(lat0);
 
-    const float cosine = cosf(declination_rad);
-    const float sine = sinf(declination_rad);
+    ref->lon0_rad = deg_to_rad(lon0);
+    ref->sin_lat0 = sin(lat0_rad);
+    ref->cos_lat0 = cos(lat0_rad);
 
-    *adjusted_x = cosine * original_x + sine * original_y;
-    *adjusted_y = -sine * original_x + cosine * original_y;
+    const double N0 = WGS84_A /
+                      sqrt(1.0 - WGS84_E2 * ref->sin_lat0 * ref->sin_lat0);
+
+    ref->r0 = (N0 + alt0) * ref->cos_lat0;
+    ref->z0 = (N0 * (1.0 - WGS84_E2) + alt0) * ref->sin_lat0;
 }
+
+static void wgs84_to_enu(const enu_reference_t *ref,
+                         double lat, double lon, double alt,
+                         double *e, double *n, double *u)
+{
+    const double lat_rad = deg_to_rad(lat);
+    const double dlon = deg_to_rad(lon) - ref->lon0_rad;
+
+    const double sin_lat = sin(lat_rad);
+    const double cos_lat = cos(lat_rad);
+    const double sin_dlon = sin(dlon);
+    const double cos_dlon = cos(dlon);
+
+    const double N = WGS84_A /
+                     sqrt(1.0 - WGS84_E2 * sin_lat * sin_lat);
+
+    const double r = (N + alt) * cos_lat;
+    const double z = (N * (1.0 - WGS84_E2) + alt) * sin_lat;
+
+    const double dr = r * cos_dlon - ref->r0;
+    const double dz = z - ref->z0;
+
+    *e = r * sin_dlon;
+    *n = -ref->sin_lat0 * dr + ref->cos_lat0 * dz;
+    *u = ref->cos_lat0 * dr + ref->sin_lat0 * dz;
+}
+
+
+
 
 static void predict_phase(kalman_state *state, const sensor_msg_t *imu_data, float P[6][6], const float sigma[3])
 {
@@ -39,8 +75,8 @@ static void predict_phase(kalman_state *state, const sensor_msg_t *imu_data, flo
         return;
 
     // Predict state
-    float acc_east, acc_north;
-    adjust_for_declination(&acc_east, &acc_north, imu_data->data.imu.data.acceleration_data.acc_x, imu_data->data.imu.data.acceleration_data.acc_y);
+    float acc_east = imu_data->data.imu.data.acceleration_data.acc_x;
+    float acc_north = imu_data->data.imu.data.acceleration_data.acc_y;
     const float dt = (1.0e-6) * (imu_data->timestamp - state->last_update);
     const float dt2 = dt * dt;
     const float dt3 = dt2 * dt;
@@ -99,11 +135,9 @@ static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *
     if (!gps->has_fix)
         return;
 
-    double x, y, z;
     double gps_east, gps_north, gps_up;
 
-    wgs84_to_ecef(gps->latitude, gps->longtitude, state->origo_altitude, &x, &y, &z);
-    ecef_to_enu(x, y, z, state->origo_latitude, state->origo_longitude, state->origo_altitude, &gps_east, &gps_north, &gps_up);
+    wgs84_to_enu(&state->origin, gps->latitude, gps->longtitude, 0, &gps_east, &gps_north, &gps_up);
 
     float S[2][2] = {
         {P[0][0], P[0][1]},
@@ -151,47 +185,7 @@ static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *
     }
 }
 
-static void wgs84_to_ecef(double lat, double lon, double alt, double *x, double *y, double *z)
-{
-    double rad_lat = deg_to_rad(lat);
-    double rad_lon = deg_to_rad(lon);
 
-    double sin_lat = sin(rad_lat);
-    double cos_lat = cos(rad_lat);
-    double sin_lon = sin(rad_lon);
-    double cos_lon = cos(rad_lon);
-
-    double N = WGS84_A / sqrt(1.0 - WGS84_E2 * sin_lat * sin_lat);
-
-    *x = (N + alt) * cos_lat * cos_lon;
-    *y = (N + alt) * cos_lat * sin_lon;
-    *z = (N * (1.0 - WGS84_E2) + alt) * sin_lat;
-}
-
-static void ecef_to_enu(double x, double y, double z,
-                        double lat0, double lon0, double alt0,
-                        double *e, double *n, double *u)
-{
-    double x0, y0, z0;
-
-    wgs84_to_ecef(lat0, lon0, alt0, &x0, &y0, &z0);
-
-    double dx = x - x0;
-    double dy = y - y0;
-    double dz = z - z0;
-
-    double rad_lat0 = deg_to_rad(lat0);
-    double rad_lon0 = deg_to_rad(lon0);
-
-    double sin_lat0 = sin(rad_lat0);
-    double cos_lat0 = cos(rad_lat0);
-    double sin_lon0 = sin(rad_lon0);
-    double cos_lon0 = cos(rad_lon0);
-
-    *e = -sin_lon0 * dx + cos_lon0 * dy;
-    *n = -sin_lat0 * cos_lon0 * dx - sin_lat0 * sin_lon0 * dy + cos_lat0 * dz;
-    *u = cos_lat0 * cos_lon0 * dx + cos_lat0 * sin_lon0 * dy + sin_lat0 * dz;
-}
 
 static void fusion_task(void *arg)
 {

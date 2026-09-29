@@ -20,6 +20,8 @@
 #include "euler.h"
 #include "math.h"
 
+#define M_PI 3.14159265358979323846
+
 static const char *TAG = "IMU";
 
 /* These are the ESP32-S3 GPIOs connected to the BNO085 */
@@ -72,6 +74,19 @@ static void calculate_rotation_matrix(float r, float i, float j, float k, float 
     matrix[2][2] = 1.0f - 2 * (xx + yy);
 }
 
+
+static void adjust_for_declination(float *adjusted_x, float *adjusted_y, const float original_x, const float original_y)
+{
+    const float declination_rad = (12.64 * M_PI) / 180.0;
+
+    const float cosine = cosf(declination_rad);
+    const float sine = sinf(declination_rad);
+
+    *adjusted_x = cosine * original_x + sine * original_y;
+    *adjusted_y = -sine * original_x + cosine * original_y;
+}
+
+
 static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
 {
     (void)cookie;
@@ -87,54 +102,48 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
     
 
     static bool has_rotation_matrix = false;
-
-    // Ideana myöhemmin siirtää rotaatiomatriisin laskenta fuusiotaskiin
-    // ja poistaa kaikki paikalliset muuttujat täältä ja latoa arvot suoraan structeihin ja
-    // siitä fusionqueen.
-    static float r, i, j, k;
-    static float acc_x, acc_y, acc_z, world_acc_x, world_acc_y, world_acc_z;
-    static float roll_rad, pitch_rad, yaw_rad;
+    
     static float rotation_matrix[3][3] = {0};
 
     switch (value.sensorId)
     {
     case SH2_ROTATION_VECTOR:
-        r = value.un.rotationVector.real;
-        i = value.un.rotationVector.i;
-        j = value.un.rotationVector.j;
-        k = value.un.rotationVector.k;
+
+        const float r = value.un.rotationVector.real;
+        const float i = value.un.rotationVector.i;
+        const float j = value.un.rotationVector.j;
+        const float k = value.un.rotationVector.k;
 
         calculate_rotation_matrix(r, i, j, k, rotation_matrix);
+
         has_rotation_matrix = true;
 
-        q_to_ypr(r, i, j, k, &yaw_rad, &pitch_rad, &roll_rad);
-
         msg.data.imu.data_type = ROTATION_DATA;
-        
+
         msg.data.imu.data.rotation_data.real = r;
         msg.data.imu.data.rotation_data.i = i;
         msg.data.imu.data.rotation_data.j = j;
         msg.data.imu.data.rotation_data.k = k;
-        msg.data.imu.data.rotation_data.yaw_angle = yaw_rad * (180.0f / 3.14159265f);
-        msg.data.imu.data.rotation_data.pitch_angle = pitch_rad * (180.0f / 3.14159265f);
-        msg.data.imu.data.rotation_data.roll_angle = roll_rad * (180.0f / 3.14159265f);
 
         break;
+
     case SH2_LINEAR_ACCELERATION:
-        acc_x = value.un.linearAcceleration.x;
-        acc_y = value.un.linearAcceleration.y;
-        acc_z = value.un.linearAcceleration.z;
+
+        float acc_x = value.un.linearAcceleration.x;
+        float acc_y = value.un.linearAcceleration.y;
+        float acc_z = value.un.linearAcceleration.z;
 
         if (!has_rotation_matrix) return;
-
-        world_acc_x = rotation_matrix[0][0] * acc_x + rotation_matrix[0][1] * acc_y + rotation_matrix[0][2] * acc_z;
-        world_acc_y = rotation_matrix[1][0] * acc_x + rotation_matrix[1][1] * acc_y + rotation_matrix[1][2] * acc_z;
-        world_acc_z = rotation_matrix[2][0] * acc_x + rotation_matrix[2][1] * acc_y + rotation_matrix[2][2] * acc_z;
-
+        
         msg.data.imu.data_type = ACCELERATION_DATA;
-        msg.data.imu.data.acceleration_data.acc_x = world_acc_x;
-        msg.data.imu.data.acceleration_data.acc_y = world_acc_y;
-        msg.data.imu.data.acceleration_data.acc_z = world_acc_z;
+
+        msg.data.imu.data.acceleration_data.acc_x = rotation_matrix[0][0] * acc_x + rotation_matrix[0][1] * acc_y + rotation_matrix[0][2] * acc_z;
+        msg.data.imu.data.acceleration_data.acc_y  = rotation_matrix[1][0] * acc_x + rotation_matrix[1][1] * acc_y + rotation_matrix[1][2] * acc_z;
+        msg.data.imu.data.acceleration_data.acc_z = rotation_matrix[2][0] * acc_x + rotation_matrix[2][1] * acc_y + rotation_matrix[2][2] * acc_z;
+
+
+        adjust_for_declination(&msg.data.imu.data.acceleration_data.acc_x, &msg.data.imu.data.acceleration_data.acc_x, msg.data.imu.data.acceleration_data.acc_x, msg.data.imu.data.acceleration_data.acc_y);
+
 
         break;
     default:

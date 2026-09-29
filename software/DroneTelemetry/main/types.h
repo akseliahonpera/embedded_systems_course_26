@@ -12,6 +12,15 @@
 //-------------------------------------------------------------------------------------------------
 // Custom lightweight data structures:
 
+typedef struct {
+    double lon0_rad;
+    double sin_lat0;
+    double cos_lat0;
+    double r0; // Origin distance from Earth's rotation axis, metres.
+    double z0; // Origin ECEF z coordinate, metres.
+} enu_reference_t;
+
+
 typedef struct 
 {
     float real;       // Quaternion real component
@@ -19,9 +28,6 @@ typedef struct
     float j;          // Quaternion j-component
     float k;          // Quaternion k-component
     float accuracy;   // Accuracy estimate [radians]
-    float roll_angle;
-    float pitch_angle;
-    float yaw_angle;
 
 } imu_rotation_data_t;
 
@@ -122,11 +128,9 @@ typedef struct {
     float position_up;      
     float velocity_east;
     float velocity_north;
-    float velocity_up;      
-    float origo_latitude;
-    float origo_longitude;
-    float origo_altitude;    
+    float velocity_up;         
     int64_t last_update;
+    enu_reference_t origin;
     bool init;
 
 } kalman_state;
