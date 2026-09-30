@@ -245,13 +245,22 @@ static void print_kalman_state(const kalman_state *state, const float imu_covari
 {
     const char *mode = state->mode == IDLE ? "IDLE" : state->mode == INIT ? "INIT (waiting for GPS)"
                                                                           : "TRACKING";
-    ESP_LOGI(TAG, "Kalman mode: %s", mode);
-    ESP_LOGI(TAG, "Position ENU [m]: %.3f, %.3f, %.3f",
-             state->position_east, state->position_north, state->position_up);
-    ESP_LOGI(TAG, "Velocity ENU [m/s]: %.3f, %.3f, %.3f",
-             state->velocity_east, state->velocity_north, state->velocity_up);
-    ESP_LOGI(TAG, "IMU covariance source: %s", covariance_source);
-    ESP_LOGI(TAG, "IMU variances: %.6f, %.6f, %.6f",
+    ESP_LOGI(TAG,
+             "\n\n"
+             "  KALMAN STATUS  |  %s\n"
+             "  ----------------------------------------------------------\n"
+             "  %-18s %12s %12s %12s\n"
+             "  %-18s %12.3f %12.3f %12.3f\n"
+             "  %-18s %12.3f %12.3f %12.3f\n"
+             "\n"
+             "  IMU covariance source: %s\n"
+             "  %-18s %12.6f %12.6f %12.6f\n"
+             "  ----------------------------------------------------------\n",
+             mode,
+             "", "East", "North", "Up",
+             "Position [m]", state->position_east, state->position_north, state->position_up,
+             "Velocity [m/s]", state->velocity_east, state->velocity_north, state->velocity_up,
+             covariance_source, "IMU variance",
              imu_covariance[0], imu_covariance[1], imu_covariance[2]);
     fflush(stdout);
     fsync(fileno(stdout));
@@ -412,7 +421,7 @@ static void fusion_task(void *arg)
         if ((events & (FUSION_CMD_PRINT_STATUS | FUSION_CMD_TOGGLE_IMU_COVARIANCE_SOURCE)) || periodic_due)
         {
             const float *imu_covariance = use_measured_covariance && has_imu_covariance ? received_imu_covariance : manual_imu_covariance;
-            const char *source = !use_measured_covariance ? "manual" : has_imu_covariance ? "queue" : "queue (manual fallback; no IMU covariance received)";
+            const char *source = !use_measured_covariance ? "manual" : has_imu_covariance ? "measured" : "measured (manual fallback)";
             print_kalman_state(&state, imu_covariance, source);
         }
         if (periodic_due)
