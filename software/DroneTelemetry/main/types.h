@@ -36,8 +36,14 @@ typedef struct
     float acc_x;       
     float acc_y;          
     float acc_z;         
-    
 } imu_acceleration_data_t;
+
+typedef struct 
+{
+    float cov_x;
+    float cov_y;
+    float cov_z;
+} imu_covariance_data_t;
 
 
 // Struct for barometer, derived from bmp5_defs.h
@@ -51,12 +57,13 @@ typedef struct
 // Struct for imu, derived from sh2_SensorValue.h
 typedef struct
 {
-    enum {ROTATION_DATA, ACCELERATION_DATA} data_type;
+    enum {ROTATION_DATA, ACCELERATION_DATA, COVARIANCE_DATA} data_type;
 
     union 
     {
         imu_rotation_data_t rotation_data;
         imu_acceleration_data_t acceleration_data;
+        imu_covariance_data_t covariance_data;
     } data;
 
     uint64_t imu_internal_timestamp;

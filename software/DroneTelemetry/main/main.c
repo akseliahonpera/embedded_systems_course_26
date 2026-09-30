@@ -108,4 +108,14 @@ void app_main(void)
     barometer_init(fusion_queue, i2c_bus, I2C_FREQ_HZ);
     vTaskDelay(pdMS_TO_TICKS(1000));
     imu_init(fusion_queue, i2c_bus);
+
+    
+
+
+
+
+
+
+
+
 }

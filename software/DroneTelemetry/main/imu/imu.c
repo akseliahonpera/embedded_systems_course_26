@@ -21,6 +21,7 @@
 #include "math.h"
 
 #define M_PI 3.14159265358979323846
+#define N 5000
 
 static const char *TAG = "IMU";
 
@@ -37,6 +38,17 @@ static volatile bool imu_reset_complete;
 // Queue handle (to fusion task)
 static QueueHandle_t fusion_queue;
 
+// IMU state: currently used only during calibration of accelerometer bias
+static imu_state_t imu_state = IMU_NORMAL;
+
+void imu_notify(imu_command_t cmd)
+{
+    xTaskNotify(
+        imu_task_handle,
+        cmd,
+        eSetBits);
+}
+
 static void IRAM_ATTR hint_isr_handler(void *arg)
 {
     (void)arg;
@@ -44,7 +56,12 @@ static void IRAM_ATTR hint_isr_handler(void *arg)
     BaseType_t higher_priority_task_woken = pdFALSE;
     if (imu_task_handle != NULL)
     {
-        vTaskNotifyGiveFromISR(imu_task_handle, &higher_priority_task_woken);
+        xTaskNotifyFromISR(
+            imu_task_handle,
+            IMU_DATA_READY,
+            eSetBits,
+            &higher_priority_task_woken);
+
         portYIELD_FROM_ISR(higher_priority_task_woken);
     }
 }
@@ -74,7 +91,6 @@ static void calculate_rotation_matrix(float r, float i, float j, float k, float 
     matrix[2][2] = 1.0f - 2 * (xx + yy);
 }
 
-
 static void adjust_for_declination(float *adjusted_x, float *adjusted_y, const float original_x, const float original_y)
 {
     const float declination_rad = (12.64 * M_PI) / 180.0;
@@ -85,7 +101,6 @@ static void adjust_for_declination(float *adjusted_x, float *adjusted_y, const f
     *adjusted_x = cosine * original_x + sine * original_y;
     *adjusted_y = -sine * original_x + cosine * original_y;
 }
-
 
 static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
 {
@@ -99,10 +114,9 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
 
     sensor_msg_t msg;
     msg.type = SENSOR_IMU;
-    
 
     static bool has_rotation_matrix = false;
-    
+
     static float rotation_matrix[3][3] = {0};
 
     switch (value.sensorId)
@@ -129,21 +143,117 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
 
     case SH2_LINEAR_ACCELERATION:
 
-        float acc_x = value.un.linearAcceleration.x;
-        float acc_y = value.un.linearAcceleration.y;
-        float acc_z = value.un.linearAcceleration.z;
+        static float acc_bias_x = 0.0f;
+        static float acc_bias_y = 0.0f;
+        static float acc_bias_z = 0.0f;
 
-        if (!has_rotation_matrix) return;
-        
+        if (imu_state == IMU_MEASURING_BIAS) {
+            acc_bias_x = 0.0f;
+            acc_bias_y = 0.0f;
+            acc_bias_z = 0.0f;
+        }
+
+        float acc_x = value.un.linearAcceleration.x - acc_bias_x;
+        float acc_y = value.un.linearAcceleration.y - acc_bias_y;
+        float acc_z = value.un.linearAcceleration.z - acc_bias_z;
+
+        // Accelerometer bias calculation. Take 5000 samples while stationary and average them.
+        static int count = 0;
+        if (imu_state == IMU_MEASURING_BIAS)
+        {
+            static float acc_bias_x_acc = 0.0f;
+            static float acc_bias_y_acc = 0.0f;
+            static float acc_bias_z_acc = 0.0f;
+
+            acc_bias_x_acc += acc_x;
+            acc_bias_y_acc += acc_y;
+            acc_bias_z_acc += acc_z;
+            count++;
+
+            if (count >= 5000)
+            {
+                acc_bias_x = acc_bias_x_acc / count;
+                acc_bias_y = acc_bias_y_acc / count;
+                acc_bias_z = acc_bias_z_acc / count;
+                acc_bias_x_acc = 0.0f;
+                acc_bias_y_acc = 0.0f;
+                acc_bias_z_acc = 0.0f;
+                count = 0;
+                imu_state = IMU_NORMAL;
+            }
+        }
+
+        if (!has_rotation_matrix)
+            return;
+
         msg.data.imu.data_type = ACCELERATION_DATA;
 
-        msg.data.imu.data.acceleration_data.acc_x = rotation_matrix[0][0] * acc_x + rotation_matrix[0][1] * acc_y + rotation_matrix[0][2] * acc_z;
-        msg.data.imu.data.acceleration_data.acc_y  = rotation_matrix[1][0] * acc_x + rotation_matrix[1][1] * acc_y + rotation_matrix[1][2] * acc_z;
-        msg.data.imu.data.acceleration_data.acc_z = rotation_matrix[2][0] * acc_x + rotation_matrix[2][1] * acc_y + rotation_matrix[2][2] * acc_z;
+        float acc_x_world = rotation_matrix[0][0] * acc_x + rotation_matrix[0][1] * acc_y + rotation_matrix[0][2] * acc_z;
+        float acc_y_world = rotation_matrix[1][0] * acc_x + rotation_matrix[1][1] * acc_y + rotation_matrix[1][2] * acc_z;
+        float acc_z_world = rotation_matrix[2][0] * acc_x + rotation_matrix[2][1] * acc_y + rotation_matrix[2][2] * acc_z;
 
+        adjust_for_declination(&acc_x_world, &acc_y_world, acc_x_world, acc_y_world);
 
-        adjust_for_declination(&msg.data.imu.data.acceleration_data.acc_x, &msg.data.imu.data.acceleration_data.acc_x, msg.data.imu.data.acceleration_data.acc_x, msg.data.imu.data.acceleration_data.acc_y);
+        static int idx = 0;
+        static float samples[3][N];
+        if (imu_state == IMU_MEASURING_COVARIANCE)
+        {
+            if (idx < N)
+            {
+                samples[0][idx] = acc_x_world;
+                samples[1][idx] = acc_y_world;
+                samples[2][idx] = acc_z_world;
+                idx++;
+            }
+            else
+            {
+                float mu[3] = {0.0f};
 
+                for (int i = 0; i < N; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        mu[j] += samples[j][i];
+                    }
+                }
+
+                mu[0] /= N;
+                mu[1] /= N;
+                mu[2] /= N;
+
+                float sigma_squared[3] = {0.0f};
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < N; j++)
+                    {
+                        sigma_squared[i] += (samples[i][j] - mu[i]) * (samples[i][j] - mu[i]);
+                    }
+                }
+
+                sigma_squared[0] /= (N - 1);
+                sigma_squared[1] /= (N - 1);
+                sigma_squared[2] /= (N - 1);
+
+                idx = 0;
+                imu_state = IMU_NORMAL;
+
+                // Send the covariance to fusion task
+                sensor_msg_t cov_msg;
+                cov_msg.type = SENSOR_IMU;
+                cov_msg.timestamp = esp_timer_get_time();
+                cov_msg.data.imu.data.covariance_data.cov_x = sigma_squared[0];
+                cov_msg.data.imu.data.covariance_data.cov_y = sigma_squared[1];
+                cov_msg.data.imu.data.covariance_data.cov_z = sigma_squared[2];
+                if (xQueueSend(fusion_queue, &cov_msg, portMAX_DELAY) != pdTRUE)
+                {
+                    ESP_LOGW(TAG, "Fusion queue full; IMU update discarded");
+                }
+            }
+        }
+
+        msg.data.imu.data.acceleration_data.acc_x = acc_x_world;
+        msg.data.imu.data.acceleration_data.acc_y = acc_y_world;
+        msg.data.imu.data.acceleration_data.acc_z = acc_z_world;
 
         break;
     default:
@@ -156,20 +266,6 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
     {
         ESP_LOGW(TAG, "Fusion queue full; IMU update discarded");
     }
-    // static TickType_t last_print_time = 0;
-    // const TickType_t print_interval = pdMS_TO_TICKS(500);
-    // TickType_t current_time = xTaskGetTickCount();
-    // if ((current_time - last_print_time) >= print_interval)
-    // {
-    //     float roll_deg = roll_rad * (180.0f / 3.14159265f);
-    //     float pitch_deg = pitch_rad * (180.0f / 3.14159265f);
-    //     float yaw_deg = yaw_rad * (180.0f / 3.14159265f);
-    //     // ESP_LOGI(TAG, "Roll=%.1f°, Pitch=%.1f°, Yaw=%.1f°",
-    //     //          roll_deg, pitch_deg, yaw_deg);
-    //     ESP_LOGI(TAG, "acc_x=%.5f, acc_y=%.5f, acc_z=%.5f",
-    //              world_acc_x, world_acc_y, world_acc_z);
-    //     last_print_time = current_time;
-    // }
 }
 
 static void sh2_event_handler(void *cookie, sh2_AsyncEvent_t *event)
@@ -187,10 +283,76 @@ static void imu_task(void *arg)
     // This function waits for the HINT-activated ISR to wake it up, and notify the sh2 service to do it's thing.
     (void)arg;
 
+    uint32_t events = 0;
+
     for (;;)
     {
-        /* Wake periodically to report zero counts even if IMU reports stop. */
-        (void)ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(100));
+        // /* Wake periodically to report zero counts even if IMU reports stop. */
+        // (void)ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(100));
+
+        // while (bno085_port_data_ready())
+        // {
+        //     sh2_service();
+        // }
+        BaseType_t received = xTaskNotifyWait(
+            0,
+            UINT32_MAX,
+            &events,
+            pdMS_TO_TICKS(100));
+
+        if (received == pdTRUE)
+        {
+            if (events & IMU_CMD_MODE_STANDBY)
+            {
+                // Set to standby here
+            }
+
+            if (events & IMU_CMD_MODE_NORMAL)
+            {
+                // Start IMU here
+            }
+
+            if (events & IMU_CMD_START_BIAS_MEASUREMENT)
+            {
+                switch (imu_state)
+                {
+
+                case IMU_NORMAL:
+                    ESP_LOGI(TAG, "Starting bias measurement", NULL);
+                    imu_state = IMU_MEASURING_BIAS;
+                    break;
+
+                case IMU_MEASURING_BIAS:
+                    ESP_LOGI(TAG, "Already measuring bias", NULL);
+                    break;
+
+                default:
+                    ESP_LOGI(TAG, "Can not measure bias now, state = %d", imu_state);
+                    break;
+                }
+            }
+
+            if (events & IMU_CMD_START_COVARIANCE_MEASUREMENT)
+            {
+                switch (imu_state)
+                {
+
+                case IMU_NORMAL:
+                    ESP_LOGI(TAG, "Starting covariance measurement", NULL);
+                    imu_state = IMU_MEASURING_COVARIANCE;
+                    break;
+
+                case IMU_MEASURING_COVARIANCE:
+                    ESP_LOGI(TAG, "Already measuring covariance", NULL);
+                    break;
+
+                default:
+                    ESP_LOGI(TAG, "Can not measure covariance now, state = %d", imu_state);
+                    break;
+                }
+            }
+        }
+
         while (bno085_port_data_ready())
         {
             sh2_service();
