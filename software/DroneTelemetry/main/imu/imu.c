@@ -241,6 +241,7 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
                 sensor_msg_t cov_msg;
                 cov_msg.type = SENSOR_IMU;
                 cov_msg.timestamp = esp_timer_get_time();
+                cov_msg.data.imu.data_type = COVARIANCE_DATA;
                 cov_msg.data.imu.data.covariance_data.cov_x = sigma_squared[0];
                 cov_msg.data.imu.data.covariance_data.cov_y = sigma_squared[1];
                 cov_msg.data.imu.data.covariance_data.cov_z = sigma_squared[2];
