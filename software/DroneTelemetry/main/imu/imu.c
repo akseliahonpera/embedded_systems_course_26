@@ -97,7 +97,7 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
         return;
     }
 
-    sensor_msg_t msg;
+    sensor_msg_t msg = {};
     msg.type = SENSOR_IMU;
     
 
@@ -124,6 +124,7 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
         msg.data.imu.data.rotation_data.i = i;
         msg.data.imu.data.rotation_data.j = j;
         msg.data.imu.data.rotation_data.k = k;
+        msg.data.imu.data.rotation_data.accuracy = value.un.rotationVector.accuracy;
 
         break;
 
@@ -142,7 +143,7 @@ static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
         msg.data.imu.data.acceleration_data.acc_z = rotation_matrix[2][0] * acc_x + rotation_matrix[2][1] * acc_y + rotation_matrix[2][2] * acc_z;
 
 
-        adjust_for_declination(&msg.data.imu.data.acceleration_data.acc_x, &msg.data.imu.data.acceleration_data.acc_x, msg.data.imu.data.acceleration_data.acc_x, msg.data.imu.data.acceleration_data.acc_y);
+        adjust_for_declination(&msg.data.imu.data.acceleration_data.acc_x, &msg.data.imu.data.acceleration_data.acc_y, msg.data.imu.data.acceleration_data.acc_x, msg.data.imu.data.acceleration_data.acc_y);
 
 
         break;
