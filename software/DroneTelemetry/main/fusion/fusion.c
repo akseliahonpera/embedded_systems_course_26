@@ -185,7 +185,9 @@ static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *
     }
 }
 
+static void init_kalman_filter(kalman_state *state, const sensor_msg_t *gps_data) {
 
+}
 
 static void fusion_task(void *arg)
 {
@@ -198,7 +200,8 @@ static void fusion_task(void *arg)
     state.velocity_east = 0;
     state.velocity_north = 0;
     state.velocity_up = 0;
-    state.init = false;
+    state.mode = IDLE;
+    
 
     /*
      [ σE²    0     0      0      0      0   ]
@@ -231,6 +234,8 @@ static void fusion_task(void *arg)
     float imu_covariance[3] = {
         0.25f, 0.25f, 0.25f};
 
+
+
     // Nääkin vois määrittää kalibroinnilla,
     // mutta vaatii vähän enemmän työtä.
     // Myös HDOP gps:ltä ois hyvä lisä epävarmuuden arvioinnissa
@@ -259,13 +264,16 @@ static void fusion_task(void *arg)
             case SENSOR_IMU:
                 if (msg.data.imu.data_type == ACCELERATION_DATA)
                 {
+
                 }
                 break;
 
             case SENSOR_GPS:
 
-                if (msg.data.gps.has_fix)
+                if (msg.data.gps.has_fix && state.mode == INIT)
                 {
+                    init_kalman_filter(&state, &msg);
+
                 }
                 break;
 

@@ -23,6 +23,16 @@ static const char *TAG = "MAIN";
 #define I2C_GLITCH_IGNORE_COUNT 7
 #define I2C_FREQ_HZ 100000
 
+static void print_menu(void)
+{
+    printf("\nIMU menu\n"
+           "  b - Measure acceleration bias (keep the sensor stationary)\n"
+           "  v - Measure acceleration variance (keep the sensor stationary)\n"
+           "  m - Show this menu\n"
+           "> ");
+    fflush(stdout);
+}
+
 void app_main(void)
 {
     /*
@@ -107,7 +117,56 @@ void app_main(void)
     vTaskDelay(pdMS_TO_TICKS(1000));
     barometer_init(fusion_queue, i2c_bus, I2C_FREQ_HZ);
     vTaskDelay(pdMS_TO_TICKS(1000));
-    imu_init(fusion_queue, i2c_bus);
+    esp_err_t imu_result = imu_init(fusion_queue, i2c_bus);
+    if (imu_result != ESP_OK)
+    {
+        ESP_LOGE(TAG, "IMU initialization failed: %s", esp_err_to_name(imu_result));
+        return;
+    }
+
+    print_menu();
+    for (;;)
+    {
+        int command = getchar();
+        if (command == EOF)
+        {
+            // The console can return EOF when no input is available yet.
+            clearerr(stdin);
+            vTaskDelay(pdMS_TO_TICKS(20));
+            continue;
+        }
+
+        switch (command)
+        {
+        case 'b':
+        case 'B':
+            imu_notify(IMU_CMD_START_BIAS_MEASUREMENT);
+            puts("\nBias measurement requested.");
+            break;
+
+        case 'v':
+        case 'V':
+            imu_notify(IMU_CMD_START_COVARIANCE_MEASUREMENT);
+            puts("\nVariance measurement requested.");
+            break;
+
+        case 'm':
+        case 'M':
+            print_menu();
+            break;
+
+        case '\r':
+        case '\n':
+        case ' ':
+        case '\t':
+            continue;
+
+        default:
+            puts("\nUnknown command. Use b, v, or m.");
+            break;
+        }
+
+    }
 
     
 
