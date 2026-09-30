@@ -25,9 +25,14 @@ static const char *TAG = "MAIN";
 
 static void print_menu(void)
 {
-    printf("\nIMU menu\n"
+    printf("\nSensor and Kalman menu\n"
            "  b - Measure acceleration bias (keep the sensor stationary)\n"
            "  v - Measure acceleration variance (keep the sensor stationary)\n"
+           "  k - Start/reinitialize Kalman filter from the next GPS fix\n"
+           "  s - Stop Kalman filter\n"
+           "  p - Print Kalman filter status\n"
+           "  t - Toggle periodic Kalman filter status\n"
+           "  c - Toggle IMU covariance source (manual / measured)\n"
            "  m - Show this menu\n"
            "> ");
     fflush(stdout);
@@ -109,7 +114,7 @@ void app_main(void)
     QueueHandle_t telemetry_queue = xQueueCreate(10, sizeof(fusion_msg_t));
 
     // Initialize fusion and telemetry tasks
-    fusion_init(fusion_queue, telemetry_queue);
+    ESP_ERROR_CHECK(fusion_init(fusion_queue, telemetry_queue));
     telemetry_init(telemetry_queue);
 
     // Initialize sensor tasks
@@ -150,9 +155,34 @@ void app_main(void)
             puts("\nVariance measurement requested.");
             break;
 
+        case 'k':
+        case 'K':
+            fusion_notify(FUSION_CMD_START);
+            break;
+
+        case 's':
+        case 'S':
+            fusion_notify(FUSION_CMD_STOP);
+            break;
+
+        case 'p':
+        case 'P':
+            fusion_notify(FUSION_CMD_PRINT_STATUS);
+            break;
+
         case 'm':
         case 'M':
             print_menu();
+            break;
+
+        case 't':
+        case 'T':
+            fusion_notify(FUSION_CMD_TOGGLE_PERIODIC_STATUS);
+            break;
+
+        case 'c':
+        case 'C':
+            fusion_notify(FUSION_CMD_TOGGLE_IMU_COVARIANCE_SOURCE);
             break;
 
         case '\r':
@@ -162,7 +192,7 @@ void app_main(void)
             continue;
 
         default:
-            puts("\nUnknown command. Use b, v, or m.");
+            puts("\nUnknown command. Use b, v, k, s, p, t, c, or m.");
             break;
         }
 

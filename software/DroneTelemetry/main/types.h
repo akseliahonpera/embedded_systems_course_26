@@ -138,6 +138,7 @@ typedef struct {
     float velocity_up;         
     int64_t last_update;
     enu_reference_t origin;
+    int gps_fix_counter;
     enum {IDLE, INIT, TRACKING} mode;
 
 } kalman_state;
