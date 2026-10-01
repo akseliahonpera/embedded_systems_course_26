@@ -26,14 +26,21 @@ static const char *TAG = "MAIN";
 static void print_menu(void)
 {
     printf("\nSensor and Kalman menu\n"
-           "  b - Measure acceleration bias (keep the sensor stationary)\n"
-           "  v - Measure acceleration variance (keep the sensor stationary)\n"
-           "  k - Start/reinitialize Kalman filter from the next GPS fix\n"
-           "  s - Stop Kalman filter\n"
-           "  p - Print Kalman filter status\n"
-           "  t - Toggle periodic Kalman filter status\n"
-           "  c - Toggle IMU covariance source (manual / measured)\n"
-           "  m - Show this menu\n"
+           "---------------------------------------------------------------\n"
+           "  B - Measure acceleration bias (keep the sensor stationary)\n"
+           "  V - Measure acceleration variance (keep the sensor stationary)\n"
+           "  K - Start/reinitialize Kalman filter from the next GPS fix\n"
+           "  S - Stop Kalman filter\n"
+           "  P - Print Kalman filter status\n"
+           "  T - Toggle periodic Kalman filter status\n"
+           "  C - Toggle IMU covariance source (manual / measured)\n"
+           "---------------------------------------------------------------\n"
+           "  1 - Exit GPS standby mode\n"
+           "  2 - Set GPS to standby\n"
+           "  3 - Perform GPS hardware reset\n"
+           "  4 - Toggle GPS print\n"
+           "---------------------------------------------------------------\n"
+           "  M - Show this menu\n"
            "> ");
     fflush(stdout);
 }
@@ -185,6 +192,22 @@ void app_main(void)
             fusion_notify(FUSION_CMD_TOGGLE_IMU_COVARIANCE_SOURCE);
             break;
 
+        case '1':
+            gps_notify(GPS_CMD_EXIT_STANDBY);
+            break;
+
+        case '2':
+            gps_notify(GPS_CMD_STANDBY);
+            break;
+
+        case '3':
+            gps_notify(GPS_CMD_RESET);
+            break;
+
+        case '4':
+            gps_notify(GPS_CMD_PRINT_STATUS);
+            break;
+
         case '\r':
         case '\n':
         case ' ':
@@ -192,7 +215,7 @@ void app_main(void)
             continue;
 
         default:
-            puts("\nUnknown command. Use b, v, k, s, p, t, c, or m.");
+            puts("\nUnknown command. Use B, V, K, S, P, T, C, 1, 2, 3, 4 or M.");
             break;
         }
 
