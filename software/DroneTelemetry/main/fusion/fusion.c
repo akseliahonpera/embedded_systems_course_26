@@ -79,7 +79,7 @@ static void wgs84_to_enu(const enu_reference_t *ref,
     *u = ref->cos_lat0 * dr + ref->sin_lat0 * dz;
 }
 
-static void predict_phase(kalman_state *state, const sensor_msg_t *imu_data, float P[6][6], const float sigma[3])
+static void predict_phase(kalman_state *state, const sensor_msg_t *imu_data, float P[6][6], const float sigma[3][3])
 {
 
     if (state->mode != TRACKING || imu_data->timestamp <= state->last_update)
@@ -120,23 +120,23 @@ static void predict_phase(kalman_state *state, const sensor_msg_t *imu_data, flo
 
     const float position_noise_scale = 0.25f * dt4;
     const float cross_noise_scale = 0.5f * dt3;
-    const float cross_noise_0 = cross_noise_scale * sigma[0];
-    P[0][0] += position_noise_scale * sigma[0];
-    P[0][3] += cross_noise_0;
-    P[3][0] += cross_noise_0;
-    P[3][3] += dt2 * sigma[0];
+    const float velocity_noise_scale = dt2;
 
-    const float cross_noise_1 = cross_noise_scale * sigma[1];
-    P[1][1] += position_noise_scale * sigma[1];
-    P[1][4] += cross_noise_1;
-    P[4][1] += cross_noise_1;
-    P[4][4] += dt2 * sigma[1];
+    for (int i = 0; i < 3; ++i)
+    {
+        for (int j = 0; j < 3; ++j)
+        {
+            const float cov = sigma[i][j];
 
-    const float cross_noise_2 = cross_noise_scale * sigma[2];
-    P[2][2] += position_noise_scale * sigma[2];
-    P[2][5] += cross_noise_2;
-    P[5][2] += cross_noise_2;
-    P[5][5] += dt2 * sigma[2];
+            P[i][j] += position_noise_scale * cov;
+
+            P[i][j + 3] += cross_noise_scale * cov;
+
+            P[i + 3][j] += cross_noise_scale * cov;
+
+            P[i + 3][j + 3] += velocity_noise_scale * cov;
+        }
+    }
 }
 
 static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *gps_data, float P[6][6], const float R[2])
@@ -240,8 +240,7 @@ static bool gps_data_check(const sensor_msg_t *msg)
            fabsf(gps->longtitude) <= 180.0f;
 }
 
-static void print_kalman_state(const kalman_state *state, const float imu_covariance[3],
-                               const char *covariance_source)
+static void print_kalman_state(const kalman_state *state, const char *covariance_source)
 {
     const char *mode = state->mode == IDLE ? "IDLE" : state->mode == INIT ? "INIT (waiting for GPS)"
                                                                           : "TRACKING";
@@ -254,14 +253,12 @@ static void print_kalman_state(const kalman_state *state, const float imu_covari
              "  %-18s %12.3f %12.3f %12.3f\n"
              "\n"
              "  IMU covariance source: %s\n"
-             "  %-18s %12.6f %12.6f %12.6f\n"
              "  ----------------------------------------------------------\n",
              mode,
              "", "East", "North", "Up",
              "Position [m]", state->position_east, state->position_north, state->position_up,
              "Velocity [m/s]", state->velocity_east, state->velocity_north, state->velocity_up,
-             covariance_source, "IMU variance",
-             imu_covariance[0], imu_covariance[1], imu_covariance[2]);
+             covariance_source);
     fflush(stdout);
     fsync(fileno(stdout));
 }
@@ -296,7 +293,6 @@ static void handle_fusion_commands(uint32_t events, kalman_state *state, float c
 
     fflush(stdout);
     fsync(fileno(stdout));
-
 }
 
 static void fusion_task(void *arg)
@@ -332,9 +328,12 @@ static void fusion_task(void *arg)
     // mutta tässä on muutaki prosessointia.
     // Tää kannattaa alustaa kalibroinnilla, jossa mitataan
     // imun kiihtyvyysdatan kovarianssia levossa.
-    const float manual_imu_covariance[3] = {
-        0.25f, 0.25f, 0.25f};
-    float received_imu_covariance[3] = {0};
+    const float manual_imu_covariance[3][3] = {
+        {0.25f, 0.0f, 0.0f},
+        {0.0f, 0.25f, 0.0},
+        {0.0f, 0.0f, 0.25f}
+    };
+    float received_imu_covariance[3][3] = {0};
     bool has_imu_covariance = false;
     bool use_measured_covariance = true;
 
@@ -372,16 +371,16 @@ static void fusion_task(void *arg)
             case SENSOR_IMU:
                 if (msg.data.imu.data_type == COVARIANCE_DATA)
                 {
-                    
-                    received_imu_covariance[0] = msg.data.imu.data.covariance_data.cov_x;
-                    received_imu_covariance[1] = msg.data.imu.data.covariance_data.cov_y;
-                    received_imu_covariance[2] = msg.data.imu.data.covariance_data.cov_z;
+
+                    received_imu_covariance[0][0] = msg.data.imu.data.covariance_data.cov_x;
+                    received_imu_covariance[1][1] = msg.data.imu.data.covariance_data.cov_y;
+                    received_imu_covariance[2][2] = msg.data.imu.data.covariance_data.cov_z;
                     has_imu_covariance = true;
                     ESP_LOGI(TAG, "IMU covariance received (%s)", use_measured_covariance ? "in use" : "stored; manual values in use");
                 }
                 else if (msg.data.imu.data_type == ACCELERATION_DATA && state.mode == TRACKING)
                 {
-                    const float *imu_covariance = use_measured_covariance && has_imu_covariance ? received_imu_covariance : manual_imu_covariance;
+                    const float (*imu_covariance)[3] = use_measured_covariance && has_imu_covariance ? received_imu_covariance : manual_imu_covariance;
                     predict_phase(&state, &msg, state_covariance, imu_covariance);
                 }
                 break;
@@ -420,9 +419,9 @@ static void fusion_task(void *arg)
         const bool periodic_due = periodic_status && now - last_status_timestamp >= FUSION_STATUS_INTERVAL_US;
         if ((events & (FUSION_CMD_PRINT_STATUS | FUSION_CMD_TOGGLE_IMU_COVARIANCE_SOURCE)) || periodic_due)
         {
-            const float *imu_covariance = use_measured_covariance && has_imu_covariance ? received_imu_covariance : manual_imu_covariance;
-            const char *source = !use_measured_covariance ? "manual" : has_imu_covariance ? "measured" : "measured (manual fallback)";
-            print_kalman_state(&state, imu_covariance, source);
+            const char *source = !use_measured_covariance ? "manual" : has_imu_covariance ? "measured"
+                                                                                          : "measured (manual fallback)";
+            print_kalman_state(&state, source);
         }
         if (periodic_due)
         {
