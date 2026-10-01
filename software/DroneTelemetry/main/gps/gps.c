@@ -10,6 +10,8 @@
 #include "esp_log.h"
 #include "driver/gpio.h"
 
+#include "fusion.h"
+
 #include "types.h"
 #include "nmea_parser.h"
 #include "esp_timer.h"
@@ -35,9 +37,6 @@ static const char *TAG = "GPS";
 
 // Task handle
 static TaskHandle_t gps_task_handle;
-
-// Queue handle (to fusion task)
-static QueueHandle_t fusion_queue;
 
 // Flag for printing data
 static bool print_gps_data;
@@ -229,10 +228,7 @@ static void gps_event_handler(void *event_handler_arg, esp_event_base_t event_ba
             },
         };
 
-        if (xQueueSend(fusion_queue, &msg, 0) != pdTRUE)
-        {
-            ESP_LOGW(TAG, "Fusion queue full; GPS update discarded");
-        }
+        fusion_send_data(&msg);
 
         break;
     default:
@@ -240,9 +236,8 @@ static void gps_event_handler(void *event_handler_arg, esp_event_base_t event_ba
     }
 }
 
-esp_err_t gps_init(QueueHandle_t fusion_queue_handle)
+esp_err_t gps_init()
 {
-    fusion_queue = fusion_queue_handle;
     nmea_parser_config_t config = NMEA_PARSER_CONFIG_DEFAULT();
 
     config.uart.uart_port = UART_NUM;

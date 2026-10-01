@@ -25,7 +25,7 @@ typedef enum {
     IMU_MEASURING_COVARIANCE
 } imu_state_t;
 
-esp_err_t imu_init(QueueHandle_t sensor_queue_handle, i2c_master_bus_handle_t i2c_handle);
+esp_err_t imu_init(i2c_master_bus_handle_t i2c_handle);
 
 void imu_notify(imu_command_t cmd);
 

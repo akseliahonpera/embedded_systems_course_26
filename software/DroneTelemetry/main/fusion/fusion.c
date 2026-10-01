@@ -10,16 +10,40 @@
 #include <math.h>
 #include <stdio.h>
 #include <unistd.h>
+#include "fusion.h"
 
 #define WGS84_A 6378137.0
 #define WGS84_E2 0.00669437999014
 #define M_PI 3.14159265358979323846
 #define FUSION_STATUS_INTERVAL_US 1000000LL // One second.
-static QueueHandle_t fusion_queue;
+
 static QueueHandle_t telemetry_queue;
 static TaskHandle_t fusion_task_handle;
 
+static QueueHandle_t imu_queue;
+static QueueHandle_t gps_queue;
+static QueueHandle_t baro_queue;
+
 static const char *TAG = "FUSION";
+
+void fusion_send_data(const sensor_msg_t *msg)
+{
+    switch (msg->type)
+    {
+    case SENSOR_BARO:
+        xQueueSend(baro_queue, msg, 0);
+        break;
+    case SENSOR_GPS:
+        xQueueSend(gps_queue, msg, 0);
+        break;
+    case SENSOR_IMU:
+        xQueueSend(imu_queue, msg, 0);
+        break;
+    default:
+        break;
+    }
+    fusion_notify(FUSION_SENSOR_DATA_AVAILABLE);
+}
 
 void fusion_notify(fusion_command_t cmd)
 {
@@ -349,25 +373,33 @@ static void fusion_task(void *arg)
         // A notification does not unblock xQueueReceive. Bound this wait so
         // commands are handled even when sensors are silent; keep draining
         // sensor messages while IDLE to avoid blocking their producers.
-        BaseType_t received = xQueueReceive(fusion_queue, &msg, pdMS_TO_TICKS(50));
-
         uint32_t events = 0;
-        if (xTaskNotifyWait(0, UINT32_MAX, &events, 0) == pdTRUE)
-        {
-            handle_fusion_commands(events, &state, state_covariance, &start_timestamp,
-                                   &periodic_status, &last_status_timestamp, &use_measured_covariance);
-        }
 
-        if (received == pdTRUE)
+        if (xTaskNotifyWait(0, UINT32_MAX, &events, 100) == pdTRUE)
         {
-            // proc message
-            // fuusioi anturidata, lopuksi lähetä data telemetriataskille
-            switch (msg.type)
+            if (xQueueReceive(gps_queue, &msg, pdMS_TO_TICKS(0)))
             {
-            case SENSOR_BARO:
-                break;
 
-            case SENSOR_IMU:
+                if (!gps_data_check(&msg))
+                {
+                    if (state.mode == INIT)
+                        state.gps_fix_counter = 0;
+                                }
+                else if (state.mode == INIT)
+                {
+                    init_kalman_filter(&state, &msg);
+                }
+                else if (state.mode == TRACKING)
+                {
+                    correction_phase_using_gps(&state, &msg, state_covariance, gps_covariance);
+                }
+            }
+            if (xQueueReceive(baro_queue, &msg, pdMS_TO_TICKS(0)))
+            {
+                // kalman_baro_update(&msg);
+            }
+            if (xQueueReceive(imu_queue, &msg, pdMS_TO_TICKS(0)))
+            {
                 if (msg.data.imu.data_type == COVARIANCE_DATA)
                 {
 
@@ -382,36 +414,13 @@ static void fusion_task(void *arg)
                     const float (*imu_covariance)[3] = use_measured_covariance && has_imu_covariance ? received_imu_covariance : manual_imu_covariance;
                     predict_phase(&state, &msg, state_covariance, imu_covariance);
                 }
-                break;
-
-            case SENSOR_GPS:
-                if (msg.timestamp <= start_timestamp)
-                    break;
-
-                if (!gps_data_check(&msg))
-                {
-                    if (state.mode == INIT)
-                        state.gps_fix_counter = 0;
-                    break;
-                }
-
-                if (state.mode == INIT)
-                {
-                    init_kalman_filter(&state, &msg);
-                }
-                else if (state.mode == TRACKING)
-                {
-                    correction_phase_using_gps(
-                        &state, &msg, state_covariance, gps_covariance);
-                }
-                break;
-
-            default:
-                break;
             }
-            // TODO: populate a fusion_msg_t from the estimate before sending
-            // telemetry. The previous placeholder sent uninitialized data.
+            handle_fusion_commands(events, &state, state_covariance, &start_timestamp,
+                                   &periodic_status, &last_status_timestamp, &use_measured_covariance);
         }
+
+        // TODO: populate a fusion_msg_t from the estimate before sending
+        // telemetry. The previous placeholder sent uninitialized data.
 
         // Check even after a queue timeout, so output also works without sensors.
         const int64_t now = esp_timer_get_time();
@@ -430,14 +439,17 @@ static void fusion_task(void *arg)
     }
 }
 
-esp_err_t fusion_init(QueueHandle_t fusion_queue_handle, QueueHandle_t telemetry_queue_handle)
+esp_err_t fusion_init(QueueHandle_t telemetry_queue_handle)
 {
-    if (fusion_queue_handle == NULL || telemetry_queue_handle == NULL)
-        return ESP_ERR_INVALID_ARG;
-    if (fusion_task_handle != NULL)
-        return ESP_ERR_INVALID_STATE;
 
-    fusion_queue = fusion_queue_handle;
+    imu_queue = xQueueCreate(10, sizeof(sensor_msg_t));
+    gps_queue = xQueueCreate(10, sizeof(sensor_msg_t));
+    baro_queue = xQueueCreate(10, sizeof(sensor_msg_t));
+
+    if (imu_queue == NULL || gps_queue==NULL || baro_queue==NULL || telemetry_queue_handle == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+
     telemetry_queue = telemetry_queue_handle;
 
     BaseType_t task_created = xTaskCreate(fusion_task, "FUSION_TASK", 4096, NULL,

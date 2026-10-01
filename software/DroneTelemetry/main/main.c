@@ -115,21 +115,19 @@ void app_main(void)
     ESP_ERROR_CHECK(i2c_new_master_bus(&bus_cfg, &i2c_bus));
 
     // Initialize queues
-    // Queue for sensor messages from sensor tasks to sensorfusion task
-    QueueHandle_t fusion_queue = xQueueCreate(10, sizeof(sensor_msg_t));
     // Queue for fused data from sensorfusion task to telemetry task
     QueueHandle_t telemetry_queue = xQueueCreate(10, sizeof(fusion_msg_t));
 
     // Initialize fusion and telemetry tasks
-    ESP_ERROR_CHECK(fusion_init(fusion_queue, telemetry_queue));
+    ESP_ERROR_CHECK(fusion_init(telemetry_queue));
     telemetry_init(telemetry_queue);
 
     // Initialize sensor tasks
-    gps_init(fusion_queue);
+    gps_init();
     vTaskDelay(pdMS_TO_TICKS(1000));
-    barometer_init(fusion_queue, i2c_bus, I2C_FREQ_HZ);
+    barometer_init(i2c_bus, I2C_FREQ_HZ);
     vTaskDelay(pdMS_TO_TICKS(1000));
-    esp_err_t imu_result = imu_init(fusion_queue, i2c_bus);
+    esp_err_t imu_result = imu_init(i2c_bus);
     if (imu_result != ESP_OK)
     {
         ESP_LOGE(TAG, "IMU initialization failed: %s", esp_err_to_name(imu_result));

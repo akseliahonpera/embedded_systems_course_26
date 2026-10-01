@@ -12,6 +12,8 @@
 #include "esp_timer.h"
 #include "driver/gpio.h"
 
+#include "fusion.h"
+
 #include "sh2.h"
 #include "sh2_SensorValue.h"
 #include "sh2_err.h"
@@ -35,9 +37,6 @@ static const char *TAG = "IMU";
 
 static TaskHandle_t imu_task_handle;
 static volatile bool imu_reset_complete;
-
-// Queue handle (to fusion task)
-static QueueHandle_t fusion_queue;
 
 // IMU state: currently used only during calibration of accelerometer bias
 static imu_state_t imu_state = IMU_NORMAL;
@@ -103,16 +102,6 @@ static void adjust_for_declination(float *adjusted_x, float *adjusted_y, const f
     *adjusted_y = -sine * original_x + cosine * original_y;
 }
 
-static void send_message_to_fusion_queue(const sensor_msg_t *msg, bool force)
-{
-
-    const TickType_t wait_ticks = force ? portMAX_DELAY : 0;
-
-    if (xQueueSend(fusion_queue, msg, wait_ticks) != pdTRUE)
-    {
-        ESP_LOGW(TAG, "Fusion queue full; IMU update discarded");
-    }
-}
 
 static void handle_rotation_data(sh2_SensorValue_t *value, float rotation_matrix[3][3], bool *has_rotation_matrix, uint64_t *rotation_timestamp)
 {
@@ -141,7 +130,7 @@ static void handle_rotation_data(sh2_SensorValue_t *value, float rotation_matrix
     msg.data.imu.data.rotation_data.accuracy = value->un.rotationVector.accuracy;
     msg.timestamp = esp_timer_get_time();
 
-    send_message_to_fusion_queue(&msg, false);
+    fusion_send_data(&msg);
 }
 
 static void measure_acceleration_covariance(const sh2_SensorValue_t *value, float acc_x_world, float acc_y_world, float acc_z_world)
@@ -188,7 +177,7 @@ static void measure_acceleration_covariance(const sh2_SensorValue_t *value, floa
     cov_msg.data.imu.data.covariance_data.cov_y = m2[1] / denominator;
     cov_msg.data.imu.data.covariance_data.cov_z = m2[2] / denominator;
 
-    send_message_to_fusion_queue(&cov_msg, true);
+    fusion_send_data(&cov_msg);
 
     for (int i = 0; i < 3; i++)
     {
@@ -268,7 +257,7 @@ static void handle_acceleration_data(sh2_SensorValue_t *value, const float rotat
     msg.data.imu.imu_internal_timestamp = value->timestamp;
     msg.timestamp = esp_timer_get_time();
 
-    send_message_to_fusion_queue(&msg, false);
+    fusion_send_data(&msg);
 }
 
 static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
@@ -385,11 +374,8 @@ static void imu_task(void *arg)
     }
 }
 
-esp_err_t imu_init(QueueHandle_t fusion_queue_handle, i2c_master_bus_handle_t i2c_handle)
+esp_err_t imu_init(i2c_master_bus_handle_t i2c_handle)
 {
-    // Obtain sensor fusion queue handle
-    fusion_queue = fusion_queue_handle;
-
     ESP_RETURN_ON_ERROR(bno085_port_init(i2c_handle, BNO085_HINT_GPIO,
                                          BNO085_NRST_GPIO, BNO085_BOOTN_GPIO),
                         TAG, "BNO085 port initialization failed");
