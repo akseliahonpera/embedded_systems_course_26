@@ -331,8 +331,7 @@ static void fusion_task(void *arg)
     const float manual_imu_covariance[3][3] = {
         {0.25f, 0.0f, 0.0f},
         {0.0f, 0.25f, 0.0},
-        {0.0f, 0.0f, 0.25f}
-    };
+        {0.0f, 0.0f, 0.25f}};
     float received_imu_covariance[3][3] = {0};
     bool has_imu_covariance = false;
     bool use_measured_covariance = true;
