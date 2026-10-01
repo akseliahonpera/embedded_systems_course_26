@@ -69,10 +69,10 @@ static void gps_task(void *arg)
                 esp_err_t err = gpio_set_level(M20048_HW_S_GPIO, 0);
                 if (err != ESP_OK)
                 {
-                    ESP_LOGE(TAG, "Could not set GPS standby mode", esp_err_to_name(err));
+                    ESP_LOGE(TAG, "Could not set GPS standby mode: %s", esp_err_to_name(err));
                     // vTaskDelete(NULL); <- jatkossa vois tappaa taskin, miten uudelleenkäynnistys
                 }
-                ESP_LOGI(TAG, "GPS entered standby mode", NULL);
+                ESP_LOGI(TAG, "GPS entered standby mode");
                 // TODO: notify caller
             }
 
@@ -84,10 +84,10 @@ static void gps_task(void *arg)
                 esp_err_t err = gpio_set_level(M20048_HW_S_GPIO, 1);
                 if (err != ESP_OK)
                 {
-                    ESP_LOGE(TAG, "Could not exit GPS standby mode", esp_err_to_name(err));
+                    ESP_LOGE(TAG, "Could not exit GPS standby mode: %s", esp_err_to_name(err));
                     // vTaskDelete(NULL); <- jatkossa vois tappaa taskin, miten uudelleenkäynnistys
                 }
-                ESP_LOGI(TAG, "GPS exited standby mode", NULL);
+                ESP_LOGI(TAG, "GPS exited standby mode");
                 // TODO: notify caller
                 
             }
@@ -100,17 +100,17 @@ static void gps_task(void *arg)
                 esp_err_t err = gpio_set_level(M20048_HW_R_GPIO, 0);
                 if (err != ESP_OK)
                 {
-                    ESP_LOGE(TAG, "Could not pull GPS reset down", esp_err_to_name(err));
+                    ESP_LOGE(TAG, "Could not pull GPS reset down: %s", esp_err_to_name(err));
                     // vTaskDelete(NULL); <- jatkossa vois tappaa taskin, miten uudelleenkäynnistys
                 }
                 vTaskDelay(pdMS_TO_TICKS(100));
                 err = gpio_set_level(M20048_HW_R_GPIO, 1);
                 if (err != ESP_OK)
                 {
-                    ESP_LOGE(TAG, "Could not release GPS reset", esp_err_to_name(err));
+                    ESP_LOGE(TAG, "Could not release GPS reset: %s", esp_err_to_name(err));
                     // vTaskDelete(NULL); <- jatkossa vois tappaa taskin, miten uudelleenkäynnistys
                 }
-                ESP_LOGI(TAG, "GPS reset completed", NULL);
+                ESP_LOGI(TAG, "GPS reset completed");
                 // TODO: notify caller
             }
 
