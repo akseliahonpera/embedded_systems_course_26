@@ -31,13 +31,13 @@ void fusion_send_data(const sensor_msg_t *msg)
     switch (msg->type)
     {
     case SENSOR_BARO:
-        xQueueSend(baro_queue, msg, 0);
+        xQueueOverwrite(baro_queue, msg);
         break;
     case SENSOR_GPS:
-        xQueueSend(gps_queue, msg, 0);
+        xQueueOverwrite(gps_queue, msg);
         break;
     case SENSOR_IMU:
-        xQueueSend(imu_queue, msg, 0);
+        xQueueOverwrite(imu_queue, msg);
         break;
     default:
         break;
@@ -442,9 +442,9 @@ static void fusion_task(void *arg)
 esp_err_t fusion_init(QueueHandle_t telemetry_queue_handle)
 {
 
-    imu_queue = xQueueCreate(10, sizeof(sensor_msg_t));
-    gps_queue = xQueueCreate(10, sizeof(sensor_msg_t));
-    baro_queue = xQueueCreate(10, sizeof(sensor_msg_t));
+    imu_queue = xQueueCreate(1, sizeof(sensor_msg_t));
+    gps_queue = xQueueCreate(1, sizeof(sensor_msg_t));
+    baro_queue = xQueueCreate(1, sizeof(sensor_msg_t));
 
     if (imu_queue == NULL || gps_queue==NULL || baro_queue==NULL || telemetry_queue_handle == NULL) {
         return ESP_ERR_INVALID_STATE;
