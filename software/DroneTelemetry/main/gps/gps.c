@@ -87,7 +87,9 @@ static void gps_task(void *arg)
                     ESP_LOGE(TAG, "Could not exit GPS standby mode", esp_err_to_name(err));
                     // vTaskDelete(NULL); <- jatkossa vois tappaa taskin, miten uudelleenkäynnistys
                 }
+                ESP_LOGI(TAG, "GPS exited standby mode", NULL);
                 // TODO: notify caller
+                
             }
 
             if (events & GPS_CMD_RESET)
@@ -264,7 +266,7 @@ esp_err_t gps_init(QueueHandle_t fusion_queue_handle)
 
     const gpio_config_t standby_config = {
         .pin_bit_mask = 1ULL << M20048_HW_S_GPIO,
-        .mode = GPIO_MODE_OUTPUT_OD,
+        .mode = GPIO_MODE_OUTPUT,
         .pull_up_en = GPIO_PULLUP_DISABLE,
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
         .intr_type = GPIO_INTR_DISABLE,
