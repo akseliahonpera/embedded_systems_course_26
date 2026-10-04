@@ -139,6 +139,9 @@ typedef struct {
     int64_t last_update;
     enu_reference_t origin;
     int gps_fix_counter;
+    double init_latitude_sum;
+    double init_longitude_sum;
+    uint16_t stationary_samples;
     enum {IDLE, INIT, TRACKING} mode;
 
 } kalman_state;

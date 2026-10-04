@@ -9,6 +9,7 @@
 #include "types.h"
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include "fusion.h"
 
@@ -16,6 +17,16 @@
 #define WGS84_E2 0.00669437999014
 #define M_PI 3.14159265358979323846
 #define FUSION_STATUS_INTERVAL_US 1000000LL // One second.
+
+/* The BNO085 linear-acceleration output still contains small attitude and
+ * bias errors.  Do not allow a calibration performed while stationary to
+ * claim that the navigation acceleration is more accurate than this. */
+#define MIN_HORIZONTAL_ACCEL_VARIANCE 0.25f
+#define MAX_PREDICTION_DT_S 0.100f
+#define STATIONARY_ACCELERATION_MPS2 0.15f
+#define STATIONARY_SAMPLE_COUNT 20U
+#define GPS_POSITION_STDDEV_M 8.0f
+#define GPS_INNOVATION_GATE 9.21f /* 99% chi-square gate, two position axes */
 
 static QueueHandle_t telemetry_queue;
 static TaskHandle_t fusion_task_handle;
@@ -113,6 +124,13 @@ static void predict_phase(kalman_state *state, const sensor_msg_t *imu_data, flo
     float acc_east = imu_data->data.imu.data.acceleration_data.acc_x;
     float acc_north = imu_data->data.imu.data.acceleration_data.acc_y;
     const float dt = (1.0e-6) * (imu_data->timestamp - state->last_update);
+    if (!isfinite(dt) || dt <= 0.0f || dt > MAX_PREDICTION_DT_S)
+    {
+        /* Queue overruns or a debugger pause must not turn a tiny bias into
+         * seconds of fictitious motion.  Resume integration from this sample. */
+        state->last_update = imu_data->timestamp;
+        return;
+    }
     const float dt2 = dt * dt;
     const float dt3 = dt2 * dt;
     const float dt4 = dt3 * dt;
@@ -150,7 +168,9 @@ static void predict_phase(kalman_state *state, const sensor_msg_t *imu_data, flo
     {
         for (int j = 0; j < 3; ++j)
         {
-            const float cov = sigma[i][j];
+            const float cov = i == j
+                                  ? fmaxf(MIN_HORIZONTAL_ACCEL_VARIANCE, sigma[i][j])
+                                  : sigma[i][j];
 
             P[i][j] += position_noise_scale * cov;
 
@@ -161,6 +181,23 @@ static void predict_phase(kalman_state *state, const sensor_msg_t *imu_data, flo
             P[i + 3][j + 3] += velocity_noise_scale * cov;
         }
     }
+}
+
+static void apply_stationary_constraint(kalman_state *state, float P[6][6])
+{
+    state->velocity_east = 0.0f;
+    state->velocity_north = 0.0f;
+
+    /* A zero-velocity observation also removes position/velocity correlation.
+     * Keeping it would let a later GPS correction recreate velocity while the
+     * unit is known to be at rest. */
+    for (int i = 0; i < 6; ++i)
+    {
+        P[3][i] = P[i][3] = 0.0f;
+        P[4][i] = P[i][4] = 0.0f;
+    }
+    P[3][3] = 0.01f;
+    P[4][4] = 0.01f;
 }
 
 static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *gps_data, float P[6][6], const float R[2])
@@ -182,7 +219,7 @@ static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *
     S[1][1] += R[1];
 
     const float determinant = S[0][0] * S[1][1] - S[0][1] * S[1][0];
-    if (determinant == 0.0f)
+    if (!isfinite(determinant) || determinant <= 1.0e-9f)
         return;
 
     const float inverse_determinant = 1.0f / determinant;
@@ -203,6 +240,15 @@ static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *
         gps_east - state->position_east,
         gps_north - state->position_north};
 
+    const float nis = innovation[0] * (S[0][0] * innovation[0] + S[0][1] * innovation[1]) +
+                      innovation[1] * (S[1][0] * innovation[0] + S[1][1] * innovation[1]);
+    if (!isfinite(nis) || nis > GPS_INNOVATION_GATE)
+    {
+        ESP_LOGW(TAG, "Ignoring GPS outlier: innovation E=%.1f N=%.1f m (NIS=%.1f)",
+                 innovation[0], innovation[1], nis);
+        return;
+    }
+
     state->position_east += innovation[0] * K[0][0] + innovation[1] * K[0][1];
     state->position_north += innovation[0] * K[1][0] + innovation[1] * K[1][1];
     state->position_up += innovation[0] * K[2][0] + innovation[1] * K[2][1];
@@ -210,14 +256,31 @@ static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *
     state->velocity_north += innovation[0] * K[4][0] + innovation[1] * K[4][1];
     state->velocity_up += innovation[0] * K[5][0] + innovation[1] * K[5][1];
 
-    for (int j = 0; j < 6; ++j)
+    /* Joseph form avoids the loss of symmetry/positive-semidefiniteness that
+     * the simplified covariance update suffers from in single precision. */
+    float A[6][6] = {0};
+    float AP[6][6] = {0};
+    float updated_P[6][6] = {0};
+    for (int row = 0; row < 6; ++row)
     {
-
-        const float p_east = P[0][j];
-        const float p_north = P[1][j];
-        for (int i = 0; i < 6; ++i)
-            P[i][j] -= K[i][0] * p_east + K[i][1] * p_north;
+        A[row][row] = 1.0f;
+        A[row][0] -= K[row][0];
+        A[row][1] -= K[row][1];
     }
+    for (int row = 0; row < 6; ++row)
+        for (int col = 0; col < 6; ++col)
+            for (int k = 0; k < 6; ++k)
+                AP[row][col] += A[row][k] * P[k][col];
+
+    for (int row = 0; row < 6; ++row)
+        for (int col = 0; col < 6; ++col)
+        {
+            for (int k = 0; k < 6; ++k)
+                updated_P[row][col] += AP[row][k] * A[col][k];
+            updated_P[row][col] += K[row][0] * R[0] * K[col][0] +
+                                   K[row][1] * R[1] * K[col][1];
+        }
+    memcpy(P, updated_P, sizeof(updated_P));
 }
 
 static void init_kalman_filter(kalman_state *state, const sensor_msg_t *gps_data)
@@ -226,19 +289,25 @@ static void init_kalman_filter(kalman_state *state, const sensor_msg_t *gps_data
     if (gps_data->data.gps.has_fix)
     {
         state->gps_fix_counter++;
+        state->init_latitude_sum += gps_data->data.gps.latitude;
+        state->init_longitude_sum += gps_data->data.gps.longtitude;
     }
     else
     {
         state->gps_fix_counter = 0;
+        state->init_latitude_sum = 0.0;
+        state->init_longitude_sum = 0.0;
     }
 
     if (state->gps_fix_counter >= 3)
     {
+        const double origin_latitude = state->init_latitude_sum / state->gps_fix_counter;
+        const double origin_longitude = state->init_longitude_sum / state->gps_fix_counter;
         *state = (kalman_state){0};
-        enu_reference_init(&state->origin, gps_data->data.gps.latitude, gps_data->data.gps.longtitude, 0.0);
+        enu_reference_init(&state->origin, origin_latitude, origin_longitude, 0.0);
         state->last_update = gps_data->timestamp;
         state->mode = TRACKING;
-        ESP_LOGI(TAG, "Kalman filter tracking; GPS origin lat=%.7f lon=%.7f", gps_data->data.gps.latitude, gps_data->data.gps.longtitude);
+        ESP_LOGI(TAG, "Kalman filter tracking; averaged GPS origin lat=%.7f lon=%.7f", origin_latitude, origin_longitude);
     }
 }
 
@@ -360,11 +429,11 @@ static void fusion_task(void *arg)
     bool has_imu_covariance = false;
     bool use_measured_covariance = true;
 
-    // Nääkin vois määrittää kalibroinnilla,
-    // mutta vaatii vähän enemmän työtä.
-    // Myös HDOP gps:ltä ois hyvä lisä epävarmuuden arvioinnissa
+    // A standalone GPS fix is commonly noisier than a few metres, especially
+    // indoors or with limited sky view.  Treat this as an 8 m 1-sigma fix.
     float gps_covariance[2] = {
-        4.51f, 4.51f};
+        GPS_POSITION_STDDEV_M * GPS_POSITION_STDDEV_M,
+        GPS_POSITION_STDDEV_M * GPS_POSITION_STDDEV_M};
 
     sensor_msg_t msg;
 
@@ -383,8 +452,12 @@ static void fusion_task(void *arg)
                 if (!gps_data_check(&msg))
                 {
                     if (state.mode == INIT)
+                    {
                         state.gps_fix_counter = 0;
-                                }
+                        state.init_latitude_sum = 0.0;
+                        state.init_longitude_sum = 0.0;
+                    }
+                }
                 else if (state.mode == INIT)
                 {
                     init_kalman_filter(&state, &msg);
@@ -413,6 +486,20 @@ static void fusion_task(void *arg)
                 {
                     const float (*imu_covariance)[3] = use_measured_covariance && has_imu_covariance ? received_imu_covariance : manual_imu_covariance;
                     predict_phase(&state, &msg, state_covariance, imu_covariance);
+
+                    const float acceleration = hypotf(msg.data.imu.data.acceleration_data.acc_x,
+                                                      msg.data.imu.data.acceleration_data.acc_y);
+                    if (isfinite(acceleration) && acceleration < STATIONARY_ACCELERATION_MPS2)
+                    {
+                        if (state.stationary_samples < STATIONARY_SAMPLE_COUNT)
+                            state.stationary_samples++;
+                        if (state.stationary_samples == STATIONARY_SAMPLE_COUNT)
+                            apply_stationary_constraint(&state, state_covariance);
+                    }
+                    else
+                    {
+                        state.stationary_samples = 0;
+                    }
                 }
             }
             handle_fusion_commands(events, &state, state_covariance, &start_timestamp,
