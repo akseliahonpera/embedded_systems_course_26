@@ -81,6 +81,10 @@ typedef struct
 {
     float latitude;
     float longtitude;
+    float horizontal_dop;
+    float speed_mps;
+    float course_deg;
+    uint8_t satellites_in_use;
     bool has_fix;
     gps_time_t tim; 
 } gps_data_t;

@@ -223,6 +223,10 @@ static void gps_event_handler(void *event_handler_arg, esp_event_base_t event_ba
             .data.gps = {
                 .latitude = gps->latitude,
                 .longtitude = gps->longitude,
+                .horizontal_dop = gps->dop_h,
+                .speed_mps = gps->speed,
+                .course_deg = gps->cog,
+                .satellites_in_use = gps->sats_in_use,
                 .has_fix = has_fix,
                 .tim = gps->tim,
             },

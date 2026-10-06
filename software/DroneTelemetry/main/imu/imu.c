@@ -238,9 +238,12 @@ static void handle_acceleration_data(sh2_SensorValue_t *value, const float rotat
     acc_y -= bias[1];
     acc_z -= bias[2];
 
-    float acc_x_world = rotation_matrix[0][0] * acc_x + rotation_matrix[0][1] * acc_y + rotation_matrix[0][2] * acc_z;
-    float acc_y_world = rotation_matrix[1][0] * acc_x + rotation_matrix[1][1] * acc_y + rotation_matrix[1][2] * acc_z;
-    float acc_z_world = rotation_matrix[2][0] * acc_x + rotation_matrix[2][1] * acc_y + rotation_matrix[2][2] * acc_z;
+    /* The BNO085 rotation vector transforms ENU world coordinates into the
+     * device frame.  Linear acceleration is reported in that device frame,
+     * so transform it back into ENU with the transpose (inverse) of R. */
+    float acc_x_world = rotation_matrix[0][0] * acc_x + rotation_matrix[1][0] * acc_y + rotation_matrix[2][0] * acc_z;
+    float acc_y_world = rotation_matrix[0][1] * acc_x + rotation_matrix[1][1] * acc_y + rotation_matrix[2][1] * acc_z;
+    float acc_z_world = rotation_matrix[0][2] * acc_x + rotation_matrix[1][2] * acc_y + rotation_matrix[2][2] * acc_z;
     adjust_for_declination(&acc_x_world, &acc_y_world, acc_x_world, acc_y_world);
     if (imu_state == IMU_MEASURING_COVARIANCE)
     {

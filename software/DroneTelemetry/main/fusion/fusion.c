@@ -26,7 +26,14 @@
 #define STATIONARY_ACCELERATION_MPS2 0.15f
 #define STATIONARY_SAMPLE_COUNT 20U
 #define GPS_POSITION_STDDEV_M 8.0f
+#define GPS_MIN_POSITION_STDDEV_M 3.0f
+#define GPS_MAX_POSITION_STDDEV_M 20.0f
+#define GPS_METRES_PER_HDOP 5.0f
+#define GPS_VELOCITY_STDDEV_MPS 0.5f
+#define GPS_MIN_VELOCITY_FOR_COURSE_MPS 0.7f
 #define GPS_INNOVATION_GATE 9.21f /* 99% chi-square gate, two position axes */
+#define GPS_RECOVERY_MAX_POSITION_STDDEV_M 100.0f
+#define GPS_INIT_FIX_COUNT 15U
 
 static QueueHandle_t telemetry_queue;
 static TaskHandle_t fusion_task_handle;
@@ -200,27 +207,24 @@ static void apply_stationary_constraint(kalman_state *state, float P[6][6])
     P[4][4] = 0.01f;
 }
 
-static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *gps_data, float P[6][6], const float R[2])
+static bool apply_two_axis_measurement(kalman_state *state, float P[6][6],
+                                       int first_index, int second_index,
+                                       const float measurement[2], const float R[2],
+                                       const char *measurement_name)
 {
-
-    const gps_data_t *gps = &gps_data->data.gps;
-    if (!gps->has_fix)
-        return;
-
-    double gps_east, gps_north, gps_up;
-
-    wgs84_to_enu(&state->origin, gps->latitude, gps->longtitude, 0, &gps_east, &gps_north, &gps_up);
-
+    float state_vector[6] = {
+        state->position_east, state->position_north, state->position_up,
+        state->velocity_east, state->velocity_north, state->velocity_up};
     float S[2][2] = {
-        {P[0][0], P[0][1]},
-        {P[1][0], P[1][1]}};
+        {P[first_index][first_index], P[first_index][second_index]},
+        {P[second_index][first_index], P[second_index][second_index]}};
 
     S[0][0] += R[0];
     S[1][1] += R[1];
 
     const float determinant = S[0][0] * S[1][1] - S[0][1] * S[1][0];
     if (!isfinite(determinant) || determinant <= 1.0e-9f)
-        return;
+        return false;
 
     const float inverse_determinant = 1.0f / determinant;
     const float s00 = S[0][0];
@@ -232,29 +236,31 @@ static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *
     float K[6][2];
     for (int i = 0; i < 6; ++i)
     {
-        K[i][0] = P[i][0] * S[0][0] + P[i][1] * S[1][0];
-        K[i][1] = P[i][0] * S[0][1] + P[i][1] * S[1][1];
+        K[i][0] = P[i][first_index] * S[0][0] + P[i][second_index] * S[1][0];
+        K[i][1] = P[i][first_index] * S[0][1] + P[i][second_index] * S[1][1];
     }
 
     const float innovation[2] = {
-        gps_east - state->position_east,
-        gps_north - state->position_north};
+        measurement[0] - state_vector[first_index],
+        measurement[1] - state_vector[second_index]};
 
     const float nis = innovation[0] * (S[0][0] * innovation[0] + S[0][1] * innovation[1]) +
                       innovation[1] * (S[1][0] * innovation[0] + S[1][1] * innovation[1]);
     if (!isfinite(nis) || nis > GPS_INNOVATION_GATE)
     {
-        ESP_LOGW(TAG, "Ignoring GPS outlier: innovation E=%.1f N=%.1f m (NIS=%.1f)",
-                 innovation[0], innovation[1], nis);
-        return;
+        ESP_LOGW(TAG, "Ignoring %s outlier: innovation=%.2f, %.2f (NIS=%.1f)",
+                 measurement_name, innovation[0], innovation[1], nis);
+        return false;
     }
 
-    state->position_east += innovation[0] * K[0][0] + innovation[1] * K[0][1];
-    state->position_north += innovation[0] * K[1][0] + innovation[1] * K[1][1];
-    state->position_up += innovation[0] * K[2][0] + innovation[1] * K[2][1];
-    state->velocity_east += innovation[0] * K[3][0] + innovation[1] * K[3][1];
-    state->velocity_north += innovation[0] * K[4][0] + innovation[1] * K[4][1];
-    state->velocity_up += innovation[0] * K[5][0] + innovation[1] * K[5][1];
+    for (int i = 0; i < 6; ++i)
+        state_vector[i] += innovation[0] * K[i][0] + innovation[1] * K[i][1];
+    state->position_east = state_vector[0];
+    state->position_north = state_vector[1];
+    state->position_up = state_vector[2];
+    state->velocity_east = state_vector[3];
+    state->velocity_north = state_vector[4];
+    state->velocity_up = state_vector[5];
 
     /* Joseph form avoids the loss of symmetry/positive-semidefiniteness that
      * the simplified covariance update suffers from in single precision. */
@@ -264,8 +270,8 @@ static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *
     for (int row = 0; row < 6; ++row)
     {
         A[row][row] = 1.0f;
-        A[row][0] -= K[row][0];
-        A[row][1] -= K[row][1];
+        A[row][first_index] -= K[row][0];
+        A[row][second_index] -= K[row][1];
     }
     for (int row = 0; row < 6; ++row)
         for (int col = 0; col < 6; ++col)
@@ -279,8 +285,72 @@ static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *
                 updated_P[row][col] += AP[row][k] * A[col][k];
             updated_P[row][col] += K[row][0] * R[0] * K[col][0] +
                                    K[row][1] * R[1] * K[col][1];
-        }
+    }
     memcpy(P, updated_P, sizeof(updated_P));
+    return true;
+}
+
+static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *gps_data, float P[6][6])
+{
+    const gps_data_t *gps = &gps_data->data.gps;
+    if (!gps->has_fix)
+        return;
+
+    double gps_east, gps_north, gps_up;
+    wgs84_to_enu(&state->origin, gps->latitude, gps->longtitude, 0,
+                 &gps_east, &gps_north, &gps_up);
+
+    float position_stddev = GPS_POSITION_STDDEV_M;
+    if (isfinite(gps->horizontal_dop) && gps->horizontal_dop > 0.0f)
+        position_stddev = fminf(GPS_MAX_POSITION_STDDEV_M,
+                                fmaxf(GPS_MIN_POSITION_STDDEV_M,
+                                      gps->horizontal_dop * GPS_METRES_PER_HDOP));
+    if (gps->satellites_in_use > 0U && gps->satellites_in_use < 6U)
+        position_stddev *= 6.0f / gps->satellites_in_use;
+
+    const float position_measurement[2] = {(float)gps_east, (float)gps_north};
+    const float position_R[2] = {position_stddev * position_stddev,
+                                 position_stddev * position_stddev};
+    if (!apply_two_axis_measurement(state, P, 0, 1, position_measurement,
+                                    position_R, "GPS position"))
+    {
+        /* A hard gate must not become a permanent lockout.  IMU bias can
+         * legitimately move the prediction outside the gate; enlarge only
+         * the horizontal state uncertainty so the next independent GPS fix
+         * can reacquire the estimate.  Increasing diagonal covariance keeps
+         * the covariance positive semidefinite and does not accept this
+         * rejected sample. */
+        const float east_innovation = position_measurement[0] - state->position_east;
+        const float north_innovation = position_measurement[1] - state->position_north;
+        const float innovation_energy = east_innovation * east_innovation +
+                                        north_innovation * north_innovation;
+        const float target_innovation_variance = innovation_energy /
+                                                  (GPS_INNOVATION_GATE * 0.75f);
+        const float target_position_variance = fminf(
+            GPS_RECOVERY_MAX_POSITION_STDDEV_M * GPS_RECOVERY_MAX_POSITION_STDDEV_M,
+            fmaxf(0.0f, target_innovation_variance - fmaxf(position_R[0], position_R[1])));
+        P[0][0] = fmaxf(P[0][0], target_position_variance);
+        P[1][1] = fmaxf(P[1][1], target_position_variance);
+        ESP_LOGW(TAG, "GPS position gate recovery: horizontal uncertainty expanded to %.1f m",
+                 sqrtf(fmaxf(P[0][0], P[1][1])));
+        return;
+    }
+
+    /* Course becomes unreliable near zero speed.  Above this threshold it is
+     * a valuable independent velocity observation that prevents IMU bias from
+     * becoming a position error between the comparatively slow GPS fixes. */
+    if (isfinite(gps->speed_mps) && isfinite(gps->course_deg) &&
+        gps->speed_mps >= GPS_MIN_VELOCITY_FOR_COURSE_MPS)
+    {
+        const float course_rad = gps->course_deg * (float)(M_PI / 180.0);
+        const float velocity_measurement[2] = {
+            gps->speed_mps * sinf(course_rad),
+            gps->speed_mps * cosf(course_rad)};
+        const float velocity_R[2] = {GPS_VELOCITY_STDDEV_MPS * GPS_VELOCITY_STDDEV_MPS,
+                                     GPS_VELOCITY_STDDEV_MPS * GPS_VELOCITY_STDDEV_MPS};
+        (void)apply_two_axis_measurement(state, P, 3, 4, velocity_measurement,
+                                         velocity_R, "GPS velocity");
+    }
 }
 
 static void init_kalman_filter(kalman_state *state, const sensor_msg_t *gps_data)
@@ -299,7 +369,7 @@ static void init_kalman_filter(kalman_state *state, const sensor_msg_t *gps_data
         state->init_longitude_sum = 0.0;
     }
 
-    if (state->gps_fix_counter >= 3)
+    if (state->gps_fix_counter >= GPS_INIT_FIX_COUNT)
     {
         const double origin_latitude = state->init_latitude_sum / state->gps_fix_counter;
         const double origin_longitude = state->init_longitude_sum / state->gps_fix_counter;
@@ -307,7 +377,8 @@ static void init_kalman_filter(kalman_state *state, const sensor_msg_t *gps_data
         enu_reference_init(&state->origin, origin_latitude, origin_longitude, 0.0);
         state->last_update = gps_data->timestamp;
         state->mode = TRACKING;
-        ESP_LOGI(TAG, "Kalman filter tracking; averaged GPS origin lat=%.7f lon=%.7f", origin_latitude, origin_longitude);
+        ESP_LOGI(TAG, "Kalman filter tracking; origin averaged from %u GPS fixes, lat=%.7f lon=%.7f",
+                 GPS_INIT_FIX_COUNT, origin_latitude, origin_longitude);
     }
 }
 
@@ -330,7 +401,9 @@ static bool gps_data_check(const sensor_msg_t *msg)
            isfinite(gps->latitude) &&
            isfinite(gps->longtitude) &&
            fabsf(gps->latitude) <= 90.0f &&
-           fabsf(gps->longtitude) <= 180.0f;
+           fabsf(gps->longtitude) <= 180.0f &&
+           (!isfinite(gps->horizontal_dop) ||
+            (gps->horizontal_dop >= 0.0f && gps->horizontal_dop <= 10.0f));
 }
 
 static void print_kalman_state(const kalman_state *state, const char *covariance_source)
@@ -429,12 +502,6 @@ static void fusion_task(void *arg)
     bool has_imu_covariance = false;
     bool use_measured_covariance = true;
 
-    // A standalone GPS fix is commonly noisier than a few metres, especially
-    // indoors or with limited sky view.  Treat this as an 8 m 1-sigma fix.
-    float gps_covariance[2] = {
-        GPS_POSITION_STDDEV_M * GPS_POSITION_STDDEV_M,
-        GPS_POSITION_STDDEV_M * GPS_POSITION_STDDEV_M};
-
     sensor_msg_t msg;
 
     while (1)
@@ -464,7 +531,7 @@ static void fusion_task(void *arg)
                 }
                 else if (state.mode == TRACKING)
                 {
-                    correction_phase_using_gps(&state, &msg, state_covariance, gps_covariance);
+                    correction_phase_using_gps(&state, &msg, state_covariance);
                 }
             }
             if (xQueueReceive(baro_queue, &msg, pdMS_TO_TICKS(0)))
