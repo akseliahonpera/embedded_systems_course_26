@@ -8,6 +8,6 @@ namespace Utils
 
 std::string readTextFile(std::string filepath);
 std::vector<std::string> splitSpring(const std::string &str, char splitter);
-float getTimeStamp();
+double getTimeStamp();
 
 }

@@ -49,8 +49,8 @@ GLFWwindow* initDisplay(int width, int height)
 
 int main(int args, char **arg)
 {
-    int window_width = 640;
-    int window_height = 480;
+    int window_width = 1280;
+    int window_height = 720;
 
     GLFWwindow* window = initDisplay(window_width, window_height);
     Application app(window_width, window_height);

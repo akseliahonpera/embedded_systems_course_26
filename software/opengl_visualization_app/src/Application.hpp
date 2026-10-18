@@ -3,7 +3,10 @@
 #include "Camera.hpp"
 #include "Mesh.hpp"
 #include <array>
+#include <cstring>
 #include "Server.hpp"
+#include "DataSampler.hpp"
+#include "DataLogger.hpp"
 
 struct ClientState;
 
@@ -23,17 +26,9 @@ struct DroneModel
 
 struct ClientState
 {
-    ClientState() {
-        coordinates = glm::vec2(0);
-        rotation = glm::vec3(0);
-        pressure = 0.0f;
-        temperature = 0.0f;
-    }
+    DataSampler data_sampler;
+    DataFrame last_frame;
 
-    glm::vec2 coordinates;
-    glm::vec3 rotation;
-    float pressure;
-    float temperature;
     float packet_loss;
     float latency;
 
@@ -41,6 +36,27 @@ struct ClientState
 
     void updateData(ClientPtr client);
 };
+
+struct UiStaticData
+{
+    UiStaticData()
+    {
+        strcpy(logging_file, "data.csv");
+        log_sample_rate = 5;
+        log_orientation = false;
+        log_coordinates = false;
+        log_temperature = false;
+        log_pressure = false;
+    }
+
+    char logging_file[128];
+    bool log_orientation;
+    bool log_coordinates;
+    bool log_temperature;
+    bool log_pressure;
+    float log_sample_rate;
+};
+
 
 struct Application
 {
@@ -56,6 +72,9 @@ private:
     DroneModel drone;
     Camera cam;
     Server server;
+    Logging::DataLogger logger;
+
+    UiStaticData ui_data;
 
     std::string show_client_addr;
     std::map<std::string, ClientState> active_clients;

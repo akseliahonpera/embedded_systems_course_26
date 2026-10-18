@@ -5,8 +5,6 @@
 #include "imgui/imgui.h"
 #include "MeshRenderer.hpp"
 #include "Utils.hpp"
-#include <unordered_map>
-
 
 constexpr float client_timeout_time = 5.0f;
 
@@ -22,6 +20,8 @@ glm::vec3 convertAngles(glm::vec3 angles)
                 * glm::angleAxis(roll,  glm::vec3(0.0f, 0.0f, 1.0f));
 
     return glm::eulerAngles(q);
+
+
 }
 
 
@@ -63,12 +63,14 @@ void ClientState::updateData(ClientPtr client)
 
         Datagram dg;
         if (client->popDatagram(dg)) {
+            /*static int drop_counter = 0;
+            drop_counter++;
+            if ((drop_counter % 10) != 0) {
+                continue;
+            }*/
 
-            rotation = glm::vec3(dg.rotation[0], dg.rotation[1], dg.rotation[2]);
-            coordinates = glm::vec2(dg.location[0], dg.location[1]);
-            pressure = dg.pressure;
-            temperature = dg.temperature;
-
+            last_frame = DataFrame::fromDatagram(dg);
+            data_sampler.pushFrame(Utils::getTimeStamp(), last_frame);
         }
     }
 
@@ -90,7 +92,8 @@ void DroneModel::render(const Camera &cam)
 void DroneModel::update(float deltaTime, ClientState *show_client)
 {
     if (show_client) {
-        transform->rotation = convertAngles(show_client->rotation);
+        //transform->rotation = convertAngles(show_client->data_sampler.getSample(Utils::getTimeStamp() - 0.25f).rotation);
+        transform->rotation = convertAngles(show_client->last_frame.rotation);
     }
 
     for (auto &prop : propellers) {
@@ -125,56 +128,68 @@ void Application::updateGui()
     ImGui::NewFrame();
 
     ImGui::Begin("Clients");
+        for (auto &[addr, client_state] : active_clients) {
+            ImGui::Text("%s Packet loss %.1f%%  Ping %.1f ms", addr.c_str(), client_state.packet_loss*100.0f, client_state.latency*1000.0f);
 
-    for (auto &[addr, client_state] : active_clients) {
-        ImGui::Text("%s Packet loss %.1f%%  Ping %.1f ms", addr.c_str(), client_state.packet_loss*100.0f, client_state.latency*1000.0f);
-
-        if (addr == show_client_addr) {
-            rotation = client_state.rotation;
-            coordinates = client_state.coordinates;
-            pressure = client_state.pressure;
-            temperature = client_state.temperature;
-        } else {
-            ImGui::SameLine();
-            ImGui::PushID(std::hash<std::string>{}(addr));
-            if (ImGui::Button("Track")) {
-                show_client_addr = addr;
+            if (addr == show_client_addr) {
+                rotation = client_state.last_frame.rotation;
+                coordinates = client_state.last_frame.coordinates;
+                pressure = client_state.last_frame.pressure;
+                temperature = client_state.last_frame.temperature;
+            } else {
+                ImGui::SameLine();
+                ImGui::PushID(std::hash<std::string>{}(addr));
+                if (ImGui::Button("Track")) {
+                    show_client_addr = addr;
+                }
+                ImGui::PopID();
             }
-            ImGui::PopID();
         }
-    }
-
     ImGui::End();
 
 
     ImGui::Begin("Rotation");
-    ImGui::Text("Roll %.2f, Pitch %.2f, Yaw %.2f", rotation[0], rotation[1], rotation[2]);
-    if (ImGui::Button("Calibrate IMU")) {
-        std::cout << "send IMU calcmd" << std::endl;
-        sendCommandToActiveClient(CMD_CALIBRATE_IMU);
-    }
-    if (ImGui::Button("Calibrate compass")) {
-        std::cout << "send compass calcmd" << std::endl;
-        sendCommandToActiveClient(CMD_CALIBRATE_COMPASS);
-    }
-
+        ImGui::Text("Roll %.2f, Pitch %.2f, Yaw %.2f", rotation[0], rotation[1], rotation[2]);
+        if (ImGui::Button("Calibrate IMU")) {
+            std::cout << "send IMU calcmd" << std::endl;
+            sendCommandToActiveClient(CMD_CALIBRATE_IMU);
+        }
+        if (ImGui::Button("Calibrate compass")) {
+            std::cout << "send compass calcmd" << std::endl;
+            sendCommandToActiveClient(CMD_CALIBRATE_COMPASS);
+        }
     ImGui::End();
 
     ImGui::Begin("Location");
-    ImGui::Text("Latitude %.4f, Longitude %.4f", coordinates.x, coordinates.y);
-
+        ImGui::Text("Latitude %.4f, Longitude %.4f", coordinates.x, coordinates.y);
     ImGui::End();
 
     ImGui::Begin("Pressure");
+        ImGui::Text("%.2f hPa", pressure);
+        ImGui::Text("Estimated height %.1f m", temperature);
+        ImGui::SameLine();
+        if (ImGui::Button("Calibrate")) {
+            std::cout << "send barometer calcmd" << std::endl;
+            sendCommandToActiveClient(CMD_CALIBRATE_BAROMETER);
+        }
+    ImGui::End();
 
-    ImGui::Text("%.2f hPa", pressure);
-    ImGui::Text("Estimated height %.1f m", temperature);
-    ImGui::SameLine();
-    if (ImGui::Button("Calibrate")) {
-        std::cout << "send barometer calcmd" << std::endl;
-        sendCommandToActiveClient(CMD_CALIBRATE_BAROMETER);
-    }
 
+    ImGui::Begin("Logging");
+    ImGui::InputText("Output file", ui_data.logging_file, sizeof(ui_data.logging_file));
+        ImGui::Checkbox("Orientation", &ui_data.log_orientation);
+        ImGui::Checkbox("Coordinates", &ui_data.log_coordinates);
+        ImGui::Checkbox("Pressure", &ui_data.log_pressure);
+        ImGui::Checkbox("Temperature", &ui_data.log_temperature);
+        ImGui::SliderFloat("Samplerate", &ui_data.log_sample_rate, 1, 100);
+        if (ImGui::Button("Apply")) {
+            logger.setOutputFile(std::string(ui_data.logging_file));
+            logger.enableCoordinatesLogging(ui_data.log_coordinates);
+            logger.enableOrientationLogging(ui_data.log_orientation);
+            logger.enablePressureLogging(ui_data.log_pressure);
+            logger.enableTemperatureLogging(ui_data.log_temperature);
+            logger.setSampleRate(ui_data.log_sample_rate);
+        }
     ImGui::End();
 }
 
@@ -202,6 +217,10 @@ void Application::update(float deltaTime)
     }
 
     drone.update(deltaTime, show_client);
+
+    if (show_client) {
+        logger.log(show_client->data_sampler);
+    }
 }
 
 void Application::sendCommandToActiveClient(ControlCommand cmd)

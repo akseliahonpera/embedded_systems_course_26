@@ -35,7 +35,7 @@ std::vector<std::string> splitSpring(const std::string &str, char splitter)
     return substrings;
 }
 
-float getTimeStamp()
+double getTimeStamp()
 {
     using clock = std::chrono::steady_clock;
 
@@ -47,8 +47,7 @@ float getTimeStamp()
     //Because timers uses microseconds, 32-bit floating point might not have optimal precision
     double dp = static_cast<double>(microseconds - first) / 1000000.0;
 
-    //After microseconds has been converted to seconds, we can more safely use 32-bit floats
-    return static_cast<float>(dp);
+    return dp;
 }
 
 

@@ -29,8 +29,8 @@ debug: $(TARGET_DEBUG)
 $(TARGET_RELEASE): $(OBJS_RELEASE)
 	@mkdir -p $(dir $@)
 
-	cp -r assets build/release/bin/assets
-	cp -r shaders build/release/bin/shaders
+	#cp -r assets build/release/bin/assets
+	#cp -r shaders build/release/bin/shaders
 
 	$(CXX) $(CXXFLAGS_RELEASE) $(LDFLAGS_RELEASE) -o $@ $^ $(addprefix -l,$(LIBS))
 
