@@ -29,6 +29,28 @@ static const char *TAG = "MAIN";
 #define WIFI_PASSWORD   "PLACEHOLDER"
 #define WIFI_TIMEOUT    100
 
+static void print_menu(void)
+{
+    printf("\nSensor and Kalman menu\n"
+           "---------------------------------------------------------------\n"
+           "  B - Measure acceleration bias (keep the sensor stationary)\n"
+           "  V - Measure acceleration variance (keep the sensor stationary)\n"
+           "  K - Start/reinitialize Kalman filter from the next GPS fix\n"
+           "  S - Stop Kalman filter\n"
+           "  P - Print Kalman filter status\n"
+           "  T - Toggle periodic Kalman filter status\n"
+           "  C - Toggle IMU covariance source (manual / measured)\n"
+           "---------------------------------------------------------------\n"
+           "  1 - Exit GPS standby mode\n"
+           "  2 - Set GPS to standby\n"
+           "  3 - Perform GPS hardware reset\n"
+           "  4 - Toggle GPS print\n"
+           "---------------------------------------------------------------\n"
+           "  M - Show this menu\n"
+           "> ");
+    fflush(stdout);
+}
+
 void app_main(void)
 {
     // Initialize wifi
@@ -51,19 +73,117 @@ void app_main(void)
     ESP_ERROR_CHECK(i2c_new_master_bus(&bus_cfg, &i2c_bus));
 
     // Initialize queues
-    // Queue for sensor messages from sensor tasks to sensorfusion task
-    QueueHandle_t fusion_queue = xQueueCreate(10, sizeof(sensor_msg_t));
     // Queue for fused data from sensorfusion task to telemetry task
     QueueHandle_t telemetry_queue = xQueueCreate(10, sizeof(fusion_msg_t));
 
     // Initialize fusion and telemetry tasks
-    fusion_init(fusion_queue, telemetry_queue);
+    ESP_ERROR_CHECK(fusion_init(telemetry_queue));
     telemetry_init(telemetry_queue);
 
     // Initialize sensor tasks
-    gps_init(fusion_queue);
+    gps_init();
     vTaskDelay(pdMS_TO_TICKS(1000));
-    barometer_init(fusion_queue, i2c_bus, I2C_FREQ_HZ);
+    barometer_init(i2c_bus, I2C_FREQ_HZ);
     vTaskDelay(pdMS_TO_TICKS(1000));
-    imu_init(fusion_queue, i2c_bus);
+    esp_err_t imu_result = imu_init(i2c_bus);
+    if (imu_result != ESP_OK)
+    {
+        ESP_LOGE(TAG, "IMU initialization failed: %s", esp_err_to_name(imu_result));
+        return;
+    }
+
+    print_menu();
+    for (;;)
+    {
+        int command = getchar();
+        if (command == EOF)
+        {
+            // The console can return EOF when no input is available yet.
+            clearerr(stdin);
+            vTaskDelay(pdMS_TO_TICKS(20));
+            continue;
+        }
+
+        switch (command)
+        {
+        case 'b':
+        case 'B':
+            imu_notify(IMU_CMD_START_BIAS_MEASUREMENT);
+            puts("\nBias measurement requested.");
+            break;
+
+        case 'v':
+        case 'V':
+            imu_notify(IMU_CMD_START_COVARIANCE_MEASUREMENT);
+            puts("\nVariance measurement requested.");
+            break;
+
+        case 'k':
+        case 'K':
+            fusion_notify(FUSION_CMD_START);
+            break;
+
+        case 's':
+        case 'S':
+            fusion_notify(FUSION_CMD_STOP);
+            break;
+
+        case 'p':
+        case 'P':
+            fusion_notify(FUSION_CMD_PRINT_STATUS);
+            break;
+
+        case 'm':
+        case 'M':
+            print_menu();
+            break;
+
+        case 't':
+        case 'T':
+            fusion_notify(FUSION_CMD_TOGGLE_PERIODIC_STATUS);
+            break;
+
+        case 'c':
+        case 'C':
+            fusion_notify(FUSION_CMD_TOGGLE_IMU_COVARIANCE_SOURCE);
+            break;
+
+        case '1':
+            gps_notify(GPS_CMD_EXIT_STANDBY);
+            break;
+
+        case '2':
+            gps_notify(GPS_CMD_STANDBY);
+            break;
+
+        case '3':
+            gps_notify(GPS_CMD_RESET);
+            break;
+
+        case '4':
+            gps_notify(GPS_CMD_PRINT_STATUS);
+            break;
+
+        case '\r':
+        case '\n':
+        case ' ':
+        case '\t':
+            continue;
+
+        default:
+            puts("\nUnknown command. Use B, V, K, S, P, T, C, 1, 2, 3, 4 or M.");
+            break;
+        }
+
+    }
+
+    
+
+
+
+
+
+
+
+
 }

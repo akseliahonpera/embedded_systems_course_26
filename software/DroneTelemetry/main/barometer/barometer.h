@@ -5,7 +5,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
-esp_err_t barometer_init(QueueHandle_t fusion_queue_handle, i2c_master_bus_handle_t bus, uint32_t freq);
+esp_err_t barometer_init(i2c_master_bus_handle_t bus, uint32_t freq);
 
 /*
 for debugging

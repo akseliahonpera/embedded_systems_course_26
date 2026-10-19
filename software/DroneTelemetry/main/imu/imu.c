@@ -1,5 +1,6 @@
 #include "imu.h"
-
+#include <stdio.h>
+#include <unistd.h>
 #include <stdbool.h>
 
 #include "freertos/FreeRTOS.h"
@@ -11,6 +12,8 @@
 #include "esp_timer.h"
 #include "driver/gpio.h"
 
+#include "fusion.h"
+
 #include "sh2.h"
 #include "sh2_SensorValue.h"
 #include "sh2_err.h"
@@ -21,6 +24,7 @@
 #include "math.h"
 
 #define M_PI 3.14159265358979323846
+#define N 2500
 
 static const char *TAG = "IMU";
 
@@ -34,8 +38,16 @@ static const char *TAG = "IMU";
 static TaskHandle_t imu_task_handle;
 static volatile bool imu_reset_complete;
 
-// Queue handle (to fusion task)
-static QueueHandle_t fusion_queue;
+// IMU state: currently used only during calibration of accelerometer bias
+static imu_state_t imu_state = IMU_NORMAL;
+
+void imu_notify(imu_command_t cmd)
+{
+    xTaskNotify(
+        imu_task_handle,
+        cmd,
+        eSetBits);
+}
 
 static void IRAM_ATTR hint_isr_handler(void *arg)
 {
@@ -44,7 +56,12 @@ static void IRAM_ATTR hint_isr_handler(void *arg)
     BaseType_t higher_priority_task_woken = pdFALSE;
     if (imu_task_handle != NULL)
     {
-        vTaskNotifyGiveFromISR(imu_task_handle, &higher_priority_task_woken);
+        xTaskNotifyFromISR(
+            imu_task_handle,
+            IMU_DATA_READY,
+            eSetBits,
+            &higher_priority_task_woken);
+
         portYIELD_FROM_ISR(higher_priority_task_woken);
     }
 }
@@ -74,7 +91,6 @@ static void calculate_rotation_matrix(float r, float i, float j, float k, float 
     matrix[2][2] = 1.0f - 2 * (xx + yy);
 }
 
-
 static void adjust_for_declination(float *adjusted_x, float *adjusted_y, const float original_x, const float original_y)
 {
     const float declination_rad = (12.64 * M_PI) / 180.0;
@@ -87,90 +103,189 @@ static void adjust_for_declination(float *adjusted_x, float *adjusted_y, const f
 }
 
 
+static void handle_rotation_data(sh2_SensorValue_t *value, float rotation_matrix[3][3], bool *has_rotation_matrix, uint64_t *rotation_timestamp)
+{
+    sensor_msg_t msg = {0};
+
+    const float r = value->un.rotationVector.real;
+    const float i = value->un.rotationVector.i;
+    const float j = value->un.rotationVector.j;
+    const float k = value->un.rotationVector.k;
+
+    calculate_rotation_matrix(r, i, j, k, rotation_matrix);
+    *rotation_timestamp = value->timestamp;
+    ;
+    *has_rotation_matrix = true;
+
+    msg.data.imu.data_type = ROTATION_DATA;
+
+    msg.data.imu.data.rotation_data.real = r;
+    msg.data.imu.data.rotation_data.i = i;
+    msg.data.imu.data.rotation_data.j = j;
+    msg.data.imu.data.rotation_data.k = k;
+
+    msg.type = SENSOR_IMU;
+    msg.data.imu.status = value->status;
+    msg.data.imu.imu_internal_timestamp = value->timestamp;
+    msg.data.imu.data.rotation_data.accuracy = value->un.rotationVector.accuracy;
+    msg.timestamp = esp_timer_get_time();
+
+    fusion_send_data(&msg);
+}
+
+static void measure_acceleration_covariance(const sh2_SensorValue_t *value, float acc_x_world, float acc_y_world, float acc_z_world)
+{
+    static float mean[3] = {0.0f};
+    static float m2[3] = {0.0f};
+    static int count = 0;
+
+    // Welford’s algorithm
+    const float sample[3] = {
+        acc_x_world,
+        acc_y_world,
+        acc_z_world};
+
+    count++;
+
+    if (count % 500 == 0)
+    {
+        ESP_LOGI(TAG, "Variance progress: %d/%d samples", count, N);
+        fflush(stdout);          // Flush the C stream.
+        fsync(fileno(stdout));   // Flush the USB transfer.
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+        float delta = sample[i] - mean[i];
+        mean[i] += delta / count;
+        float delta_after = sample[i] - mean[i];
+        m2[i] += delta * delta_after;
+    }
+
+    if (count < N)
+        return;
+
+    sensor_msg_t cov_msg = {0};
+    cov_msg.type = SENSOR_IMU;
+    cov_msg.data.imu.data_type = COVARIANCE_DATA;
+    cov_msg.data.imu.status = value->status;
+    cov_msg.data.imu.imu_internal_timestamp = value->timestamp;
+    cov_msg.timestamp = esp_timer_get_time();
+
+    const float denominator = (float)(count - 1);
+    cov_msg.data.imu.data.covariance_data.cov_x = m2[0] / denominator;
+    cov_msg.data.imu.data.covariance_data.cov_y = m2[1] / denominator;
+    cov_msg.data.imu.data.covariance_data.cov_z = m2[2] / denominator;
+
+    fusion_send_data(&cov_msg);
+
+    for (int i = 0; i < 3; i++)
+    {
+        mean[i] = 0.0f;
+        m2[i] = 0.0f;
+    }
+
+    count = 0;
+    imu_state = IMU_NORMAL;
+    ESP_LOGI(TAG, "Variance measurement ready");
+    ESP_LOGI(TAG, "Variance: x=%.5f | y=%.5f | z=%.5f", cov_msg.data.imu.data.covariance_data.cov_x, cov_msg.data.imu.data.covariance_data.cov_y, cov_msg.data.imu.data.covariance_data.cov_z);
+}
+
+static void handle_acceleration_data(sh2_SensorValue_t *value, const float rotation_matrix[3][3], const bool has_rotation_matrix, const uint64_t *rotation_timestamp)
+{
+
+    static float bias[3] = {0.0f};
+    static float sums[3] = {0.0f};
+    static int count = 0;
+
+    float acc_x = value->un.linearAcceleration.x;
+    float acc_y = value->un.linearAcceleration.y;
+    float acc_z = value->un.linearAcceleration.z;
+
+    if (imu_state == IMU_MEASURING_BIAS)
+    {
+        sums[0] += acc_x;
+        sums[1] += acc_y;
+        sums[2] += acc_z;
+        count++;
+
+        if (count % 500 == 0)
+        {
+            ESP_LOGI(TAG, "Bias progress: %d/%d samples", count, N);
+            fflush(stdout);          // Flush the C stream.
+            fsync(fileno(stdout));   // Flush the USB transfer.
+        }
+
+        if (count >= N)
+        {
+            bias[0] = sums[0] / count;
+            bias[1] = sums[1] / count;
+            bias[2] = sums[2] / count;
+            sums[0] = sums[1] = sums[2] = 0.0f;
+            count = 0;
+            imu_state = IMU_NORMAL;
+            ESP_LOGI(TAG, "Bias measurement ready");
+            ESP_LOGI(TAG, "Bias: x=%.5f | y=%.5f | z=%.5f", bias[0], bias[1], bias[2]);
+        }
+    }
+
+    if (!has_rotation_matrix || *rotation_timestamp > value->timestamp || value->timestamp - *rotation_timestamp > 20000ULL)
+    {
+        return;
+    }
+
+    acc_x -= bias[0];
+    acc_y -= bias[1];
+    acc_z -= bias[2];
+
+    float acc_x_world = rotation_matrix[0][0] * acc_x + rotation_matrix[0][1] * acc_y + rotation_matrix[0][2] * acc_z;
+    float acc_y_world = rotation_matrix[1][0] * acc_x + rotation_matrix[1][1] * acc_y + rotation_matrix[1][2] * acc_z;
+    float acc_z_world = rotation_matrix[2][0] * acc_x + rotation_matrix[2][1] * acc_y + rotation_matrix[2][2] * acc_z;
+    adjust_for_declination(&acc_x_world, &acc_y_world, acc_x_world, acc_y_world);
+    if (imu_state == IMU_MEASURING_COVARIANCE)
+    {
+        measure_acceleration_covariance(value, acc_x_world, acc_y_world, acc_z_world);
+    }
+
+    sensor_msg_t msg = {0};
+    msg.type = SENSOR_IMU;
+    msg.data.imu.data_type = ACCELERATION_DATA;
+    msg.data.imu.data.acceleration_data.acc_x = acc_x_world;
+    msg.data.imu.data.acceleration_data.acc_y = acc_y_world;
+    msg.data.imu.data.acceleration_data.acc_z = acc_z_world;
+    msg.data.imu.status = value->status;
+    msg.data.imu.imu_internal_timestamp = value->timestamp;
+    msg.timestamp = esp_timer_get_time();
+
+    fusion_send_data(&msg);
+}
+
 static void sensor_event_handler(void *cookie, sh2_SensorEvent_t *event)
 {
+
     (void)cookie;
     sh2_SensorValue_t value;
+    static bool has_rotation_matrix = false;
+    static float rotation_matrix[3][3] = {0};
+    static uint64_t rotation_timestamp = 0;
 
     if (sh2_decodeSensorEvent(&value, event) != SH2_OK)
     {
         return;
     }
 
-    sensor_msg_t msg = {};
-    msg.type = SENSOR_IMU;
-    
-
-    static bool has_rotation_matrix = false;
-    
-    static float rotation_matrix[3][3] = {0};
-
     switch (value.sensorId)
     {
     case SH2_ROTATION_VECTOR:
-
-        const float r = value.un.rotationVector.real;
-        const float i = value.un.rotationVector.i;
-        const float j = value.un.rotationVector.j;
-        const float k = value.un.rotationVector.k;
-
-        calculate_rotation_matrix(r, i, j, k, rotation_matrix);
-
-        has_rotation_matrix = true;
-
-        msg.data.imu.data_type = ROTATION_DATA;
-
-        msg.data.imu.data.rotation_data.real = r;
-        msg.data.imu.data.rotation_data.i = i;
-        msg.data.imu.data.rotation_data.j = j;
-        msg.data.imu.data.rotation_data.k = k;
-        msg.data.imu.data.rotation_data.accuracy = value.un.rotationVector.accuracy;
-
+        handle_rotation_data(&value, rotation_matrix, &has_rotation_matrix, &rotation_timestamp);
         break;
 
     case SH2_LINEAR_ACCELERATION:
-
-        float acc_x = value.un.linearAcceleration.x;
-        float acc_y = value.un.linearAcceleration.y;
-        float acc_z = value.un.linearAcceleration.z;
-
-        if (!has_rotation_matrix) return;
-        
-        msg.data.imu.data_type = ACCELERATION_DATA;
-
-        msg.data.imu.data.acceleration_data.acc_x = rotation_matrix[0][0] * acc_x + rotation_matrix[0][1] * acc_y + rotation_matrix[0][2] * acc_z;
-        msg.data.imu.data.acceleration_data.acc_y  = rotation_matrix[1][0] * acc_x + rotation_matrix[1][1] * acc_y + rotation_matrix[1][2] * acc_z;
-        msg.data.imu.data.acceleration_data.acc_z = rotation_matrix[2][0] * acc_x + rotation_matrix[2][1] * acc_y + rotation_matrix[2][2] * acc_z;
-
-
-        adjust_for_declination(&msg.data.imu.data.acceleration_data.acc_x, &msg.data.imu.data.acceleration_data.acc_y, msg.data.imu.data.acceleration_data.acc_x, msg.data.imu.data.acceleration_data.acc_y);
-
-
+        handle_acceleration_data(&value, rotation_matrix, has_rotation_matrix, &rotation_timestamp);
         break;
     default:
         return;
     }
-    msg.data.imu.status = value.status;
-    msg.data.imu.imu_internal_timestamp = value.timestamp;
-    msg.timestamp = esp_timer_get_time();
-    if (xQueueSend(fusion_queue, &msg, 0) != pdTRUE)
-    {
-        ESP_LOGW(TAG, "Fusion queue full; IMU update discarded");
-    }
-    // static TickType_t last_print_time = 0;
-    // const TickType_t print_interval = pdMS_TO_TICKS(500);
-    // TickType_t current_time = xTaskGetTickCount();
-    // if ((current_time - last_print_time) >= print_interval)
-    // {
-    //     float roll_deg = roll_rad * (180.0f / 3.14159265f);
-    //     float pitch_deg = pitch_rad * (180.0f / 3.14159265f);
-    //     float yaw_deg = yaw_rad * (180.0f / 3.14159265f);
-    //     // ESP_LOGI(TAG, "Roll=%.1f°, Pitch=%.1f°, Yaw=%.1f°",
-    //     //          roll_deg, pitch_deg, yaw_deg);
-    //     ESP_LOGI(TAG, "acc_x=%.5f, acc_y=%.5f, acc_z=%.5f",
-    //              world_acc_x, world_acc_y, world_acc_z);
-    //     last_print_time = current_time;
-    // }
 }
 
 static void sh2_event_handler(void *cookie, sh2_AsyncEvent_t *event)
@@ -188,10 +303,70 @@ static void imu_task(void *arg)
     // This function waits for the HINT-activated ISR to wake it up, and notify the sh2 service to do it's thing.
     (void)arg;
 
+    uint32_t events = 0;
+
     for (;;)
     {
-        /* Wake periodically to report zero counts even if IMU reports stop. */
-        (void)ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(100));
+        // /* Wake periodically to report zero counts even if IMU reports stop. */
+        BaseType_t received = xTaskNotifyWait(
+            0,
+            UINT32_MAX,
+            &events,
+            pdMS_TO_TICKS(100));
+
+        if (received == pdTRUE)
+        {
+            if (events & IMU_CMD_MODE_STANDBY)
+            {
+                // Set to standby here
+            }
+
+            if (events & IMU_CMD_MODE_NORMAL)
+            {
+                // Start IMU here
+            }
+
+            if (events & IMU_CMD_START_BIAS_MEASUREMENT)
+            {
+                switch (imu_state)
+                {
+
+                case IMU_NORMAL:
+                    ESP_LOGI(TAG, "Starting bias measurement", NULL);
+                    imu_state = IMU_MEASURING_BIAS;
+                    break;
+
+                case IMU_MEASURING_BIAS:
+                    ESP_LOGI(TAG, "Already measuring bias", NULL);
+                    break;
+
+                default:
+                    ESP_LOGI(TAG, "Can not measure bias now, state = %d", imu_state);
+                    break;
+                }
+            }
+
+            if (events & IMU_CMD_START_COVARIANCE_MEASUREMENT)
+            {
+                switch (imu_state)
+                {
+
+                case IMU_NORMAL:
+                    ESP_LOGI(TAG, "Starting covariance measurement", NULL);
+                    imu_state = IMU_MEASURING_COVARIANCE;
+                    break;
+
+                case IMU_MEASURING_COVARIANCE:
+                    ESP_LOGI(TAG, "Already measuring covariance", NULL);
+                    break;
+
+                default:
+                    ESP_LOGI(TAG, "Can not measure covariance now, state = %d", imu_state);
+                    break;
+                }
+            }
+        }
+
         while (bno085_port_data_ready())
         {
             sh2_service();
@@ -199,11 +374,8 @@ static void imu_task(void *arg)
     }
 }
 
-esp_err_t imu_init(QueueHandle_t fusion_queue_handle, i2c_master_bus_handle_t i2c_handle)
+esp_err_t imu_init(i2c_master_bus_handle_t i2c_handle)
 {
-    // Obtain sensor fusion queue handle
-    fusion_queue = fusion_queue_handle;
-
     ESP_RETURN_ON_ERROR(bno085_port_init(i2c_handle, BNO085_HINT_GPIO,
                                          BNO085_NRST_GPIO, BNO085_BOOTN_GPIO),
                         TAG, "BNO085 port initialization failed");
@@ -276,7 +448,7 @@ esp_err_t imu_init(QueueHandle_t fusion_queue_handle, i2c_master_bus_handle_t i2
     /* Do not wait for another edge if a packet is already pending. */
     if (bno085_port_data_ready())
     {
-        xTaskNotifyGive(imu_task_handle);
+        xTaskNotify(imu_task_handle, IMU_DATA_READY, eSetBits);
     }
 
     ESP_LOGI(TAG, "IMU task started.");

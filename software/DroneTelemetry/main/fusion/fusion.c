@@ -3,25 +3,63 @@
 #include "esp_err.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
+#include "freertos/task.h"
 #include "esp_log.h"
+#include "esp_timer.h"
 #include "types.h"
 #include <math.h>
-
+#include <stdio.h>
+#include <unistd.h>
+#include "fusion.h"
 
 #define WGS84_A 6378137.0
 #define WGS84_E2 0.00669437999014
 #define M_PI 3.14159265358979323846
-static QueueHandle_t fusion_queue;
+#define FUSION_STATUS_INTERVAL_US 1000000LL // One second.
+
 static QueueHandle_t telemetry_queue;
+static TaskHandle_t fusion_task_handle;
+
+static QueueHandle_t imu_queue;
+static QueueHandle_t gps_queue;
+static QueueHandle_t baro_queue;
 
 static const char *TAG = "FUSION";
+
+void fusion_send_data(const sensor_msg_t *msg)
+{
+    switch (msg->type)
+    {
+    case SENSOR_BARO:
+        xQueueOverwrite(baro_queue, msg);
+        break;
+    case SENSOR_GPS:
+        xQueueOverwrite(gps_queue, msg);
+        break;
+    case SENSOR_IMU:
+        xQueueOverwrite(imu_queue, msg);
+        break;
+    default:
+        break;
+    }
+    fusion_notify(FUSION_SENSOR_DATA_AVAILABLE);
+}
+
+void fusion_notify(fusion_command_t cmd)
+{
+    if (fusion_task_handle == NULL)
+    {
+        ESP_LOGW(TAG, "Fusion task is not initialized");
+        return;
+    }
+
+    xTaskNotify(fusion_task_handle, cmd, eSetBits);
+}
 
 static double deg_to_rad(double deg)
 {
     return deg * M_PI / 180.0;
 }
-
-
 
 static void enu_reference_init(enu_reference_t *ref,
                                double lat0, double lon0, double alt0)
@@ -65,13 +103,10 @@ static void wgs84_to_enu(const enu_reference_t *ref,
     *u = ref->cos_lat0 * dr + ref->sin_lat0 * dz;
 }
 
-
-
-
-static void predict_phase(kalman_state *state, const sensor_msg_t *imu_data, float P[6][6], const float sigma[3])
+static void predict_phase(kalman_state *state, const sensor_msg_t *imu_data, float P[6][6], const float sigma[3][3])
 {
 
-    if (!state->init || imu_data->timestamp <= state->last_update)
+    if (state->mode != TRACKING || imu_data->timestamp <= state->last_update)
         return;
 
     // Predict state
@@ -109,23 +144,23 @@ static void predict_phase(kalman_state *state, const sensor_msg_t *imu_data, flo
 
     const float position_noise_scale = 0.25f * dt4;
     const float cross_noise_scale = 0.5f * dt3;
-    const float cross_noise_0 = cross_noise_scale * sigma[0];
-    P[0][0] += position_noise_scale * sigma[0];
-    P[0][3] += cross_noise_0;
-    P[3][0] += cross_noise_0;
-    P[3][3] += dt2 * sigma[0];
+    const float velocity_noise_scale = dt2;
 
-    const float cross_noise_1 = cross_noise_scale * sigma[1];
-    P[1][1] += position_noise_scale * sigma[1];
-    P[1][4] += cross_noise_1;
-    P[4][1] += cross_noise_1;
-    P[4][4] += dt2 * sigma[1];
+    for (int i = 0; i < 3; ++i)
+    {
+        for (int j = 0; j < 3; ++j)
+        {
+            const float cov = sigma[i][j];
 
-    const float cross_noise_2 = cross_noise_scale * sigma[2];
-    P[2][2] += position_noise_scale * sigma[2];
-    P[2][5] += cross_noise_2;
-    P[5][2] += cross_noise_2;
-    P[5][5] += dt2 * sigma[2];
+            P[i][j] += position_noise_scale * cov;
+
+            P[i][j + 3] += cross_noise_scale * cov;
+
+            P[i + 3][j] += cross_noise_scale * cov;
+
+            P[i + 3][j + 3] += velocity_noise_scale * cov;
+        }
+    }
 }
 
 static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *gps_data, float P[6][6], const float R[2])
@@ -185,20 +220,114 @@ static void correction_phase_using_gps(kalman_state *state, const sensor_msg_t *
     }
 }
 
+static void init_kalman_filter(kalman_state *state, const sensor_msg_t *gps_data)
+{
 
+    if (gps_data->data.gps.has_fix)
+    {
+        state->gps_fix_counter++;
+    }
+    else
+    {
+        state->gps_fix_counter = 0;
+    }
+
+    if (state->gps_fix_counter >= 3)
+    {
+        *state = (kalman_state){0};
+        enu_reference_init(&state->origin, gps_data->data.gps.latitude, gps_data->data.gps.longtitude, 0.0);
+        state->last_update = gps_data->timestamp;
+        state->mode = TRACKING;
+        ESP_LOGI(TAG, "Kalman filter tracking; GPS origin lat=%.7f lon=%.7f", gps_data->data.gps.latitude, gps_data->data.gps.longtitude);
+    }
+}
+
+static void reset_state_covariance(float covariance[6][6])
+{
+    for (int row = 0; row < 6; row++)
+    {
+        for (int col = 0; col < 6; col++)
+        {
+            covariance[row][col] = row == col ? (row < 3 ? 9.0f : 1.0f) : 0.0f;
+        }
+    }
+}
+
+static bool gps_data_check(const sensor_msg_t *msg)
+{
+    const gps_data_t *gps = &msg->data.gps;
+
+    return gps->has_fix &&
+           isfinite(gps->latitude) &&
+           isfinite(gps->longtitude) &&
+           fabsf(gps->latitude) <= 90.0f &&
+           fabsf(gps->longtitude) <= 180.0f;
+}
+
+static void print_kalman_state(const kalman_state *state, const char *covariance_source)
+{
+    const char *mode = state->mode == IDLE ? "IDLE" : state->mode == INIT ? "INIT (waiting for GPS)"
+                                                                          : "TRACKING";
+    ESP_LOGI(TAG,
+             "\n\n"
+             "  KALMAN STATUS  |  %s\n"
+             "  ----------------------------------------------------------\n"
+             "  %-18s %12s %12s %12s\n"
+             "  %-18s %12.3f %12.3f %12.3f\n"
+             "  %-18s %12.3f %12.3f %12.3f\n"
+             "\n"
+             "  IMU covariance source: %s\n"
+             "  ----------------------------------------------------------\n",
+             mode,
+             "", "East", "North", "Up",
+             "Position [m]", state->position_east, state->position_north, state->position_up,
+             "Velocity [m/s]", state->velocity_east, state->velocity_north, state->velocity_up,
+             covariance_source);
+    fflush(stdout);
+    fsync(fileno(stdout));
+}
+
+static void handle_fusion_commands(uint32_t events, kalman_state *state, float covariance[6][6],
+                                   int64_t *start_timestamp, bool *periodic_status,
+                                   int64_t *last_status_timestamp, bool *use_queue_covariance)
+{
+
+    if (events & FUSION_CMD_STOP)
+    {
+        state->mode = IDLE;
+        ESP_LOGI(TAG, "Kalman filter stopped");
+    }
+    else if (events & FUSION_CMD_START)
+    {
+        *state = (kalman_state){.mode = INIT};
+        reset_state_covariance(covariance);
+        *start_timestamp = esp_timer_get_time();
+        ESP_LOGI(TAG, "Kalman filter waiting for the next GPS fix");
+    }
+
+    if (events & FUSION_CMD_TOGGLE_PERIODIC_STATUS)
+    {
+        *periodic_status = !*periodic_status;
+        *last_status_timestamp = esp_timer_get_time();
+        ESP_LOGI(TAG, "Periodic Kalman status %s", *periodic_status ? "enabled" : "disabled");
+    }
+
+    if (events & FUSION_CMD_TOGGLE_IMU_COVARIANCE_SOURCE)
+        *use_queue_covariance = !*use_queue_covariance;
+
+    fflush(stdout);
+    fsync(fileno(stdout));
+}
 
 static void fusion_task(void *arg)
 {
     (void)arg;
 
-    kalman_state state;
-    state.position_east = 0;
-    state.position_north = 0;
-    state.position_up = 0;
-    state.velocity_east = 0;
-    state.velocity_north = 0;
-    state.velocity_up = 0;
-    state.init = false;
+    kalman_state state = {.gps_fix_counter = 0,
+                          .mode = IDLE};
+    int64_t start_timestamp = 0;
+    bool periodic_status = false;
+    int64_t last_status_timestamp = 0;
 
     /*
      [ σE²    0     0      0      0      0   ]
@@ -210,13 +339,8 @@ static void fusion_task(void *arg)
     */
     // Nää on hatusta, tässä 9.0 tarkoittaa että alun sijainnin keskihajonta 3m
     // ja 1.0 tarkoittaa että alkunopeuden kekihajonta 1m/s. Käytännössä siis arvot alkutilan epävarmuudelle.
-    float state_covariance[6][6] = {
-        {9.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-        {0.0f, 9.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-        {0.0f, 0.0f, 9.0f, 0.0f, 0.0f, 0.0f},
-        {0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
-        {0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-        {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f}};
+    float state_covariance[6][6];
+    reset_state_covariance(state_covariance);
 
     /*
      [ σx²    0     0  ]
@@ -228,8 +352,13 @@ static void fusion_task(void *arg)
     // mutta tässä on muutaki prosessointia.
     // Tää kannattaa alustaa kalibroinnilla, jossa mitataan
     // imun kiihtyvyysdatan kovarianssia levossa.
-    float imu_covariance[3] = {
-        0.25f, 0.25f, 0.25f};
+    const float manual_imu_covariance[3][3] = {
+        {0.25f, 0.0f, 0.0f},
+        {0.0f, 0.25f, 0.0},
+        {0.0f, 0.0f, 0.25f}};
+    float received_imu_covariance[3][3] = {0};
+    bool has_imu_covariance = false;
+    bool use_measured_covariance = true;
 
     // Nääkin vois määrittää kalibroinnilla,
     // mutta vaatii vähän enemmän työtä.
@@ -238,51 +367,90 @@ static void fusion_task(void *arg)
         4.51f, 4.51f};
 
     sensor_msg_t msg;
-    fusion_msg_t msg_out;
-
-    imu_data_t imu_data_newest;
-    gps_data_t gps_data_newest;
-    baro_data_t barometer_data_newest;
 
     while (1)
     {
-        // Sleep until there is data in the queue.
-        if (xQueueReceive(fusion_queue, &msg, portMAX_DELAY) == pdTRUE)
+        // A notification does not unblock xQueueReceive. Bound this wait so
+        // commands are handled even when sensors are silent; keep draining
+        // sensor messages while IDLE to avoid blocking their producers.
+        uint32_t events = 0;
+
+        if (xTaskNotifyWait(0, UINT32_MAX, &events, 100) == pdTRUE)
         {
-            // proc message
-            // fuusioi anturidata, lopuksi lähetä data telemetriataskille
-            switch (msg.type)
+            if (xQueueReceive(gps_queue, &msg, pdMS_TO_TICKS(0)))
             {
-            case SENSOR_BARO:
-                break;
 
-            case SENSOR_IMU:
-                if (msg.data.imu.data_type == ACCELERATION_DATA)
+                if (!gps_data_check(&msg))
                 {
-                }
-                break;
-
-            case SENSOR_GPS:
-
-                if (msg.data.gps.has_fix)
+                    if (state.mode == INIT)
+                        state.gps_fix_counter = 0;
+                                }
+                else if (state.mode == INIT)
                 {
+                    init_kalman_filter(&state, &msg);
                 }
-                break;
-
-            default:
-                break;
+                else if (state.mode == TRACKING)
+                {
+                    correction_phase_using_gps(&state, &msg, state_covariance, gps_covariance);
+                }
             }
-            xQueueSend(telemetry_queue, &msg_out, 0); // 0 tarkoittaa että tämä funktio palaa heti jos jono on täysi.
+            if (xQueueReceive(baro_queue, &msg, pdMS_TO_TICKS(0)))
+            {
+                // kalman_baro_update(&msg);
+            }
+            if (xQueueReceive(imu_queue, &msg, pdMS_TO_TICKS(0)))
+            {
+                if (msg.data.imu.data_type == COVARIANCE_DATA)
+                {
+
+                    received_imu_covariance[0][0] = msg.data.imu.data.covariance_data.cov_x;
+                    received_imu_covariance[1][1] = msg.data.imu.data.covariance_data.cov_y;
+                    received_imu_covariance[2][2] = msg.data.imu.data.covariance_data.cov_z;
+                    has_imu_covariance = true;
+                    ESP_LOGI(TAG, "IMU covariance received (%s)", use_measured_covariance ? "in use" : "stored; manual values in use");
+                }
+                else if (msg.data.imu.data_type == ACCELERATION_DATA && state.mode == TRACKING)
+                {
+                    const float (*imu_covariance)[3] = use_measured_covariance && has_imu_covariance ? received_imu_covariance : manual_imu_covariance;
+                    predict_phase(&state, &msg, state_covariance, imu_covariance);
+                }
+            }
+            handle_fusion_commands(events, &state, state_covariance, &start_timestamp,
+                                   &periodic_status, &last_status_timestamp, &use_measured_covariance);
+        }
+
+        // TODO: populate a fusion_msg_t from the estimate before sending
+        // telemetry. The previous placeholder sent uninitialized data.
+
+        // Check even after a queue timeout, so output also works without sensors.
+        const int64_t now = esp_timer_get_time();
+        const bool periodic_due = periodic_status && now - last_status_timestamp >= FUSION_STATUS_INTERVAL_US;
+        if ((events & (FUSION_CMD_PRINT_STATUS | FUSION_CMD_TOGGLE_IMU_COVARIANCE_SOURCE)) || periodic_due)
+        {
+            const char *source = !use_measured_covariance ? "manual" : has_imu_covariance ? "measured"
+                                                                                          : "measured (manual fallback)";
+            print_kalman_state(&state, source);
+        }
+        if (periodic_due)
+        {
+            // Skip missed intervals rather than printing a burst after a delay.
+            last_status_timestamp = now;
         }
     }
 }
 
-esp_err_t fusion_init(QueueHandle_t fusion_queue_handle, QueueHandle_t telemetry_queue_handle)
+esp_err_t fusion_init(QueueHandle_t telemetry_queue_handle)
 {
-    fusion_queue = fusion_queue_handle;
-    telemetry_queue = telemetry_queue_handle;
 
-    TaskHandle_t fusion_task_handle;
+    imu_queue = xQueueCreate(1, sizeof(sensor_msg_t));
+    gps_queue = xQueueCreate(1, sizeof(sensor_msg_t));
+    baro_queue = xQueueCreate(1, sizeof(sensor_msg_t));
+
+    if (imu_queue == NULL || gps_queue==NULL || baro_queue==NULL || telemetry_queue_handle == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    telemetry_queue = telemetry_queue_handle;
 
     BaseType_t task_created = xTaskCreate(fusion_task, "FUSION_TASK", 4096, NULL,
                                           5, &fusion_task_handle);
