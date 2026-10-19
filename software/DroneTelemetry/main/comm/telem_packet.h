@@ -4,13 +4,20 @@
 #include <assert.h>
 
 
-#define CMD_ACT                 (1 << 0)
-#define CMD_PING                (1 << 1)
-#define CMD_CALIBRATE_IMU       (1 << 2)
-#define CMD_CALIBRATE_COMPASS   (1 << 3)
-#define CMD_CALIBRATE_BAROMETER (1 << 4)
-#define CMD_DISABLE_GPS         (1 << 5)
-#define CMD_ENABLE_GPS          (1 << 6)
+#define CMD_ACT                 (1UL << 0)
+#define CMD_PING                (1UL << 1)
+#define CMD_CALIBRATE_IMU       (1UL << 2)
+#define CMD_CALIBRATE_COMPASS   (1UL << 3)
+#define CMD_CALIBRATE_BAROMETER (1UL << 4)
+#define CMD_DISABLE_GPS         (1UL << 5)
+#define CMD_ENABLE_GPS          (1UL << 6)
+#define CMD_RESET_GPS           (1UL << 7)
+#define CMD_DISABLE_IMU         (1UL << 8)
+#define CMD_ENABLE_IMU          (1UL << 9)
+#define CMD_IMU_MEASURE_COV     (1UL << 10)
+#define CMD_IMU_MEASURE_BIAS    (1UL << 11)
+#define CMD_FUSION_START        (1UL << 12)
+#define CMD_FUSION_STOP         (1UL << 13)
 
 typedef struct __attribute__((packed)) {
     float location[2];
