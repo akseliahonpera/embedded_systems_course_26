@@ -12,7 +12,6 @@
 #define CMD_DISABLE_GPS         (1 << 5)
 #define CMD_ENABLE_GPS          (1 << 6)
 
-
 typedef struct __attribute__((packed)) {
     float location[2];
     float rotation[3];

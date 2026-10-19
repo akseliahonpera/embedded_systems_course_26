@@ -14,6 +14,8 @@
 #include "telemetry.h"
 #include "fusion.h"
 
+#include "wifi_sta.h"
+
 static const char *TAG = "MAIN";
 
 // I2C confs
@@ -23,58 +25,14 @@ static const char *TAG = "MAIN";
 #define I2C_GLITCH_IGNORE_COUNT 7
 #define I2C_FREQ_HZ 100000
 
+#define WIFI_SSID       "PLACEHOLDER"
+#define WIFI_PASSWORD   "PLACEHOLDER"
+#define WIFI_TIMEOUT    100
+
 void app_main(void)
 {
-    /*
-    Mun idea ois, että kapseloidaan kaikki mitä mahdollista omiin tiedostoihin.
-    Eli kutsuttas vain kunkin anturin init funktiota mainista.
-    Jaettu I2C on järkevää alustaa täällä, koska se täytyy passata barometrille ja imulle,
-    mutta UART on point-to-point joten se on sama alustaa gps.c:ssä.
-    
-    Sitten voitas käyttää jonoa näiden anturitaskien ja fuusiotaskin kommunikointiin:
-
-        static QueueHandle_t sensor_fusion_queue;
-
-    Periaatteessa vois olla useampikin jono, mutta mun mielipide on, että yhellä jonolla 
-    toteutus on siistimpi, koska fuusiotaskin tarttee tällöin herätä ainoastaan yhden jonon dataan:
-        
-        while(1) {
-            if (xQueueReceive(sensor_fusion_queue, &data, 0) == pdTRUE) {
-            handle(&data);
-            }   
-        }
-
-    Tätä varten täytyy vaan määritellä jonkinnäköset "geneeriset" tietorakenteet, jotta data saadaan parsittua
-    ja käsiteltyä oikein. Esim jotain tänkaltasta:
-
-        Anturin tyyppi. Käytetään fuusiotaskin switchissä jotta datalle saadaan tehtyä oikeat temput
-        typedef enum {
-            SENSOR_BARO
-            SENSOR_IMU
-            SENSOR_GPS
-        } sensor_type_t;
-
-        Datatyypit. Näille määritellään sopivat structit
-        typedef union {
-            imu_data_t imu;
-            baro_data_t baro;
-            gps_data_t gps;
-        } sensor_payload_t;
-
-        Viesti joka pukataan jonoon
-        typedef struct {
-            sensor_type_t type;
-            int timestamp;
-            sensor_payload_t data;
-        } sensor_message_t;
-
-    Eli homma toimis suurinpiirtein näin:
-    gps_task ---------|
-    imu_task* --------|---> QueueHandle_t sensor_fusion_queue --> sensor_fusion_task --> jono? --> datanlähetystaski
-    barometer_task ---|
-    *POIKKEUS: imun sh2-kirjasto käyttää callback-funktiota (sensor_event_handler). Tämä callback saa puskea datan jonoon itse.
-   
-    */
+    // Initialize wifi
+    wifi_sta_start(WIFI_SSID, WIFI_PASSWORD, WIFI_TIMEOUT);
 
     // Init I2C
     i2c_master_bus_handle_t i2c_bus = NULL;

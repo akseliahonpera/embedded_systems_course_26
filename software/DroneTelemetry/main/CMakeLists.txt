@@ -22,6 +22,10 @@ idf_component_register(
 
         "fusion/fusion.c"
 
+        "comm/telem_client.c"
+        "comm/udp_client.c"
+        "comm/wifi_sta.c"
+
     INCLUDE_DIRS
         "."
         "barometer"
@@ -29,6 +33,7 @@ idf_component_register(
         "gps"
         "telemetry"
         "fusion"
+        "comm"
     REQUIRES
         driver
         esp_driver_i2c
@@ -36,5 +41,8 @@ idf_component_register(
         esp_timer
         esp_event
         esp_driver_uart
+        esp_wifi
+        esp_netif
+        nvs_flash
 
 )

@@ -91,6 +91,7 @@ typedef struct {
     double latitude;
     double longtitude;
 
+    float pressure;
     float temperature;
 } fusion_state_t;
 
