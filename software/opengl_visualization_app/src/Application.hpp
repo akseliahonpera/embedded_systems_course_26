@@ -41,17 +41,15 @@ struct UiStaticData
 {
     UiStaticData()
     {
+        memset(this, 0, sizeof(UiStaticData));
         strcpy(logging_file, "data.csv");
         log_sample_rate = 5;
-        log_orientation = false;
-        log_coordinates = false;
-        log_temperature = false;
-        log_pressure = false;
     }
 
     char logging_file[128];
-    bool log_orientation;
+    bool log_rotation;
     bool log_coordinates;
+    bool log_relative_location;
     bool log_temperature;
     bool log_pressure;
     float log_sample_rate;

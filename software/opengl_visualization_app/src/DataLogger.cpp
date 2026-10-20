@@ -7,9 +7,10 @@ namespace Logging
 DataLogger::DataLogger()
 {
     log_coordinates = false;
-    log_orientation = false;
+    log_rotation = false;
     log_pressure = false;
     log_temperature = false;
+    log_relative_location = false;
 
     log_time = 0;
     samplerate = DEFAULT_SAMPLERATE;
@@ -19,10 +20,15 @@ void DataLogger::createWriter()
 {
     std::vector<std::string> fields;
 
-    if (log_orientation) {
+    if (log_rotation) {
         fields.emplace_back("roll");
         fields.emplace_back("pitch");
         fields.emplace_back("yaw");
+    }
+    if (log_relative_location) {
+        fields.emplace_back("locationX");
+        fields.emplace_back("locationY");
+        fields.emplace_back("locationZ");
     }
     if (log_coordinates) {
         fields.emplace_back("latitude");
@@ -44,8 +50,11 @@ void DataLogger::writeSample(double t, DataSampler &sampler)
 {
     DataFrame frame = sampler.getSample(t);
 
-    if (log_orientation) {
+    if (log_rotation) {
         writer->writeValues(frame.rotation.x, frame.rotation.y, frame.rotation.z);
+    }
+    if (log_relative_location) {
+        writer->writeValues(frame.location.x, frame.location.y, frame.location.z);
     }
     if (log_coordinates) {
         writer->writeValues(frame.coordinates.x, frame.coordinates.y);

@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Application.hpp"
 #include "Server.hpp"
+#include "TelemPacket.hpp"
 #include "imgui/imgui.h"
 #include "MeshRenderer.hpp"
 #include "Utils.hpp"
@@ -11,17 +12,23 @@ constexpr float client_timeout_time = 5.0f;
 
 glm::vec3 convertAngles(glm::vec3 angles)
 {
+    //Our OpenGL rendering engine uses different coordinates system and rotation order
+    //Angles need to be converted to that system
+
     float roll  = glm::radians(angles[0]);
     float pitch = glm::radians(angles[1]);
     float yaw   = glm::radians(angles[2]);
 
-    glm::quat q = glm::angleAxis(yaw,   glm::vec3(0.0f, 1.0f, 0.0f))
-                * glm::angleAxis(pitch, glm::vec3(1.0f, 0.0f, 0.0f))
-                * glm::angleAxis(roll,  glm::vec3(0.0f, 0.0f, 1.0f));
+    glm::mat4 rot_mat(1.0f);
 
-    return glm::eulerAngles(q);
+    rot_mat = glm::rotate(rot_mat, yaw,   glm::vec3(0, 1, 0));
+    rot_mat = glm::rotate(rot_mat, pitch, glm::vec3(1, 0, 0));
+    rot_mat = glm::rotate(rot_mat, roll,  glm::vec3(0, 0, 1));
 
+    float pitch2, yaw2, roll2;
+    glm::extractEulerAngleZYX(rot_mat, roll2, yaw2, pitch2);
 
+    return glm::vec3(pitch2, yaw2, roll2);
 }
 
 
@@ -122,6 +129,7 @@ void Application::updateGui()
 {
     glm::vec3 rotation(0.0f);
     glm::vec2 coordinates(0.0f);
+    glm::vec3 location(0.0f);
     float pressure = 0;
     float temperature = 0;
 
@@ -134,6 +142,7 @@ void Application::updateGui()
             if (addr == show_client_addr) {
                 rotation = client_state.last_frame.rotation;
                 coordinates = client_state.last_frame.coordinates;
+                location = client_state.last_frame.location;
                 pressure = client_state.last_frame.pressure;
                 temperature = client_state.last_frame.temperature;
             } else {
@@ -147,37 +156,80 @@ void Application::updateGui()
         }
     ImGui::End();
 
-
-    ImGui::Begin("Rotation");
+    ImGui::Begin("IMU");
         ImGui::Text("Roll %.2f, Pitch %.2f, Yaw %.2f", rotation[0], rotation[1], rotation[2]);
-        if (ImGui::Button("Calibrate IMU")) {
-            std::cout << "send IMU calcmd" << std::endl;
-            sendCommandToActiveClient(CMD_CALIBRATE_IMU);
+
+        if (ImGui::BeginMenu("Commands")) {
+            if (ImGui::Button("Disable IMU"))
+                sendCommandToActiveClient(CMD_DISABLE_IMU);
+
+            if (ImGui::Button("Enable IMU"))
+                sendCommandToActiveClient(CMD_ENABLE_IMU);
+
+            if (ImGui::Button("Reset IMU"))
+                sendCommandToActiveClient(CMD_RESET_IMU);
+
+            if (ImGui::Button("Measure covariance"))
+                sendCommandToActiveClient(CMD_IMU_MEASURE_COV);
+
+            if (ImGui::Button("Measure bias"))
+                sendCommandToActiveClient(CMD_IMU_MEASURE_BIAS);
+
+            ImGui::EndMenu();
         }
-        if (ImGui::Button("Calibrate compass")) {
-            std::cout << "send compass calcmd" << std::endl;
-            sendCommandToActiveClient(CMD_CALIBRATE_COMPASS);
-        }
+
     ImGui::End();
 
     ImGui::Begin("Location");
         ImGui::Text("Latitude %.4f, Longitude %.4f", coordinates.x, coordinates.y);
+        ImGui::Text("Relative location (X,Y,Z): %.4f, %.4f, %.4f", location.x, location.y, location.z);
+
+        if (ImGui::BeginMenu("Commands")) {
+            if (ImGui::Button("Start fusion"))
+                sendCommandToActiveClient(CMD_FUSION_START);
+
+            if (ImGui::Button("Stop fusion"))
+                sendCommandToActiveClient(CMD_FUSION_STOP);
+
+            if (ImGui::Button("Enable GNSS"))
+                sendCommandToActiveClient(CMD_ENABLE_GPS);
+
+            if (ImGui::Button("Disable GNSS"))
+                sendCommandToActiveClient(CMD_DISABLE_GPS);
+
+            if (ImGui::Button("Reset GNSS"))
+                sendCommandToActiveClient(CMD_RESET_GPS);
+
+            ImGui::EndMenu();
+        }
+
     ImGui::End();
 
-    ImGui::Begin("Pressure");
-        ImGui::Text("%.2f hPa", pressure);
-        ImGui::Text("Estimated height %.1f m", temperature);
-        ImGui::SameLine();
-        if (ImGui::Button("Calibrate")) {
-            std::cout << "send barometer calcmd" << std::endl;
-            sendCommandToActiveClient(CMD_CALIBRATE_BAROMETER);
+    ImGui::Begin("Pressure / Temperature");
+        ImGui::Text("Pressure %.2f hPa", pressure);
+        ImGui::Text("Temperature %.2f °C", temperature);
+
+
+        if (ImGui::BeginMenu("Commands")) {
+            if (ImGui::Button("Enable barometer"))
+                sendCommandToActiveClient(CMD_ENABLE_BAROMETER);
+
+            if (ImGui::Button("Disable barometer"))
+                sendCommandToActiveClient(CMD_DISABLE_BAROMETER);
+
+            if (ImGui::Button("Reset barometer"))
+                sendCommandToActiveClient(CMD_RESET_BAROMETER);
+
+            ImGui::EndMenu();
         }
+
     ImGui::End();
 
 
     ImGui::Begin("Logging");
     ImGui::InputText("Output file", ui_data.logging_file, sizeof(ui_data.logging_file));
-        ImGui::Checkbox("Orientation", &ui_data.log_orientation);
+        ImGui::Checkbox("Rotation", &ui_data.log_rotation);
+        ImGui::Checkbox("Relative location", &ui_data.log_relative_location);
         ImGui::Checkbox("Coordinates", &ui_data.log_coordinates);
         ImGui::Checkbox("Pressure", &ui_data.log_pressure);
         ImGui::Checkbox("Temperature", &ui_data.log_temperature);
@@ -185,7 +237,8 @@ void Application::updateGui()
         if (ImGui::Button("Apply")) {
             logger.setOutputFile(std::string(ui_data.logging_file));
             logger.enableCoordinatesLogging(ui_data.log_coordinates);
-            logger.enableOrientationLogging(ui_data.log_orientation);
+            logger.enableRotationLogging(ui_data.log_rotation);
+            logger.enableRelativeLocationLogging(ui_data.log_relative_location);
             logger.enablePressureLogging(ui_data.log_pressure);
             logger.enableTemperatureLogging(ui_data.log_temperature);
             logger.setSampleRate(ui_data.log_sample_rate);

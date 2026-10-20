@@ -25,8 +25,8 @@ public:
     void setSampleRate(double rt) {
         samplerate = rt;
     }
-    void enableOrientationLogging(bool e) {
-        log_orientation = e;
+    void enableRotationLogging(bool e) {
+        log_rotation = e;
         createWriter();
     }
     void enableCoordinatesLogging(bool e) {
@@ -41,13 +41,18 @@ public:
         log_temperature = e;
         createWriter();
     }
+    void enableRelativeLocationLogging(bool e) {
+        log_relative_location = e;
+        createWriter();
+    }
 
 private:
     void createWriter();
     void writeSample(double t, DataSampler &sampler);
 
-    bool log_orientation;
+    bool log_rotation;
     bool log_coordinates;
+    bool log_relative_location;
     bool log_pressure;
     bool log_temperature;
 
