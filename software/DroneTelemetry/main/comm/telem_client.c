@@ -52,7 +52,7 @@ int telem_client_poll_command(telem_client_t *client)
             ret_cmd = 0;
         }
         //Mark sequence number as received
-        client->ctrl_pkt_seq_mask |= (1 << seq_delta); // TODO: Overflow? 1 is probably 32 bit signed int
+        client->ctrl_pkt_seq_mask |= (1ull << seq_delta); // TODO: Overflow? 1 is probably 32 bit signed int
     }
 
     if (ret_cmd) {
