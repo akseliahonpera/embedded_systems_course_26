@@ -27,16 +27,21 @@ static const char *TAG = "TELEMETRY";
 
 static void map_packet(fusion_msg_t *fusion_data, telem_packet_t *telem_packet)
 {
-    telem_packet->location[0] = fusion_data->state.latitude;
-    telem_packet->location[1] = fusion_data->state.longtitude;
-    telem_packet->rotation[0] = fusion_data->state.roll;
-    telem_packet->rotation[1] = fusion_data->state.pitch;
-    telem_packet->rotation[2] = fusion_data->state.yaw;
-    telem_packet->velocity[0] = fusion_data->state.velocity; // TODO Tää on vektori, pitääkattoa structit kuntoon
+    telem_packet->coordinates[0] = fusion_data->state.latitude;
+    telem_packet->coordinates[1] = fusion_data->state.longtitude;
+    telem_packet->location[0] = 0;  // East
+    telem_packet->location[1] = 0;  // North
+    telem_packet->location[3] = 0;  // Up
+    telem_packet->velocity[0] = 0;  // East
+    telem_packet->velocity[1] = 0;  // North
+    telem_packet->velocity[2] = 0;  // Up
+    telem_packet->rotation[0] = 0;  // quaternion
+    telem_packet->rotation[1] = 0;  // quaternion
+    telem_packet->rotation[2] = 0;  // quaternion
+    telem_packet->rotation[3] = 0;  // quaternion
     telem_packet->pressure    = fusion_data->state.pressure;
     telem_packet->temperature = fusion_data->state.temperature;
     telem_packet->time        = fusion_data->timestamp;
-    // Altitude? Relative position in meters?
 }
 
 static void telemetry_task(void *arg)
