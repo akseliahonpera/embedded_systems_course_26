@@ -51,9 +51,6 @@ static void telemetry_task(void *arg)
         int command = telem_client_poll_command(&telem_client);
         switch (command)
         {
-        case CMD_PING:
-            break;
-
         // IMU
         case CMD_DISABLE_IMU:
             imu_notify(IMU_CMD_STANDBY);
@@ -61,24 +58,27 @@ static void telemetry_task(void *arg)
         case CMD_ENABLE_IMU:
             imu_notify(IMU_CMD_EXIT_STANDBY);
             break;
+        case CMD_RESET_IMU:
+            imu_notify(IMU_CMD_RESET);
+            break;
         case CMD_IMU_MEASURE_BIAS:
             imu_notify(IMU_CMD_START_BIAS_MEASUREMENT);
             break;
         case CMD_IMU_MEASURE_COV:
             imu_notify(IMU_CMD_START_COVARIANCE_MEASUREMENT);
             break;
-        case CMD_CALIBRATE_IMU:
-            // TODO
-            break;
-        case CMD_CALIBRATE_COMPASS:
-            // TODO
-            break;
 
         // BAROMETER
-        case CMD_CALIBRATE_BAROMETER:
-            // TODO
+        case CMD_DISABLE_BAROMETER:
+            barometer_notify(BAROMETER_CMD_STANDBY);
             break;
+        case CMD_ENABLE_BAROMETER:
+            barometer_notify(BAROMETER_CMD_EXIT_STANDBY);
+            break;
+        case CMD_RESET_BAROMETER:
+            barometer_notify(BAROMETER_CMD_RESET);
 
+        // GPS
         case CMD_DISABLE_GPS:
             gps_notify(GPS_CMD_STANDBY);
             break;
@@ -89,6 +89,7 @@ static void telemetry_task(void *arg)
             gps_notify(GPS_CMD_RESET);
             break;
 
+        // FUSION
         case CMD_FUSION_STOP:
             fusion_notify(FUSION_CMD_STOP);
             break;

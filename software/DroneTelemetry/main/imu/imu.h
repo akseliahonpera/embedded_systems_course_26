@@ -11,12 +11,14 @@
  *
  * The BNO085 must be connected using the GPIO mapping in imu.c.
  */
+
 typedef enum {
     IMU_DATA_READY                          = (1UL << 0),
     IMU_CMD_START_BIAS_MEASUREMENT          = (1UL << 1),
     IMU_CMD_START_COVARIANCE_MEASUREMENT    = (1UL << 2),
-    IMU_CMD_STANDBY                    = (1UL << 3),
-    IMU_CMD_EXIT_STANDBY                   = (1UL << 4)
+    IMU_CMD_STANDBY                         = (1UL << 3),
+    IMU_CMD_EXIT_STANDBY                    = (1UL << 4),
+    IMU_CMD_RESET                           = (1UL << 5)
 } imu_command_t;
 
 typedef enum {
@@ -30,6 +32,8 @@ typedef enum {
 esp_err_t imu_init(i2c_master_bus_handle_t i2c_handle);
 
 void imu_notify(imu_command_t cmd);
+
+imu_state_t imu_get_state(void);
 
 
 #endif /* IMU_H */
