@@ -38,8 +38,24 @@ static const char *TAG = "GPS";
 // Task handle
 static TaskHandle_t gps_task_handle;
 
+// GPS state
+static gps_state_t gps_state;
+
 // Flag for printing data
 static bool print_gps_data;
+
+void gps_notify(gps_command_t cmd)
+{
+    xTaskNotify(
+        gps_task_handle,
+        cmd,
+        eSetBits);
+}
+
+gps_state_t gps_get_state(void)
+{
+    return gps_state;
+}
 
 static void gps_task(void *arg)
 {
@@ -54,63 +70,43 @@ static void gps_task(void *arg)
         {
             if (events & GPS_CMD_STANDBY)
             {
-                /* Standby mode is a power saving mode that shuts down the RF section of the
-                module and puts the processor into a standby mode. The RTC is kept alive, and
-                the RAM power is maintained to keep the module configuration.
-                The standby state can be initiated either with a hardware signal to Pin26 or by
-                using a command.
-                Hardware controlled Standby: Enable standby mode by a low state to Pin26
-                (HW_S). To wake the module back to full power a high state needs to be
-                applied to Pin26. If Pin26 is not to be used, then it must be kept floating (not
-                connected).
-                Standby mode command: Software on the host needs to send the “PMTK161”
-                command through the UART interface*/
-                esp_err_t err = gpio_set_level(M20048_HW_S_GPIO, 0);
-                if (err != ESP_OK)
+                if (gpio_set_level(M20048_HW_S_GPIO, 0) == ESP_OK)
                 {
-                    ESP_LOGE(TAG, "Could not set GPS standby mode: %s", esp_err_to_name(err));
-                    // vTaskDelete(NULL); <- jatkossa vois tappaa taskin, miten uudelleenkäynnistys
+                    ESP_LOGI(TAG, "GPS entered standby mode");
+                    gps_state = GPS_STATE_STANDBY;
                 }
-                ESP_LOGI(TAG, "GPS entered standby mode");
-                // TODO: notify caller
+                else
+                {
+                    ESP_LOGE(TAG, "GPS failed to enter standby mode");
+                }
             }
 
             if (events & GPS_CMD_EXIT_STANDBY)
             {
-                /*To wake the module back to full power a high state needs to be
-                applied to Pin26. If Pin26 is not to be used, then it must be kept floating (not
-                connected).*/
-                esp_err_t err = gpio_set_level(M20048_HW_S_GPIO, 1);
-                if (err != ESP_OK)
+                if (gpio_set_level(M20048_HW_S_GPIO, 1) == ESP_OK)
                 {
-                    ESP_LOGE(TAG, "Could not exit GPS standby mode: %s", esp_err_to_name(err));
-                    // vTaskDelete(NULL); <- jatkossa vois tappaa taskin, miten uudelleenkäynnistys
+                    ESP_LOGI(TAG, "GPS exited standby mode");
+                    gps_state = GPS_STATE_RUNNING;
                 }
-                ESP_LOGI(TAG, "GPS exited standby mode");
-                // TODO: notify caller
-                
+                ESP_LOGE(TAG, "GPS failed to exit standby mode");
             }
 
             if (events & GPS_CMD_RESET)
             {
-                /*The External reset pin is default high by an internal 75Kohm and should be
-                left floating if not used. To initiate a reset the pin needs to be pulled low. The
-                module also initiates a reset if the VCC drops below the minimum 2.8V supply. */
+                gps_state = GPS_STATE_INIT;
                 esp_err_t err = gpio_set_level(M20048_HW_R_GPIO, 0);
                 if (err != ESP_OK)
                 {
                     ESP_LOGE(TAG, "Could not pull GPS reset down: %s", esp_err_to_name(err));
-                    // vTaskDelete(NULL); <- jatkossa vois tappaa taskin, miten uudelleenkäynnistys
                 }
                 vTaskDelay(pdMS_TO_TICKS(100));
                 err = gpio_set_level(M20048_HW_R_GPIO, 1);
                 if (err != ESP_OK)
                 {
                     ESP_LOGE(TAG, "Could not release GPS reset: %s", esp_err_to_name(err));
-                    // vTaskDelete(NULL); <- jatkossa vois tappaa taskin, miten uudelleenkäynnistys
                 }
                 ESP_LOGI(TAG, "GPS reset completed");
-                // TODO: notify caller
+                gps_state = GPS_STATE_RUNNING;
             }
 
             if (events & GPS_CMD_PRINT_STATUS)
@@ -120,14 +116,6 @@ static void gps_task(void *arg)
             }
         }
     }
-}
-
-void gps_notify(gps_command_t cmd)
-{
-    xTaskNotify(
-        gps_task_handle,
-        cmd,
-        eSetBits);
 }
 
 static const char *gps_fix_name(gps_fix_t fix)
@@ -238,6 +226,7 @@ static void gps_event_handler(void *event_handler_arg, esp_event_base_t event_ba
 
 esp_err_t gps_init()
 {
+    gps_state = GPS_STATE_INIT;
     nmea_parser_config_t config = NMEA_PARSER_CONFIG_DEFAULT();
 
     config.uart.uart_port = UART_NUM;
@@ -290,6 +279,7 @@ esp_err_t gps_init()
         return ESP_ERR_NO_MEM;
     }
 
+    gps_state = GPS_STATE_RUNNING;
     ESP_LOGI(TAG, "GPS task started.");
     return ESP_OK;
 }

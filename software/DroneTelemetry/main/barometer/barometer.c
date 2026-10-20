@@ -16,51 +16,103 @@ static const char *TAG = "BAROMETER";
 static struct bmp5_dev bmp_dev;
 static struct bmp5_osr_odr_press_config osr_odr_press_cfg;
 
+// Barometer state
+static barometer_state_t barometer_state;
+
+// Task handle
 static TaskHandle_t barometer_task_handle;
+
+void barometer_notify(barometer_command_t cmd)
+{
+    xTaskNotify(
+        barometer_task_handle,
+        cmd,
+        eSetBits);
+}
+
+barometer_state_t barometer_get_state(void) {
+    return barometer_state;
+}
 
 static void barometer_task(void *arg)
 {
-    // print every 10th second
     (void)arg;
     struct bmp5_sensor_data sensor_data;
-    float pressure_pa, temperature_c;
     sensor_msg_t msg;
     msg.type = SENSOR_BARO;
 
     while (1)
     {
-        vTaskDelay(pdMS_TO_TICKS(5000));
-        int8_t rslt = bmp5_get_sensor_data(
-            &sensor_data,
-            &osr_odr_press_cfg,
-            &bmp_dev);
+        uint32_t events;
+        BaseType_t received = xTaskNotifyWait(0, UINT32_MAX, &events, pdMS_TO_TICKS(5000));
 
-        if (rslt != BMP5_OK)
-        {
-            ESP_LOGE(TAG, "BMP581 read failed (%d)", rslt);
+        if (received == pdTRUE) {
+            if (events & BAROMETER_CMD_STANDBY) {
+                if (bmp5_set_power_mode(BMP5_POWERMODE_STANDBY, &bmp_dev) == BMP5_OK) {
+                    barometer_state = BAROMETER_STATE_STANDBY;
+                    ESP_LOGI(TAG, "Barometer entered standby mode");
+                } else {
+                    ESP_LOGI(TAG, "Barometer failed to enter standby mode");
+                }
+            }
+            if (events & BAROMETER_CMD_EXIT_STANDBY) {
+                if (bmp5_set_power_mode(BMP5_POWERMODE_NORMAL, &bmp_dev) == BMP5_OK) {
+                    barometer_state = BAROMETER_STATE_RUNNING;
+                    ESP_LOGI(TAG, "Barometer exited standby mode");
+                } else {
+                    ESP_LOGI(TAG, "Barometer failed to exit standby mode");
+                }
+            }
+            if (events & BAROMETER_CMD_RESET) {
+                barometer_state = BAROMETER_STATE_INIT;
+                int8_t rslt = bmp5_soft_reset(&bmp_dev);
+                if (rslt != BMP5_OK) {
+                    ESP_LOGE(TAG, "BMP581 reset failed (%d)", rslt);
+                } else {
+                    rslt = bmp5_set_osr_odr_press_config(
+                        &osr_odr_press_cfg,
+                        &bmp_dev);
+
+                    if (rslt != BMP5_OK) {
+                        ESP_LOGE(TAG, "Sensor configuration after reset failed (%d)", rslt);
+                    } else {
+                        rslt = bmp5_set_power_mode(BMP5_POWERMODE_NORMAL, &bmp_dev);
+                        if (rslt != BMP5_OK) {
+                            ESP_LOGE(TAG, "Power mode after reset failed (%d)", rslt);
+                        } else {
+                            barometer_state = BAROMETER_STATE_RUNNING;
+                            ESP_LOGI(TAG, "Barometer reset successful");
+                        }
+                    }
+                }
+            }
         }
-        pressure_pa = sensor_data.pressure;
-        temperature_c = sensor_data.temperature;
 
-        // ESP_LOGI(TAG,
-        //          "Pressure: %.2f Pa (%.2f hPa), Temperature: %.2f C",
-        //          pressure_pa,
-        //          pressure_pa / 100.0f,
-        //          temperature_c);
+        if (barometer_state == BAROMETER_STATE_RUNNING) {
+            int8_t rslt = bmp5_get_sensor_data(
+                &sensor_data,
+                &osr_odr_press_cfg,
+                &bmp_dev);
 
-        fusion_send_data(&msg);
+            if (rslt != BMP5_OK)
+            {
+                ESP_LOGE(TAG, "BMP581 read failed (%d)", rslt);
+            } else {
+                msg.data.baro.pressure = sensor_data.pressure;
+                msg.data.baro.temperature = sensor_data.temperature;
+
+                fusion_send_data(&msg);
+            }
+        }
     }
 }
 
 esp_err_t barometer_init(i2c_master_bus_handle_t bus, uint32_t freq)
 {
+    barometer_state = BAROMETER_STATE_INIT;
     ESP_RETURN_ON_ERROR(bmp581_port_init(bus, freq),
                         TAG,
                         "Port init failed");
-
-    ESP_RETURN_ON_ERROR(bmp581_soft_reset(),
-                        TAG,
-                        "BMP581 reset failed");
 
     // Tässä laitetaan callbackit HALista (bmp581_port.h) API-laitteeseen
     bmp_dev.intf = BMP5_I2C_INTF;
@@ -118,35 +170,7 @@ esp_err_t barometer_init(i2c_master_bus_handle_t bus, uint32_t freq)
     {
         return ESP_ERR_NO_MEM;
     }
+    barometer_state = BAROMETER_STATE_RUNNING;
     ESP_LOGI(TAG, "Barometer task started.");
-    return ESP_OK;
-}
-
-// left for debugging
-esp_err_t barometer_read(float *pressure_pa, float *temperature_c)
-{
-    struct bmp5_sensor_data sensor_data;
-
-    int8_t rslt = bmp5_get_sensor_data(
-        &sensor_data,
-        &osr_odr_press_cfg,
-        &bmp_dev);
-
-    if (rslt != BMP5_OK)
-    {
-        ESP_LOGE(TAG, "BMP581 read failed (%d)", rslt);
-        return ESP_FAIL;
-    }
-
-    if (pressure_pa != NULL)
-    {
-        *pressure_pa = sensor_data.pressure;
-    }
-
-    if (temperature_c != NULL)
-    {
-        *temperature_c = sensor_data.temperature;
-    }
-
     return ESP_OK;
 }

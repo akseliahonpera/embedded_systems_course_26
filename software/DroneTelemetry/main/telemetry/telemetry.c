@@ -53,15 +53,32 @@ static void telemetry_task(void *arg)
         {
         case CMD_PING:
             break;
+
+        // IMU
+        case CMD_DISABLE_IMU:
+            imu_notify(IMU_CMD_STANDBY);
+            break;
+        case CMD_ENABLE_IMU:
+            imu_notify(IMU_CMD_EXIT_STANDBY);
+            break;
+        case CMD_IMU_MEASURE_BIAS:
+            imu_notify(IMU_CMD_START_BIAS_MEASUREMENT);
+            break;
+        case CMD_IMU_MEASURE_COV:
+            imu_notify(IMU_CMD_START_COVARIANCE_MEASUREMENT);
+            break;
         case CMD_CALIBRATE_IMU:
             // TODO
             break;
         case CMD_CALIBRATE_COMPASS:
             // TODO
             break;
+
+        // BAROMETER
         case CMD_CALIBRATE_BAROMETER:
             // TODO
             break;
+
         case CMD_DISABLE_GPS:
             gps_notify(GPS_CMD_STANDBY);
             break;
@@ -71,18 +88,7 @@ static void telemetry_task(void *arg)
         case CMD_RESET_GPS:
             gps_notify(GPS_CMD_RESET);
             break;
-        case CMD_DISABLE_IMU:
-            imu_notify(IMU_CMD_MODE_STANDBY);
-            break;
-        case CMD_ENABLE_IMU:
-            imu_notify(IMU_CMD_MODE_NORMAL);
-            break;
-        case CMD_IMU_MEASURE_BIAS:
-            imu_notify(IMU_CMD_START_BIAS_MEASUREMENT);
-            break;
-        case CMD_IMU_MEASURE_COV:
-            imu_notify(IMU_CMD_START_COVARIANCE_MEASUREMENT);
-            break;
+
         case CMD_FUSION_STOP:
             fusion_notify(FUSION_CMD_STOP);
             break;
@@ -95,7 +101,7 @@ static void telemetry_task(void *arg)
         // Proc pending telemetry data
         if (xQueueReceive(telemetry_queue, &msg, pdMS_TO_TICKS(10)) == pdTRUE)
         {
-            // Mäppää fuusioitu anturidata telem_packet_h muotoon -> lähetä
+            // Mäppää fuusioitu anturidata telem_packet_t muotoon -> lähetä
             telem_packet_t packet = {0};
             map_packet(&msg, &packet);
             telem_client_send(&telem_client, &packet);

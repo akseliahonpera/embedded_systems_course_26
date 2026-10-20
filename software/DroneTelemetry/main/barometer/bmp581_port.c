@@ -5,8 +5,6 @@
 #include "esp_check.h"
 #include "esp_rom_sys.h"
 #include "bmp5.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 
 #define BMP581_ADDR 0x46
 #define BMP581_I2C_TIMEOUT_MS 1000
@@ -69,28 +67,4 @@ void bmp581_delay_us(uint32_t period_us, void *intf_ptr)
 {
     (void)intf_ptr;
     esp_rom_delay_us(period_us);
-}
-
-esp_err_t bmp581_soft_reset(void)
-{
-    uint8_t reset_cmd[2] = {
-        0x7E, // BMP581 CMD register
-        0xB6  // Soft reset command
-    };
-
-    esp_err_t err = i2c_master_transmit(
-        bmp581_dev,
-        reset_cmd,
-        sizeof(reset_cmd),
-        BMP581_I2C_TIMEOUT_MS);
-
-    if (err != ESP_OK)
-    {
-        return err;
-    }
-
-    // BMP581 needs time after reset
-    vTaskDelay(pdMS_TO_TICKS(10));
-
-    return ESP_OK;
 }
