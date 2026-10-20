@@ -82,6 +82,7 @@ static void telemetry_task(void *arg)
             break;
         case CMD_RESET_BAROMETER:
             barometer_notify(BAROMETER_CMD_RESET);
+            break;
 
         // GPS
         case CMD_DISABLE_GPS:

@@ -5,6 +5,18 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
+typedef enum {
+    BAROMETER_CMD_EXIT_STANDBY = (1UL << 0),
+    BAROMETER_CMD_STANDBY      = (1UL << 1),
+    BAROMETER_CMD_RESET        = (1UL << 2)
+} barometer_command_t;
+
+typedef enum {
+    BAROMETER_STATE_STANDBY      = (1UL << 0),
+    BAROMETER_STATE_RUNNING      = (1UL << 1),
+    BAROMETER_STATE_INIT         = (1UL << 2)
+} barometer_state_t;
+
 /**
  * @brief Initializes the barometer
  * 
@@ -27,17 +39,5 @@ void barometer_notify(barometer_command_t cmd);
  * @return barometer_state_t 
  */
 barometer_state_t barometer_get_state(void);
-
-typedef enum {
-    BAROMETER_CMD_EXIT_STANDBY = (1UL << 0),
-    BAROMETER_CMD_STANDBY      = (1UL << 1),
-    BAROMETER_CMD_RESET        = (1UL << 2)
-} barometer_command_t;
-
-typedef enum {
-    BAROMETER_STATE_STANDBY      = (1UL << 0),
-    BAROMETER_STATE_RUNNING      = (1UL << 1),
-    BAROMETER_STATE_INIT         = (1UL << 2)
-} barometer_state_t;
 
 #endif // BAROMETER_H
