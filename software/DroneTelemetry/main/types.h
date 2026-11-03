@@ -86,20 +86,16 @@ typedef struct
 } gps_data_t;
 //--------------------------------------------------------------------------------------------------
 
-// Drone's state as calculated by the fusion task.
+// Latest state published by the fusion task to telemetry.
 typedef struct {
-    float roll;
-    float pitch;
-    float yaw;
-
-    float altitude;
-    float velocity;
-
+    float rotation[4];
+    float location[3];
+    float velocity[3];
     double latitude;
     double longtitude;
-
     float pressure;
     float temperature;
+    uint32_t status;
 } fusion_state_t;
 
 typedef enum {
@@ -126,7 +122,7 @@ typedef struct {
 // message sent to telemetry task
 typedef struct {
     fusion_state_t state;
-    int timestamp;
+    int64_t timestamp; // ESP timer time in microseconds
 } fusion_msg_t;
 
 

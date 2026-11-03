@@ -45,10 +45,27 @@ struct DataFrame
     float pressure;
     float temperature;
 
+    // static DataFrame fromDatagram(const Datagram &dg) {
+    //     DataFrame frame;
+
+    //     frame.rotation =  quatToTaitBryat(glm::quat(dg.rotation[0], dg.rotation[1], dg.rotation[2], dg.rotation[3]));
+    //     frame.coordinates = glm::vec2(dg.coordinates[0], dg.coordinates[1]);
+    //     frame.location = glm::vec3(dg.location[0], dg.location[1], dg.location[2]);
+    //     frame.pressure = dg.pressure;
+    //     frame.temperature = dg.temperature;
+
+    //     return frame;
+    // }
+    
     static DataFrame fromDatagram(const Datagram &dg) {
         DataFrame frame;
 
-        frame.rotation =  quatToTaitBryat(glm::quat(dg.rotation[0], dg.rotation[1], dg.rotation[2], dg.rotation[3]));
+        // TODO: akselien fixailua. vaihoin vaan akselien paikkaa, pitäis kattoa oikeat akselit ja miten päin levyä pidetään.
+        // yllä uloskommentoituna orkkiskoodi
+        glm::vec3 euler = quatToTaitBryat(
+            glm::quat(dg.rotation[0], dg.rotation[1], dg.rotation[2], dg.rotation[3]));
+        frame.rotation = glm::vec3(-euler.y, euler.x, euler.z); // pitch, roll, yaw
+
         frame.coordinates = glm::vec2(dg.coordinates[0], dg.coordinates[1]);
         frame.location = glm::vec3(dg.location[0], dg.location[1], dg.location[2]);
         frame.pressure = dg.pressure;

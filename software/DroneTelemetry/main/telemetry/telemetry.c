@@ -1,6 +1,7 @@
 #include "telemetry.h"
 
 #include "esp_err.h"
+#include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "esp_log.h"
@@ -29,19 +30,16 @@ static void map_packet(fusion_msg_t *fusion_data, telem_packet_t *telem_packet)
 {
     telem_packet->coordinates[0] = fusion_data->state.latitude;
     telem_packet->coordinates[1] = fusion_data->state.longtitude;
-    telem_packet->location[0] = 0;  // East
-    telem_packet->location[1] = 0;  // North
-    telem_packet->location[3] = 0;  // Up
-    telem_packet->velocity[0] = 0;  // East
-    telem_packet->velocity[1] = 0;  // North
-    telem_packet->velocity[2] = 0;  // Up
-    telem_packet->rotation[0] = 0;  // quaternion
-    telem_packet->rotation[1] = 0;  // quaternion
-    telem_packet->rotation[2] = 0;  // quaternion
-    telem_packet->rotation[3] = 0;  // quaternion
+    memcpy(telem_packet->location, fusion_data->state.location,
+           sizeof(telem_packet->location));
+    memcpy(telem_packet->velocity, fusion_data->state.velocity,
+           sizeof(telem_packet->velocity));
+    memcpy(telem_packet->rotation, fusion_data->state.rotation,
+           sizeof(telem_packet->rotation));
     telem_packet->pressure    = fusion_data->state.pressure;
     telem_packet->temperature = fusion_data->state.temperature;
-    telem_packet->time        = fusion_data->timestamp;
+    telem_packet->time        = (double)fusion_data->timestamp / 1000000.0;
+    telem_packet->status      = fusion_data->state.status;
 }
 
 static void telemetry_task(void *arg)

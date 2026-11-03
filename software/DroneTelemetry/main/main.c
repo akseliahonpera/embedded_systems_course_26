@@ -77,8 +77,9 @@ void app_main(void)
     ESP_ERROR_CHECK(i2c_new_master_bus(&bus_cfg, &i2c_bus));
 
     // Initialize queues
-    // Queue for fused data from sensorfusion task to telemetry task
-    QueueHandle_t telemetry_queue = xQueueCreate(10, sizeof(fusion_msg_t));
+    // Single-slot latest-state queue; fusion overwrites stale telemetry
+    // just like sensor producers overwrite stale samples for fusion.
+    QueueHandle_t telemetry_queue = xQueueCreate(1, sizeof(fusion_msg_t));
 
     // Initialize fusion and telemetry tasks
     ESP_ERROR_CHECK(fusion_init(telemetry_queue));

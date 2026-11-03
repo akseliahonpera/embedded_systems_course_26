@@ -27,10 +27,10 @@ struct  __attribute__((__packed__)) Datagram
     float pressure;         // (HPa)
     float temperature;      // (C)
 
+    double time;
     uint32_t status;
 
     int32_t packet_num;
-    double time;
 };
 
 enum ControlCommand: uint32_t

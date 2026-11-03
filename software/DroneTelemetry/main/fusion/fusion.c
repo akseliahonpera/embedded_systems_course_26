@@ -9,6 +9,7 @@
 #include "types.h"
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include "fusion.h"
 
@@ -359,6 +360,11 @@ static void fusion_task(void *arg)
     float received_imu_covariance[3][3] = {0};
     bool has_imu_covariance = false;
     bool use_measured_covariance = true;
+    double latest_latitude = 0.0;
+    double latest_longitude = 0.0;
+    float latest_pressure = 0.0f;
+    float latest_temperature = 0.0f;
+    float latest_rotation[4] = {1.0f, 0.0f, 0.0f, 0.0f};
 
     // Nääkin vois määrittää kalibroinnilla,
     // mutta vaatii vähän enemmän työtä.
@@ -384,23 +390,37 @@ static void fusion_task(void *arg)
                 {
                     if (state.mode == INIT)
                         state.gps_fix_counter = 0;
-                                }
-                else if (state.mode == INIT)
-                {
-                    init_kalman_filter(&state, &msg);
                 }
-                else if (state.mode == TRACKING)
+                else
                 {
-                    correction_phase_using_gps(&state, &msg, state_covariance, gps_covariance);
+                    latest_latitude = msg.data.gps.latitude;
+                    latest_longitude = msg.data.gps.longtitude;
+
+                    if (state.mode == INIT)
+                    {
+                        init_kalman_filter(&state, &msg);
+                    }
+                    else if (state.mode == TRACKING)
+                    {
+                        correction_phase_using_gps(&state, &msg, state_covariance, gps_covariance);
+                    }
                 }
             }
             if (xQueueReceive(baro_queue, &msg, pdMS_TO_TICKS(0)))
             {
-                // kalman_baro_update(&msg);
+                latest_pressure = msg.data.baro.pressure;
+                latest_temperature = msg.data.baro.temperature;
             }
             if (xQueueReceive(imu_queue, &msg, pdMS_TO_TICKS(0)))
             {
-                if (msg.data.imu.data_type == COVARIANCE_DATA)
+                if (msg.data.imu.data_type == ROTATION_DATA)
+                {
+                    latest_rotation[0] = msg.data.imu.data.rotation_data.real;
+                    latest_rotation[1] = msg.data.imu.data.rotation_data.i;
+                    latest_rotation[2] = msg.data.imu.data.rotation_data.j;
+                    latest_rotation[3] = msg.data.imu.data.rotation_data.k;
+                }
+                else if (msg.data.imu.data_type == COVARIANCE_DATA)
                 {
 
                     received_imu_covariance[0][0] = msg.data.imu.data.covariance_data.cov_x;
@@ -419,11 +439,26 @@ static void fusion_task(void *arg)
                                    &periodic_status, &last_status_timestamp, &use_measured_covariance);
         }
 
-        // TODO: populate a fusion_msg_t from the estimate before sending
-        // telemetry. The previous placeholder sent uninitialized data.
-
-        // Check even after a queue timeout, so output also works without sensors.
         const int64_t now = esp_timer_get_time();
+
+        // Publish the latest fused state to the one-slot telemetry queue.
+        // Overwrite semantics keep telemetry current if the network is slower
+        // than the sensor/fusion update rate.
+        fusion_msg_t telemetry_msg = {0};
+        telemetry_msg.timestamp = now;
+        telemetry_msg.state.latitude = latest_latitude;
+        telemetry_msg.state.longtitude = latest_longitude;
+        telemetry_msg.state.location[0] = state.position_east;
+        telemetry_msg.state.location[1] = state.position_north;
+        telemetry_msg.state.location[2] = state.position_up;
+        telemetry_msg.state.velocity[0] = state.velocity_east;
+        telemetry_msg.state.velocity[1] = state.velocity_north;
+        telemetry_msg.state.velocity[2] = state.velocity_up;
+        memcpy(telemetry_msg.state.rotation, latest_rotation, sizeof(latest_rotation));
+        telemetry_msg.state.pressure = latest_pressure;
+        telemetry_msg.state.temperature = latest_temperature;
+        xQueueOverwrite(telemetry_queue, &telemetry_msg);
+
         const bool periodic_due = periodic_status && now - last_status_timestamp >= FUSION_STATUS_INTERVAL_US;
         if ((events & (FUSION_CMD_PRINT_STATUS | FUSION_CMD_TOGGLE_IMU_COVARIANCE_SOURCE)) || periodic_due)
         {
