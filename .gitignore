@@ -2,3 +2,4 @@ build/
 sdkconfig.old
 .vscode/
 software/opengl_visualization_app/src/build
+wifi_cred.h
