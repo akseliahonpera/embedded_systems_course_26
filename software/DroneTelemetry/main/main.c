@@ -26,7 +26,7 @@ static const char *TAG = "MAIN";
 #define I2C_GLITCH_IGNORE_COUNT 7
 #define I2C_FREQ_HZ 100000
 
-#define WIFI_TIMEOUT    100
+#define WIFI_TIMEOUT    15000
 
 static void print_menu(void)
 {
@@ -53,7 +53,12 @@ static void print_menu(void)
 void app_main(void)
 {
     // Initialize wifi
-    wifi_sta_start(WIFI_SSID, WIFI_PASSWORD, WIFI_TIMEOUT);
+    esp_err_t wifi_result = wifi_sta_start(WIFI_SSID, WIFI_PASSWORD, WIFI_TIMEOUT);
+    if (wifi_result != ESP_OK)
+    {
+        ESP_LOGW(TAG, "Wi-Fi did not connect within %u ms: %s",
+                 (unsigned)WIFI_TIMEOUT, esp_err_to_name(wifi_result));
+    }
 
     // Init I2C
     i2c_master_bus_handle_t i2c_bus = NULL;
