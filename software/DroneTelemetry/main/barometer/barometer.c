@@ -114,6 +114,10 @@ esp_err_t barometer_init(i2c_master_bus_handle_t bus, uint32_t freq)
                         TAG,
                         "Port init failed");
 
+    ESP_RETURN_ON_ERROR(bmp581_soft_reset(),
+                        TAG,
+                        "BMP581 reset failed");
+
     // Tässä laitetaan callbackit HALista (bmp581_port.h) API-laitteeseen
     bmp_dev.intf = BMP5_I2C_INTF;
     bmp_dev.read = bmp581_i2c_read;
