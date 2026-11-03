@@ -23,7 +23,7 @@ static telem_client_t telem_client;
 static const char *TAG = "TELEMETRY";
 
 #define CLIENT_IP "PLACEHOLDER"
-#define CLIENT_PORT 5000
+#define CLIENT_PORT 1234
 
 static void map_packet(fusion_msg_t *fusion_data, telem_packet_t *telem_packet)
 {

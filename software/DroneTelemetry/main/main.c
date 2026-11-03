@@ -14,6 +14,7 @@
 #include "telemetry.h"
 #include "fusion.h"
 
+#include "wifi_cred.h"
 #include "wifi_sta.h"
 
 static const char *TAG = "MAIN";
@@ -25,8 +26,6 @@ static const char *TAG = "MAIN";
 #define I2C_GLITCH_IGNORE_COUNT 7
 #define I2C_FREQ_HZ 100000
 
-#define WIFI_SSID       "PLACEHOLDER"
-#define WIFI_PASSWORD   "PLACEHOLDER"
 #define WIFI_TIMEOUT    100
 
 static void print_menu(void)
