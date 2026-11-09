@@ -128,6 +128,8 @@ void Application::render()
 void Application::updateGui()
 {
     glm::vec3 rotation(0.0f);
+    glm::vec3 firmware_rotation(0.0f);
+    glm::vec4 quaternion(1.0f, 0.0f, 0.0f, 0.0f);
     glm::vec2 coordinates(0.0f);
     glm::vec3 location(0.0f);
     float pressure = 0;
@@ -141,6 +143,8 @@ void Application::updateGui()
 
             if (addr == show_client_addr) {
                 rotation = client_state.last_frame.rotation;
+                firmware_rotation = client_state.last_frame.firmware_rotation;
+                quaternion = client_state.last_frame.quaternion;
                 coordinates = client_state.last_frame.coordinates;
                 location = client_state.last_frame.location;
                 pressure = client_state.last_frame.pressure;
@@ -157,7 +161,11 @@ void Application::updateGui()
     ImGui::End();
 
     ImGui::Begin("IMU");
-        ImGui::Text("Roll %.2f, Pitch %.2f, Yaw %.2f", rotation[0], rotation[1], rotation[2]);
+        ImGui::Text("Quaternion wxyz: %.5f, %.5f, %.5f, %.5f",
+                    quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+        ImGui::Text("Firmware Euler (deg) - Roll %.2f, Pitch %.2f, Yaw %.2f",
+                    firmware_rotation[0], firmware_rotation[1], firmware_rotation[2]);
+        ImGui::Text("Visualization roll / yaw (deg): %.2f / %.2f", rotation[0], rotation[2]);
 
         if (ImGui::BeginMenu("Commands")) {
             if (ImGui::Button("Disable IMU"))

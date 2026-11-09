@@ -111,12 +111,24 @@ static void adjust_for_declination(float *adjusted_x, float *adjusted_y, const f
 
 static void handle_rotation_data(sh2_SensorValue_t *value, float rotation_matrix[3][3], bool *has_rotation_matrix, uint64_t *rotation_timestamp)
 {
+    static uint32_t diagnostic_count = 0;
     sensor_msg_t msg = {0};
 
     const float r = value->un.rotationVector.real;
     const float i = value->un.rotationVector.i;
     const float j = value->un.rotationVector.j;
     const float k = value->un.rotationVector.k;
+
+    if (++diagnostic_count % 100 == 0)
+    {
+        float yaw, pitch, roll;
+        q_to_ypr(r, i, j, k, &yaw, &pitch, &roll);
+        ESP_LOGI(TAG, "Rotation q(wxyz)=[%.5f %.5f %.5f %.5f], YPR(deg)=[%.2f %.2f %.2f]",
+                 r, i, j, k,
+                 yaw * (180.0f / (float)M_PI),
+                 pitch * (180.0f / (float)M_PI),
+                 roll * (180.0f / (float)M_PI));
+    }
 
     calculate_rotation_matrix(r, i, j, k, rotation_matrix);
     *rotation_timestamp = value->timestamp;

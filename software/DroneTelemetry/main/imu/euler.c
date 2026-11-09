@@ -29,8 +29,8 @@
 float q_to_yaw(float r, float i, float j, float k)
 {
     // convert to Euler Angles
-    float num = 2.0f * i * j - 2.0f * r * k;
-    float den = 2.0f * r * r + 2.0f * j * j - 1.0f;
+    float num = 2.0f * i * j + 2.0f * r * k;
+    float den = 2.0f * r * r + 2.0f * i * i - 1.0f;
 
     float yaw = (float)atan2((double)num, (double)den);
     
@@ -61,8 +61,8 @@ float q_to_roll(float r, float i, float j, float k)
 void q_to_ypr(float r, float i, float j, float k, float *pYaw, float *pPitch, float *pRoll)
 {
     // convert to Euler Angles
-    float num = 2.0f * i * j - 2.0f * r * k;
-    float den = 2.0f * r * r + 2.0f * j * j - 1.0f;
+    float num = 2.0f * i * j + 2.0f * r * k;
+    float den = 2.0f * r * r + 2.0f * i * i - 1.0f;
     *pYaw = (float)atan2((double)num, (double)den);
 
     float arg = 2.0f * j * k + 2.0f * r * i;
