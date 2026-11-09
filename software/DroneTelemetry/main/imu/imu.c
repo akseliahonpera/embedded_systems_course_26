@@ -1,5 +1,6 @@
 #include "imu.h"
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <stdbool.h>
 
@@ -115,9 +116,17 @@ static void handle_rotation_data(sh2_SensorValue_t *value, float rotation_matrix
     sensor_msg_t msg = {0};
 
     const float r = value->un.rotationVector.real;
-    const float i = value->un.rotationVector.i;
-    const float j = value->un.rotationVector.j;
+    const float sensor_i = value->un.rotationVector.i;
+    const float sensor_j = value->un.rotationVector.j;
     const float k = value->un.rotationVector.k;
+
+    // Conjugate by a 180-degree Z rotation: yaw is preserved while roll/pitch
+    // signs reverse in the reported quaternion (w, -x, -y, z).
+    const float i = -sensor_i;
+    const float j = -sensor_j;
+
+    // Keep linear-acceleration world-frame conversion in the sensor's existing frame.
+    calculate_rotation_matrix(r, sensor_i, sensor_j, k, rotation_matrix);
 
     if (++diagnostic_count % 100 == 0)
     {
@@ -130,7 +139,6 @@ static void handle_rotation_data(sh2_SensorValue_t *value, float rotation_matrix
                  roll * (180.0f / (float)M_PI));
     }
 
-    calculate_rotation_matrix(r, i, j, k, rotation_matrix);
     *rotation_timestamp = value->timestamp;
     ;
     *has_rotation_matrix = true;
@@ -489,6 +497,67 @@ static void imu_task(void *arg)
     }
 }
 
+static esp_err_t configure_system_orientation(void)
+{
+    // FRS system orientation quaternion in signed Q30, Qw, Qx, Qy, Qz order.
+    uint32_t requested_orientation[4] = {
+        0x20000000u, 0xE0000000u, 0xE0000000u, 0xE0000000u,
+    };
+    uint32_t stored_orientation[4] = {0};
+    uint16_t stored_words = 4;
+
+    int rc = sh2_getFrs(SYSTEM_ORIENTATION, stored_orientation, &stored_words);
+    if (rc != SH2_OK)
+    {
+        ESP_LOGE(TAG, "Could not read system orientation FRS (%d)", rc);
+        return ESP_FAIL;
+    }
+
+    if (stored_words == 4 &&
+        memcmp(stored_orientation, requested_orientation, sizeof(requested_orientation)) == 0)
+    {
+        ESP_LOGI(TAG, "System orientation FRS already matches requested quaternion");
+        return ESP_OK;
+    }
+
+    rc = sh2_setFrs(SYSTEM_ORIENTATION, requested_orientation, 4);
+    if (rc != SH2_OK)
+    {
+        ESP_LOGE(TAG, "Could not write system orientation FRS (%d)", rc);
+        return ESP_FAIL;
+    }
+
+    ESP_LOGI(TAG, "Wrote system orientation FRS quaternion Qwxyz=[0.5 -0.5 -0.5 -0.5]");
+
+    // The system orientation FRS is loaded by the hub during reset.
+    imu_reset_complete = false;
+    rc = sh2_devReset();
+    if (rc != SH2_OK)
+    {
+        ESP_LOGE(TAG, "Could not reset BNO085 to apply system orientation (%d)", rc);
+        return ESP_FAIL;
+    }
+
+    const int64_t reset_start_us = esp_timer_get_time();
+    while (!imu_reset_complete && esp_timer_get_time() - reset_start_us < 2000000LL)
+    {
+        while (bno085_port_data_ready())
+        {
+            sh2_service();
+        }
+        vTaskDelay(pdMS_TO_TICKS(1));
+    }
+
+    if (!imu_reset_complete)
+    {
+        ESP_LOGE(TAG, "Timed out waiting for BNO085 reset after FRS write");
+        return ESP_ERR_TIMEOUT;
+    }
+
+    ESP_LOGI(TAG, "BNO085 reset complete; system orientation is active");
+    return ESP_OK;
+}
+
 esp_err_t imu_init(i2c_master_bus_handle_t i2c_handle)
 {
     imu_state = IMU_STATE_INIT;
@@ -514,6 +583,13 @@ esp_err_t imu_init(i2c_master_bus_handle_t i2c_handle)
         ESP_LOGE(TAG, "No reset advertisement from BNO085; check I2C, HINT, and SA0");
         sh2_close();
         return ESP_ERR_TIMEOUT;
+    }
+
+    esp_err_t orientation_err = configure_system_orientation();
+    if (orientation_err != ESP_OK)
+    {
+        sh2_close();
+        return orientation_err;
     }
 
     rc = sh2_setSensorCallback(sensor_event_handler, NULL);

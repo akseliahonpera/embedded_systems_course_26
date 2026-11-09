@@ -53,7 +53,6 @@ struct DataFrame
         frame.firmware_rotation = quatToTaitBryat(glm::quat(frame.quaternion.x, frame.quaternion.y,
                                                             frame.quaternion.z, frame.quaternion.w));
         frame.rotation = frame.firmware_rotation;
-        // The visualization roll sign matches the observed physical motion.
         frame.rotation.x = -frame.firmware_rotation.x;
         frame.coordinates = glm::vec2(dg.coordinates[0], dg.coordinates[1]);
         frame.location = glm::vec3(dg.location[0], dg.location[1], dg.location[2]);
