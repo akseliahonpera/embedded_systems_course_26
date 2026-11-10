@@ -267,6 +267,11 @@ static void handle_acceleration_data(sh2_SensorValue_t *value, const float rotat
     float acc_x_world = rotation_matrix[0][0] * acc_x + rotation_matrix[0][1] * acc_y + rotation_matrix[0][2] * acc_z;
     float acc_y_world = rotation_matrix[1][0] * acc_x + rotation_matrix[1][1] * acc_y + rotation_matrix[1][2] * acc_z;
     float acc_z_world = rotation_matrix[2][0] * acc_x + rotation_matrix[2][1] * acc_y + rotation_matrix[2][2] * acc_z;
+
+    // Match the 180-degree Z frame conversion used for the reported quaternion.
+    acc_x_world = -acc_x_world;
+    acc_y_world = -acc_y_world;
+
     adjust_for_declination(&acc_x_world, &acc_y_world, acc_x_world, acc_y_world);
     if (imu_state == IMU_STATE_MEASURING_COVARIANCE)
     {
